@@ -1,4 +1,4 @@
-package io.github.yeghishe
+package com.github.justindb
 
 import akka.actor.ActorSystem
 import akka.testkit.{ TestKit, ImplicitSender }

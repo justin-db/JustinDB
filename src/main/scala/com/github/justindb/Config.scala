@@ -1,4 +1,4 @@
-package io.github.yeghishe
+package com.github.justindb
 
 import com.typesafe.config.ConfigFactory
 
