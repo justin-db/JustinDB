@@ -4,12 +4,12 @@ import akka.actor.ActorSystem
 import scala.collection.immutable.{ TreeMap, SortedMap }
 import scala.util.hashing.MurmurHash3
 
-case class Node(name: String)
+case class Node(id: Int, name: String)
 
 object Main extends App {
 
   val realNodes = 5
-  val virtualNodesPerNode = 1 // it's usually much higher that number of real nodes
+  val virtualNodesPerNode = 2 // it's usually much higher that number of real nodes
 
   var ring: SortedMap[Int, Node] = TreeMap.empty
 
@@ -17,7 +17,7 @@ object Main extends App {
 
   def add(node: Node): Unit = {
     (1 to virtualNodesPerNode).map { i =>
-      ring = ring + ((hashFunc(node.name + i), node))
+      ring = ring + ((hashFunc(node.name + i), node.copy(name = node.name + ":v=" + i.toString)))
     }
   }
 
@@ -39,13 +39,13 @@ object Main extends App {
 
   //   example
   (1 to realNodes).foreach { i =>
-    add(Node(s"Node_nr_$i"))
+    add(Node(i, s"r=$i"))
   }
 
   println(ring.toString)
 
   println(get(78))
   println(get("ala"))
-  println(get(Node("alalala")))
+  println(get(Node(1, "alalala")))
   println(get(34534534L))
 }
