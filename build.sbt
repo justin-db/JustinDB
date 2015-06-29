@@ -12,10 +12,12 @@ libraryDependencies ++= {
   val scalaTestV       = "3.0.0-M1"
   val scalaMockV       = "3.2.2"
   val scalazScalaTestV = "0.2.3"
+
   Seq(
-    "org.scalaz"        %% "scalaz-core"                 % scalazV,
     "com.typesafe.akka" %% "akka-actor"                  % akkaV,
-    "com.typesafe.akka" %% "akka-agent"                  % akkaV,
+    "com.typesafe.akka" %% "akka-cluster"                % akkaV,
+    "com.typesafe.akka" %% "akka-slf4j"                  % akkaV,
+    "org.scalaz"        %% "scalaz-core"                 % scalazV,
     "org.scalatest"     %% "scalatest"                   % scalaTestV       % "it,test",
     "org.scalamock"     %% "scalamock-scalatest-support" % scalaMockV       % "it,test",
     "org.scalaz"        %% "scalaz-scalacheck-binding"   % scalazV          % "it,test",
