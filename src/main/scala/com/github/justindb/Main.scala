@@ -1,15 +1,38 @@
 package com.github.justindb
 
-import com.github.justindb.consistent_hashing.{ ConsistentHashing, Node }
+import com.github.justindb.consistent_hashing.{ Node, LongRecord, TextRecord, ConsistentHashing }
+
+import scala.util.Random
 
 object Main extends App {
 
-  ConsistentHashing.addNodes(realNodes = 5, virtualNodesPerNode = 20)
+  ConsistentHashing.addNodes(
+    realNodes = 5,
+    virtualNodesPerNode = 2000
+  )
 
-  println(ConsistentHashing.ring)
-  println(ConsistentHashing.get(78))
-  println(ConsistentHashing.get("ala"))
-  println(ConsistentHashing.get(Node(1, "alalala")))
-  println(ConsistentHashing.get(34534534L))
+  for {
+    nodeId <- ConsistentHashing.getNodeId("aaaa")
+  } yield {
+    val node = ConsistentHashing.ring(nodeId)
+    println(node)
+    println(node.store)
+  }
+
+  Node.addRecord(
+    key = "aaaa",
+    v = TextRecord("pierwszy rekord w bazie")
+  )
+  Node.addRecord(
+    key = "bbbb",
+    v = TextRecord("drugi rekord w bazie")
+  )
+  Node.addRecord(
+    key = "cccc",
+    v = LongRecord(9999L)
+  )
+
+  assert(Node.findRecord("aaaa").get == TextRecord("pierwszy rekord w bazie"))
+  assert(Node.findRecord("cccc").get == LongRecord(9999L))
 
 }
