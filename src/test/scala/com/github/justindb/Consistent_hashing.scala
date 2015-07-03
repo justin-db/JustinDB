@@ -12,12 +12,6 @@ class Consistent_hashing extends FlatSpec with Matchers {
       virtualNodesPerNode = 2000
     )
 
-    for {
-      nodeId <- ConsistentHashing.getNodeId("aaaa")
-    } yield {
-      val node = ConsistentHashing.ring(nodeId)
-    }
-
     Node.addRecord(
       key = "aaaa",
       v = TextRecord("first record")
@@ -33,7 +27,6 @@ class Consistent_hashing extends FlatSpec with Matchers {
 
     Node.findRecord("aaaa").get should be(TextRecord("first record"))
     Node.findRecord("cccc").get should be(LongRecord(9999L))
-
   }
 
 }
