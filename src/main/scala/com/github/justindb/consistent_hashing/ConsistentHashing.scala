@@ -1,45 +1,9 @@
 package com.github.justindb.consistent_hashing
 
+import com.github.justindb.common.{ Record, Node }
+
 import scala.collection.immutable.{ TreeMap, SortedMap }
 import scala.util.hashing.MurmurHash3
-
-trait Record[T] {
-  def v: T
-}
-case class TextRecord(override val v: String) extends Record[String]
-case class LongRecord(override val v: Long) extends Record[Long]
-
-case class Node(id: Int, name: String, hash: Int = 0) {
-  type RecordHash = Int
-  type Key = (String, RecordHash)
-
-  var store: Map[Key, Record[_]] = Map.empty
-
-}
-
-object Node {
-
-  def addRecord[T](key: String, v: Record[T]): Option[Unit] = {
-    for {
-      recordHash <- Some(ConsistentHashing.hashFunc(key))
-      id <- ConsistentHashing.getNodeId(recordHash)
-      node <- ConsistentHashing.getNode(id)
-    } yield {
-      node.store = node.store + (((key, recordHash), v))
-    }
-  }
-
-  def findRecord(key: String): Option[Record[_]] = {
-    for {
-      recordHash <- Some(ConsistentHashing.hashFunc(key))
-      id <- ConsistentHashing.getNodeId(recordHash)
-      node <- ConsistentHashing.getNode(id)
-    } yield {
-      node.store((key, recordHash))
-    }
-  }
-
-}
 
 object ConsistentHashing {
 
@@ -80,6 +44,26 @@ object ConsistentHashing {
         tailMap.firstKey
 
       Some(nodeKey)
+    }
+  }
+
+  def addRecord[T](key: String, v: Record[T]): Option[Unit] = {
+    for {
+      recordHash <- Some(ConsistentHashing.hashFunc(key))
+      id <- ConsistentHashing.getNodeId(recordHash)
+      node <- ConsistentHashing.getNode(id)
+    } yield {
+      node.addRecord(key, recordHash, v)
+    }
+  }
+
+  def findRecord(key: String): Option[Record[_]] = {
+    for {
+      recordHash <- Some(ConsistentHashing.hashFunc(key))
+      id <- ConsistentHashing.getNodeId(recordHash)
+      node <- ConsistentHashing.getNode(id)
+    } yield {
+      node.getRecord(key, recordHash)
     }
   }
 }
