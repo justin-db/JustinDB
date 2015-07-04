@@ -1,8 +1,10 @@
 package com.github.justindb.common
 
-trait Record[T] {
-  def v: T
-}
+case class Record[T: AcceptableValue](v: T)
 
-case class TextRecord(override val v: String) extends Record[String]
-case class LongRecord(override val v: Long) extends Record[Long]
+trait AcceptableValue[T]
+
+object AcceptableValue {
+  implicit object LongOK extends AcceptableValue[Long]
+  implicit object StringOK extends AcceptableValue[String]
+}

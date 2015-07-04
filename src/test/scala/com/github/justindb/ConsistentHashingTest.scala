@@ -1,6 +1,6 @@
 package com.github.justindb
 
-import com.github.justindb.common.{ LongRecord, TextRecord }
+import com.github.justindb.common.Record
 import com.github.justindb.consistent_hashing.ConsistentHashing
 import org.scalatest._
 
@@ -15,19 +15,19 @@ class ConsistentHashingTest extends FlatSpec with Matchers {
 
     ConsistentHashing.addRecord(
       key = "aaaa",
-      v = TextRecord("first record")
+      v = Record("first record")
     )
     ConsistentHashing.addRecord(
       key = "bbbb",
-      v = TextRecord("second record")
+      v = Record("second record")
     )
     ConsistentHashing.addRecord(
       key = "cccc",
-      v = LongRecord(9999L)
+      v = Record(9999L)
     )
 
-    ConsistentHashing.findRecord("aaaa").get should be(TextRecord("first record"))
-    ConsistentHashing.findRecord("cccc").get should be(LongRecord(9999L))
+    ConsistentHashing.findRecord("aaaa").get.v should be("first record")
+    ConsistentHashing.findRecord("cccc").get.v should be(9999L)
   }
 
 }
