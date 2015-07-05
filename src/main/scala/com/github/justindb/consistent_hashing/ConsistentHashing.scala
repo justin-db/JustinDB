@@ -13,7 +13,7 @@ object ConsistentHashing {
 
   def addNodes(realNodes: Int, virtualNodesPerNode: Int): Unit = {
     (1 to realNodes).foreach { i =>
-      ConsistentHashing.add(Node(i, s"r=$i"), virtualNodesPerNode)
+      add(Node(i, s"r=$i"), virtualNodesPerNode)
     }
   }
 
@@ -47,22 +47,28 @@ object ConsistentHashing {
     }
   }
 
+  def getNode(key: String): Option[Node] = {
+    for {
+      recordHash <- Some(hashFunc(key))
+      id <- getNodeId(recordHash)
+      node <- getNode(id)
+    } yield node
+  }
+
   def addRecord[T](key: String, v: Record[T]): Option[Unit] = {
     for {
-      recordHash <- Some(ConsistentHashing.hashFunc(key))
-      id <- ConsistentHashing.getNodeId(recordHash)
-      node <- ConsistentHashing.getNode(id)
+      node <- getNode(key)
     } yield {
+      val recordHash = hashFunc(key)
       node.addRecord(key, recordHash, v)
     }
   }
 
   def findRecord(key: String): Option[Record[_]] = {
     for {
-      recordHash <- Some(ConsistentHashing.hashFunc(key))
-      id <- ConsistentHashing.getNodeId(recordHash)
-      node <- ConsistentHashing.getNode(id)
+      node <- getNode(key)
     } yield {
+      val recordHash = hashFunc(key)
       node.getRecord(key, recordHash)
     }
   }
