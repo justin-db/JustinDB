@@ -5,6 +5,8 @@ import com.github.justindb.common.{ Record, Node }
 import scala.collection.immutable.{ TreeMap, SortedMap }
 import scala.util.hashing.MurmurHash3
 
+case class Ring(underlying: SortedMap[Int, Node] = TreeMap.empty) extends AnyVal
+
 object ConsistentHashing {
 
   var ring: SortedMap[Int, Node] = TreeMap.empty
