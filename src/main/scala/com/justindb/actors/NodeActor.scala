@@ -1,6 +1,6 @@
 package com.justindb.actors
 
-import akka.actor.{ Actor, Props }
+import akka.actor.{ Actor, ActorRef, Props }
 import akka.routing.FromConfig
 
 class NodeActor extends Actor {
@@ -10,6 +10,6 @@ class NodeActor extends Actor {
   }
 }
 
+case class Node(key: Key, a: ActorRef)
 
 sealed trait NodeActorMsg
-
