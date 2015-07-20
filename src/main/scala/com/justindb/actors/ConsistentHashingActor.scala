@@ -1,20 +1,20 @@
 package com.justindb.actors
 
-import scala.concurrent.duration.DurationInt
-
 import akka.actor.{ Actor, Props }
 import akka.routing.FromConfig
+import akka.actor.Actor
+import akka.actor.ActorRef
+import akka.actor.ActorSystem
 
 class ConsistentHashingActor extends Actor {
 
-  val router = context.actorOf(FromConfig.props(), name = "consumerRouter")
-  
+  var nodes = IndexedSeq.empty[ActorRef]
+
   override def receive: Receive = {
-    case "send" => println("works")
+    case AddNode(n) => nodes :+ n
+    case _ => println("xxx")
   }
 }
 
-object ConsistentHashingActor {
-  def props = Props(new ConsistentHashingActor)
-}
-
+sealed trait ConsistentHashingMsg
+case class AddNode(node: ActorRef) extends ConsistentHashingMsg
