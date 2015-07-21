@@ -5,21 +5,8 @@ import akka.routing.FromConfig
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import scala.collection.immutable.{ TreeMap, SortedMap }
-import scala.util.hashing.MurmurHash3
 import scala.math.Ordering
-
-case class Key(value: String)
-
-case class Hash(value: Int) extends AnyVal with Ordered[Hash] {
-  def compare(that: Hash) = that.value
-}
-
-object Hash {
-  def makeHash(key: Key): Hash = Hash(MurmurHash3.stringHash(key.value))
-}
-
-case class Ring(underlying: SortedMap[Hash, Node] = TreeMap.empty) extends AnyVal
+import com.justindb.{Record, Key, Hash, Node, Ring}
 
 class ConsistentHashingActor extends Actor {
 
@@ -30,8 +17,29 @@ class ConsistentHashingActor extends Actor {
       val nodeHash = Hash.makeHash(node.key)
       ring = Ring(ring.underlying + ((nodeHash, node)))
     }
+    case AddRecord(record) => {
+      val recordHash = Hash.makeHash(record.key)
+      val nodeOpt = Ring.getNode(ring, recordHash)
+
+      nodeOpt match {
+        case Some(node) => node.underlyingActor forward AddRecordToNode(record)
+        case None => sender() ! NodeFailure("There is no Node in system, try again later.")
+      }
+    }
+    case GetRecord(key: Key) => {
+      val recordHash = Hash.makeHash(key)
+      val nodeOpt = Ring.getNode(ring, recordHash)
+
+      nodeOpt match {
+        case Some(node) => node.underlyingActor forward GetRecordFromNode(key)
+        case None => sender() ! NodeFailure("There is no Node in system, try again later.")
+      }
+    }
   }
 }
 
 sealed trait ConsistentHashingMsg
 case class AddNode(n: Node) extends ConsistentHashingMsg
+case class AddRecord[T](r: Record[T]) extends ConsistentHashingMsg
+case class NodeFailure(reason: String) extends ConsistentHashingMsg
+case class GetRecord(k: Key) extends ConsistentHashingMsg
