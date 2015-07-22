@@ -1,6 +1,6 @@
-package com.github.justindb.common
+package com.justindb
 
-case class Record[T: AcceptableValue](v: T)
+case class Record[T: AcceptableValue](key: Key, v: T)
 
 trait AcceptableValue[T]
 
