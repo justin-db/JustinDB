@@ -41,7 +41,7 @@ class ConsistentHashingActor extends Actor {
         case None => sender() ! NodeFailure("There is no Node in system, try again later.")
       }
 
-    case Terminated(a) => // todo: remove from ring and stop watch
+    case Terminated(a) => // todo: remove from ring and stop watch, use ActorLogging
       println(s"Actor $a has been terminated")
   }
 

@@ -1,4 +1,4 @@
-package com.justindb
+package com.justindb.main
 
 import akka.actor.ActorSystem
 import com.justindb.actors.ConsistentHashingActor
@@ -16,11 +16,11 @@ object ConsistentHashingApp extends App {
 
   val port = if (args.isEmpty) "0" else args(0)
   val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port=$port").
-    withFallback(ConfigFactory.parseString(s"akka.cluster.roles = [$RingRole]")).
+    withFallback(ConfigFactory.parseString(s"akka.cluster.roles = [ringrole]")).
     withFallback(ConfigFactory.load())
-  val system = ActorSystem("ClusterSystem", config)
 
-  val consistentHashingActor = system.actorOf(Props[ConsistentHashingActor], name = "hashing")
+  val system = ActorSystem("ClusterSystem", config)
+  val consistentHashingActor = system.actorOf(Props[ConsistentHashingActor], name = "ringrole")
 
   import system.dispatcher
   system.scheduler.schedule(2.seconds, 2.seconds) {

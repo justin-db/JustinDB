@@ -1,10 +1,10 @@
-package com.justindb
+package com.justindb.main
 
 import akka.actor.ActorSystem
 import com.justindb.actors.ConsistentHashingActor
 import com.typesafe.config.ConfigFactory
 
-object JustingDbApp extends App {
+object JustinDbApp extends App {
 
   ConsistentHashingApp.main(Seq("2551").toArray)
   NodeApp.main(Seq("2552").toArray)

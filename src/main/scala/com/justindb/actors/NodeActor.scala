@@ -20,7 +20,6 @@ class NodeActor extends Actor {
 
   override def receive: Receive = {
     case AddRecordToNode(record) =>
-      println("add record")
       store = store + (record.key -> record.v)
     case GetRecordFromNode(key) =>
       sender() ! store(key)
@@ -30,9 +29,9 @@ class NodeActor extends Actor {
   }
 
   def register(member: Member): Unit = {
-    if(member.hasRole(RingRole))
-      context.actorSelection(RootActorPath(member.address) / "user" / RingRole) !
-        NodeRegistration
+    if(member.hasRole("ringrole")) {
+      context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! NodeRegistration
+    }
   }
 }
 
