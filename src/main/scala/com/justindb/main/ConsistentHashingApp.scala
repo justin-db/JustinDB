@@ -5,6 +5,12 @@ import com.justindb.actors.ConsistentHashingActor
 import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSystem
 import akka.actor.Props
+import akka.pattern.ask
+import akka.util.Timeout
+import com.justindb.{Key, Record}
+import scala.concurrent.duration._
+import scala.util.Random
+import com.justindb.actors.AddRecordToNode
 
 object ConsistentHashingApp extends App {
 
@@ -16,4 +22,15 @@ object ConsistentHashingApp extends App {
   val system = ActorSystem("ClusterSystem", config)
   val consistentHashingActor = system.actorOf(Props[ConsistentHashingActor], name = "hashing")
 
+  import system.dispatcher
+  system.scheduler.schedule(2.seconds, 2.seconds) {
+
+    implicit val timeout = Timeout(5 seconds)
+
+    val record = Record[String](Key(Random.nextString(10)), "content-random-nth-special")
+
+    consistentHashingActor ? AddRecordToNode(record) onSuccess {
+      case result => println(result)
+    }
+  }
 }

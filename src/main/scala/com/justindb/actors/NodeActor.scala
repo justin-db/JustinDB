@@ -20,6 +20,7 @@ class NodeActor extends Actor {
 
   override def receive: Receive = {
     case AddRecordToNode(record) =>
+      println("add record")
       store = store + (record.key -> record.v)
     case GetRecordFromNode(key) =>
       sender() ! store(key)
