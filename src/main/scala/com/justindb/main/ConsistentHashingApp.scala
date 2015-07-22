@@ -10,7 +10,7 @@ import akka.util.Timeout
 import com.justindb.{Key, Record}
 import scala.concurrent.duration._
 import scala.util.Random
-import com.justindb.actors.AddRecordToNode
+import com.justindb.actors.AddRecord
 
 object ConsistentHashingApp extends App {
 
@@ -18,8 +18,8 @@ object ConsistentHashingApp extends App {
   val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port=$port").
     withFallback(ConfigFactory.parseString(s"akka.cluster.roles = [$RingRole]")).
     withFallback(ConfigFactory.load())
-
   val system = ActorSystem("ClusterSystem", config)
+
   val consistentHashingActor = system.actorOf(Props[ConsistentHashingActor], name = "hashing")
 
   import system.dispatcher
@@ -29,7 +29,7 @@ object ConsistentHashingApp extends App {
 
     val record = Record[String](Key(Random.nextString(10)), "content-random-nth-special")
 
-    consistentHashingActor ? AddRecordToNode(record) onSuccess {
+    consistentHashingActor ? AddRecord(record) onSuccess {
       case result => println(result)
     }
   }

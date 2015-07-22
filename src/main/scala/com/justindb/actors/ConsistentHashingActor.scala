@@ -14,14 +14,16 @@ class ConsistentHashingActor extends Actor {
   var ring = new Ring
 
   override def receive: Receive = {
+
     case NodeRegistration =>
       context watch sender()
       self ! AddNode(Node(Key.uuid, sender()))
-    case AddNode(node) => {
+
+    case AddNode(node) =>
       val nodeHash = Hash.makeHash(node.key)
       ring = Ring(ring.underlying + ((nodeHash, node)))
-    }
-    case AddRecord(record) => {
+
+    case AddRecord(record) =>
       val recordHash = Hash.makeHash(record.key)
       val nodeOpt = Ring.getNode(ring, recordHash)
 
@@ -29,8 +31,8 @@ class ConsistentHashingActor extends Actor {
         case Some(node) => node.underlyingActor forward AddRecordToNode(record)
         case None => sender() ! NodeFailure("There is no Node in system, try again later.")
       }
-    }
-    case GetRecord(key: Key) => {
+
+    case GetRecord(key: Key) =>
       val recordHash = Hash.makeHash(key)
       val nodeOpt = Ring.getNode(ring, recordHash)
 
@@ -38,12 +40,10 @@ class ConsistentHashingActor extends Actor {
         case Some(node) => node.underlyingActor forward GetRecordFromNode(key)
         case None => sender() ! NodeFailure("There is no Node in system, try again later.")
       }
-    }
-    case Terminated(a) => { // todo: remove from ring
-      println(s"Actor $a has been terminated")
-    }
-  }
 
+    case Terminated(a) => // todo: remove from ring and stop watch
+      println(s"Actor $a has been terminated")
+  }
 
 }
 
