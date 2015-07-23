@@ -7,7 +7,9 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Terminated
 import scala.math.Ordering
-import com.justindb.{Record, Key, Hash, Node, Ring}
+import com.justindb.{Record, Key, Node, Ring}
+import com.justindb.HashApi.Hash
+import com.justindb.HashApi
 
 class ConsistentHashingActor extends Actor {
 
@@ -20,11 +22,11 @@ class ConsistentHashingActor extends Actor {
       self ! AddNode(Node(Key.uuid, sender()))
 
     case AddNode(node) =>
-      val nodeHash = Hash.makeHash(node.key)
+      val nodeHash = HashApi.makeHash(node.key)
       ring = Ring(ring.underlying + ((nodeHash, node)))
 
     case AddRecord(record) =>
-      val recordHash = Hash.makeHash(record.key)
+      val recordHash = HashApi.makeHash(record.key)
       val nodeOpt = Ring.getNode(ring, recordHash)
 
       nodeOpt match {
@@ -33,7 +35,7 @@ class ConsistentHashingActor extends Actor {
       }
 
     case GetRecord(key: Key) =>
-      val recordHash = Hash.makeHash(key)
+      val recordHash = HashApi.makeHash(key)
       val nodeOpt = Ring.getNode(ring, recordHash)
 
       nodeOpt match {
