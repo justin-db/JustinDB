@@ -21,7 +21,7 @@ class RingTest extends FlatSpec with Matchers {
     ring.underlying should have size 1
   }
 
-  it should "be possible to find Node in Ring based on its Hash" in {
+  it should "get proper Node based on different hashes" in {
     var ring = new Ring
 
     val node = Node(Key(value = "random-key-1"), underlyingActor = null)
@@ -32,8 +32,16 @@ class RingTest extends FlatSpec with Matchers {
     val nodeHash2 = 500
     ring = Ring(ring.underlying + ((nodeHash2 -> node2)))
 
-    Ring.getNode(ring, nodeHash2).get shouldBe node2
-    Ring.getNode(ring, nodeHash).get shouldBe node
+    Ring.getNode(ring, hash = -1).get shouldBe node
+    Ring.getNode(ring, hash = 0).get shouldBe node
+    Ring.getNode(ring, hash = 99).get shouldBe node
+    Ring.getNode(ring, hash = 100).get shouldBe node
+    Ring.getNode(ring, hash = 101).get shouldBe node2
+    Ring.getNode(ring, hash = 300).get shouldBe node2
+    Ring.getNode(ring, hash = 499).get shouldBe node2
+    Ring.getNode(ring, hash = 500).get shouldBe node2
+    Ring.getNode(ring, hash = 550).get shouldBe node
+    Ring.getNode(ring, hash = 9000).get shouldBe node
   }
 
 }
