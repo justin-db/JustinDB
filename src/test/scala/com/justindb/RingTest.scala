@@ -21,6 +21,12 @@ class RingTest extends FlatSpec with Matchers {
     ring.underlying should have size 1
   }
 
+  it should "get None when Ring is empty" in {
+    var ring = new Ring
+
+    Ring.getNode(ring, hash = 100) shouldBe None
+  }
+
   it should "get proper Node based on different hashes" in {
     var ring = new Ring
 
