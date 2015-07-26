@@ -2,7 +2,7 @@ package com.justindb.actors
 
 import akka.actor.{ Actor, ActorRef, Props }
 import akka.routing.FromConfig
-import com.justindb.{Record, Key, RingRole}
+import com.justindb.{Record, Key}
 import akka.actor.RootActorPath
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.CurrentClusterState
@@ -13,8 +13,8 @@ import akka.cluster.MemberStatus
 class NodeActor extends Actor {
 
   var store: Map[Key, Any] = Map.empty[Key, Any]
-  val cluster = Cluster(context.system)
 
+  val cluster = Cluster(context.system)
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
@@ -38,4 +38,4 @@ class NodeActor extends Actor {
 
 sealed trait NodeActorMsg
 case class AddRecordToNode[T](r: Record[T]) extends NodeActorMsg
-case class GetRecordFromNode[T](k: Key) extends NodeActorMsg
+case class GetRecordFromNode(k: Key) extends NodeActorMsg

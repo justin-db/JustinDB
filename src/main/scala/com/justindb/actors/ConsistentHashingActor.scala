@@ -31,7 +31,7 @@ class ConsistentHashingActor extends Actor {
 
       nodeOpt match {
         case Some(node) => node.underlyingActor forward AddRecordToNode(record)
-        case None => sender() ! NodeFailure("There is no Node in system, try again later.")
+        case None => sender() ! NodeFailure(s"There is no $nodeOpt in system, try again later.")
       }
 
     case GetRecord(key: Key) =>
@@ -40,7 +40,7 @@ class ConsistentHashingActor extends Actor {
 
       nodeOpt match {
         case Some(node) => node.underlyingActor forward GetRecordFromNode(key)
-        case None => sender() ! NodeFailure("There is no Node in system, try again later.")
+        case None => sender() ! NodeFailure(s"There is no $nodeOpt in system, try again later.")
       }
 
     case Terminated(a) => // todo: remove from ring and stop watch, use ActorLogging

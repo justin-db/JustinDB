@@ -14,6 +14,6 @@ object NodeApp extends App {
     withFallback(ConfigFactory.load())
 
   val system = ActorSystem("ClusterSystem", config)
-  val consistentHashingActor = system.actorOf(Props[NodeActor], name = "noderole")
+  val nodeActor = system.actorOf(Props[NodeActor], name = "noderole")
 
 }

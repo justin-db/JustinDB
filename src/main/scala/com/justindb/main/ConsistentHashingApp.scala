@@ -10,7 +10,8 @@ import akka.util.Timeout
 import com.justindb.{Key, Record}
 import scala.concurrent.duration._
 import scala.util.Random
-import com.justindb.actors.AddRecord
+import com.justindb.actors.{AddRecord, GetRecord}
+import scala.language.postfixOps
 
 object ConsistentHashingApp extends App {
 
@@ -27,7 +28,8 @@ object ConsistentHashingApp extends App {
 
     implicit val timeout = Timeout(5 seconds)
 
-    val record = Record[String](Key(Random.nextString(10)), "content-random-nth-special")
+    val randomKey = Random.nextString(3)
+    val record = Record[String](key = Key(randomKey), v = "content-random-nth-special")
 
     consistentHashingActor ? AddRecord(record) onSuccess {
       case result => println(result)
