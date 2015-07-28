@@ -12,4 +12,4 @@ and so on...
 
 PS: Stay tuned!
 
-PS2: This project has dedicated book - https://github.com/speedcom/JustinDB
+PS2: This project has dedicated book - http://speedcom.gitbooks.io/justindb/
