@@ -1,9 +1,16 @@
 package com.justindb
 
-import scala.util.hashing.MurmurHash3
+import java.security.MessageDigest
 
 object HashApi {
-  type Hash = Int
 
-  def makeHash(key: Key): Hash = MurmurHash3.stringHash(key.value)
+  type Hash = String
+
+  def makeHash(key: Key): Hash = {
+    MessageDigest
+      .getInstance("MD5")
+      .digest(key.value.getBytes)
+      .map("%02x".format(_))
+      .mkString
+  }
 }
