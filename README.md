@@ -1,4 +1,7 @@
 # JustinDB
+
+[![Build Status](https://travis-ci.org/speedcom/JustinDB.svg?branch=master)](https://travis-ci.org/speedcom/JustinDB)
+
 Distributed Key-Value Storage built on top of Scala/Akka
 
 This project is a result of my own implementation of
