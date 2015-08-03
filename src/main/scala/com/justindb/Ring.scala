@@ -3,7 +3,9 @@ package com.justindb
 import scala.collection.immutable.{ TreeMap, SortedMap }
 import com.justindb.HashApi.Hash
 
-case class Ring(underlying: SortedMap[Hash, Node] = TreeMap.empty) extends AnyVal
+case class Ring(underlying: SortedMap[Hash, Node] = TreeMap.empty) extends AnyVal {
+  def size = underlying.size
+}
 
 object Ring {
 

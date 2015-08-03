@@ -6,7 +6,7 @@ import com.justindb.{Ring, Node}
 class RingTest extends FlatSpec with Matchers {
 
   "Ring" should "be empty after initialization" in {
-    new Ring().underlying should have size 0
+    new Ring().size shouldBe 0
   }
 
   it should "get None when Ring is empty" in {
