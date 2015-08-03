@@ -23,7 +23,8 @@ class ConsistentHashingActor extends Actor {
 
     case AddNode(node) =>
       val nodeHash = HashApi.makeHash(node.key)
-      ring = Ring.addNode(ring, nodeHash, node)
+      val newRing = Ring.addNode(ring, nodeHash, node)
+      ring = newRing
 
     case AddRecord(record) =>
       val recordHash = HashApi.makeHash(record.key)
