@@ -7,6 +7,8 @@ case class Ring(underlying: SortedMap[Hash, Node] = TreeMap.empty) extends AnyVa
 
 object Ring {
 
+  def addNode(ring: Ring, nodeHash: Hash, node: Node): Ring = Ring(ring.underlying + ((nodeHash, node)))
+
   def getNode(ring: Ring, hash: Hash): Option[Node] = {
     if(ring.underlying.isEmpty)
       None
