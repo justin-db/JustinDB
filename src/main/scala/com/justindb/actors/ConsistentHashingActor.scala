@@ -17,9 +17,9 @@ class ConsistentHashingActor extends Actor {
 
   override def receive: Receive = {
 
-    case NodeRegistration =>
+    case NodeRegistration(key) =>
       context watch sender()
-      self ! AddNode(Node(Key.uuid, sender()))
+      self ! AddNode(Node(key, sender()))
 
     case AddNode(node) =>
       val nodeHash = HashApi.makeHash(node.key)
@@ -44,6 +44,8 @@ class ConsistentHashingActor extends Actor {
         case None => sender() ! NodeFailure(s"There is no $nodeOpt in the system, try again later.")
       }
 
+    case GetNodesKey => sender() ! NodesKeys(ring.nodesKey)
+
     case Terminated(actor) => // todo: remove from ring and stop watch, use ActorLogging
       println(s"Actor $actor has been terminated")
   }
@@ -52,8 +54,9 @@ class ConsistentHashingActor extends Actor {
 
 sealed trait ConsistentHashingMsg
 case class AddNode(n: Node) extends ConsistentHashingMsg
-case object NodeRegistration extends ConsistentHashingMsg
+case class NodeRegistration(key: Key) extends ConsistentHashingMsg
 case class AddRecord[T](r: Record[T]) extends ConsistentHashingMsg
 case class NodeFailure(reason: String) extends ConsistentHashingMsg
 case class GetRecord(k: Key) extends ConsistentHashingMsg
-
+case object GetNodesKey extends ConsistentHashingMsg
+case class NodesKeys(keys: Iterable[Key]) extends ConsistentHashingMsg

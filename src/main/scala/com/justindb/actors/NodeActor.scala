@@ -30,7 +30,7 @@ class NodeActor extends Actor {
 
   def register(member: Member): Unit = {
     if(member.hasRole("ringrole")) {
-      context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! NodeRegistration
+      context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! NodeRegistration(Key.uuid)
     }
   }
 }

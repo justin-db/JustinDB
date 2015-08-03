@@ -5,6 +5,7 @@ import com.justindb.HashApi.Hash
 
 case class Ring(underlying: SortedMap[Hash, Node] = TreeMap.empty) extends AnyVal {
   def size = underlying.size
+  def nodesKey = underlying.values.map(_.key)
 }
 
 object Ring {
