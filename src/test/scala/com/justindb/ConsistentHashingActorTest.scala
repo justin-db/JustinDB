@@ -1,5 +1,5 @@
 import com.justindb.actors._
-import com.justindb.Key
+import com.justindb._
 import akka.actor.ActorSystem
 import akka.actor.Actor
 import akka.testkit.{TestKit, TestActorRef, TestProbe}
@@ -49,11 +49,19 @@ class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
       tester.expectMsg(NodesKeys(Iterable(Key("20"), Key("15"), Key("1"), Key("100"))))
     }
 
-    "get node failure while trying to get record for empty Ring" in {
+    "get node failure while trying to get record when there is no Node in the system" in {
       val tester = TestProbe()
       val actorRef = TestActorRef[ConsistentHashingActor]
 
       tester.send(actorRef, GetRecord(Key("naive-key")))
+      tester.expectMsg(NodeFailure("Ring is empty, try again later."))
+    }
+
+    "get node failure while trying to save a new record when there is no Node in the system" in {
+      val tester = TestProbe()
+      val actorRef = TestActorRef[ConsistentHashingActor]
+
+      tester.send(actorRef, AddRecord(Record(Key("naive-key"), "value")))
       tester.expectMsg(NodeFailure("Ring is empty, try again later."))
     }
 
