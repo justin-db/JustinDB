@@ -46,7 +46,15 @@ class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
       tester.send(actorRef, NodeRegistration(Key("20")))
 
       tester.send(actorRef, GetNodesKey)
-      tester.expectMsg(5 seconds, NodesKeys(Iterable(Key("20"), Key("15"), Key("1"), Key("100"))))
+      tester.expectMsg(NodesKeys(Iterable(Key("20"), Key("15"), Key("1"), Key("100"))))
+    }
+
+    "get node failure while trying to get record for empty Ring" in {
+      val tester = TestProbe()
+      val actorRef = TestActorRef[ConsistentHashingActor]
+
+      tester.send(actorRef, GetRecord(Key("naive-key")))
+      tester.expectMsg(NodeFailure("Ring is empty, try again later."))
     }
 
   }
