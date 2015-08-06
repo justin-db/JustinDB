@@ -23,16 +23,4 @@ object ConsistentHashingApp extends App {
   val system = ActorSystem("ClusterSystem", config)
   val consistentHashingActor = system.actorOf(Props[ConsistentHashingActor], name = "ringrole")
 
-  import system.dispatcher
-  system.scheduler.schedule(2.seconds, 2.seconds) {
-
-    implicit val timeout = Timeout(5 seconds)
-
-    val randomKey = Random.nextString(3)
-    val record = Record[String](key = Key(randomKey), v = "content-random-nth-special")
-
-    consistentHashingActor ? AddRecord(record) onSuccess {
-      case result => println(result)
-    }
-  }
 }
