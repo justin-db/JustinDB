@@ -12,6 +12,8 @@ import com.justindb.HashApi.Hash
 import com.justindb.HashApi
 
 class ConsistentHashingActor extends Actor {
+  import ConsistentHashingActor._
+  import NodeActor._
 
   var ring = new Ring
 
@@ -52,11 +54,13 @@ class ConsistentHashingActor extends Actor {
 
 }
 
-sealed trait ConsistentHashingMsg
-case class AddNode(n: Node) extends ConsistentHashingMsg
-case class NodeRegistration(key: Key) extends ConsistentHashingMsg
-case class AddRecord[T](r: Record[T]) extends ConsistentHashingMsg
-case class NodeFailure(reason: String) extends ConsistentHashingMsg
-case class GetRecord(k: Key) extends ConsistentHashingMsg
-case object GetNodesKey extends ConsistentHashingMsg
-case class NodesKeys(keys: Iterable[Key]) extends ConsistentHashingMsg
+object ConsistentHashingActor {
+  sealed trait ConsistentHashingMsg
+  case class AddNode(n: Node) extends ConsistentHashingMsg
+  case class NodeRegistration(key: Key) extends ConsistentHashingMsg
+  case class AddRecord[T](r: Record[T]) extends ConsistentHashingMsg
+  case class NodeFailure(reason: String) extends ConsistentHashingMsg
+  case class GetRecord(k: Key) extends ConsistentHashingMsg
+  case object GetNodesKey extends ConsistentHashingMsg
+  case class NodesKeys(keys: Iterable[Key]) extends ConsistentHashingMsg
+}

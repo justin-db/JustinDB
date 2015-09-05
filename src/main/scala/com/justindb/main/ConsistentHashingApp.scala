@@ -10,7 +10,6 @@ import akka.util.Timeout
 import com.justindb.{Key, Record}
 import scala.concurrent.duration._
 import scala.util.Random
-import com.justindb.actors.{AddRecord, GetRecord}
 import scala.language.postfixOps
 
 object ConsistentHashingApp extends App {

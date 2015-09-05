@@ -11,8 +11,9 @@ import akka.cluster.Member
 import akka.cluster.MemberStatus
 
 class NodeActor extends Actor {
+  import NodeActor._
 
-  // todo: maek it as Map[Key, Record]
+  // todo: make it as Map[Key, Record]
   var store: Map[Key, Any] = Map.empty[Key, Any]
 
   val cluster = Cluster(context.system)
@@ -20,23 +21,21 @@ class NodeActor extends Actor {
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   override def receive: Receive = {
-    case AddRecordToNode(record) =>
-      store = store + (record.key -> record.v)
-    case GetRecordFromNode(key) =>
-      sender() ! store(key)
-    case state: CurrentClusterState =>
-      state.members.filter(_.status == MemberStatus.Up) foreach register
+    case AddRecordToNode(record) => store = store + (record.key -> record.v)
+    case GetRecordFromNode(key) => sender() ! store(key)
+    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up) foreach register
     case MemberUp(m) => register(m)
   }
 
   def register(member: Member): Unit = {
     if(member.hasRole("ringrole")) {
-      context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! NodeRegistration(Key.uuid)
+      context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! ConsistentHashingActor.NodeRegistration(Key.uuid)
     }
   }
 }
 
-
-sealed trait NodeActorMsg
-case class AddRecordToNode[T](r: Record[T]) extends NodeActorMsg
-case class GetRecordFromNode(k: Key) extends NodeActorMsg
+object NodeActor {
+  sealed trait NodeActorMsg
+  case class AddRecordToNode[T](r: Record[T]) extends NodeActorMsg
+  case class GetRecordFromNode(k: Key) extends NodeActorMsg
+}

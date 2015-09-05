@@ -29,9 +29,9 @@ class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
     "add node to the Ring while its registration" in {
       val actorRef = TestActorRef[ConsistentHashingActor]
 
-      actorRef ! NodeRegistration(Key("1"))
-      actorRef ! NodeRegistration(Key("2"))
-      actorRef ! NodeRegistration(Key("3"))
+      actorRef ! ConsistentHashingActor.NodeRegistration(Key("1"))
+      actorRef ! ConsistentHashingActor.NodeRegistration(Key("2"))
+      actorRef ! ConsistentHashingActor.NodeRegistration(Key("3"))
 
       actorRef.underlyingActor.ring.size shouldBe 3
     }
@@ -40,29 +40,29 @@ class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
       val tester = TestProbe()
       val actorRef = TestActorRef[ConsistentHashingActor]
 
-      tester.send(actorRef, NodeRegistration(Key("100")))
-      tester.send(actorRef, NodeRegistration(Key("1")))
-      tester.send(actorRef, NodeRegistration(Key("15")))
-      tester.send(actorRef, NodeRegistration(Key("20")))
+      tester.send(actorRef, ConsistentHashingActor.NodeRegistration(Key("100")))
+      tester.send(actorRef, ConsistentHashingActor.NodeRegistration(Key("1")))
+      tester.send(actorRef, ConsistentHashingActor.NodeRegistration(Key("15")))
+      tester.send(actorRef, ConsistentHashingActor.NodeRegistration(Key("20")))
 
-      tester.send(actorRef, GetNodesKey)
-      tester.expectMsg(NodesKeys(Iterable(Key("20"), Key("15"), Key("1"), Key("100"))))
+      tester.send(actorRef, ConsistentHashingActor.GetNodesKey)
+      tester.expectMsg(ConsistentHashingActor.NodesKeys(Iterable(Key("20"), Key("15"), Key("1"), Key("100"))))
     }
 
     "get node failure while trying to get record when there is no Node in the system" in {
       val tester = TestProbe()
       val actorRef = TestActorRef[ConsistentHashingActor]
 
-      tester.send(actorRef, GetRecord(Key("naive-key")))
-      tester.expectMsg(NodeFailure("Ring is empty, try again later."))
+      tester.send(actorRef, ConsistentHashingActor.GetRecord(Key("naive-key")))
+      tester.expectMsg(ConsistentHashingActor.NodeFailure("Ring is empty, try again later."))
     }
 
     "get node failure while trying to save a new record when there is no Node in the system" in {
       val tester = TestProbe()
       val actorRef = TestActorRef[ConsistentHashingActor]
 
-      tester.send(actorRef, AddRecord(Record(Key("naive-key"), "value")))
-      tester.expectMsg(NodeFailure("Ring is empty, try again later."))
+      tester.send(actorRef, ConsistentHashingActor.AddRecord(Record(Key("naive-key"), "value")))
+      tester.expectMsg(ConsistentHashingActor.NodeFailure("Ring is empty, try again later."))
     }
 
   }
