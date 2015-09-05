@@ -12,6 +12,7 @@ import akka.cluster.MemberStatus
 
 class NodeActor extends Actor {
 
+  // todo: maek it as Map[Key, Record]
   var store: Map[Key, Any] = Map.empty[Key, Any]
 
   val cluster = Cluster(context.system)
