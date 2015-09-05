@@ -7,7 +7,7 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
-import com.justindb.{Key, Record}
+import com.justindb.{ Key, Record }
 import scala.concurrent.duration._
 import scala.util.Random
 import scala.language.postfixOps

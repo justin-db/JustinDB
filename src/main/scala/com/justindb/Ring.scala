@@ -13,11 +13,11 @@ object Ring {
   def addNode(ring: Ring, nodeHash: Hash, node: Node): Ring = Ring(ring.underlying + ((nodeHash, node)))
 
   def getNode(ring: Ring, hash: Hash): Option[Node] = {
-    if(ring.underlying.isEmpty)
+    if (ring.underlying.isEmpty)
       None
     else {
       val tailMap = ring.underlying.from(hash)
-      val nodeHash = if(tailMap.isEmpty)
+      val nodeHash = if (tailMap.isEmpty)
         ring.underlying.firstKey
       else
         tailMap.firstKey

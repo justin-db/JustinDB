@@ -2,7 +2,7 @@ package com.justindb.actors
 
 import akka.actor.{ Actor, ActorRef, Props }
 import akka.routing.FromConfig
-import com.justindb.{Record, Key}
+import com.justindb.{ Record, Key }
 import akka.actor.RootActorPath
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.CurrentClusterState
@@ -28,7 +28,7 @@ class NodeActor extends Actor {
   }
 
   def register(member: Member): Unit = {
-    if(member.hasRole("ringrole")) {
+    if (member.hasRole("ringrole")) {
       context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! ConsistentHashingActor.NodeRegistration(Key.uuid)
     }
   }

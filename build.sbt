@@ -42,3 +42,5 @@ val project = Project(
     }
   )
 ) configs (MultiJvm)
+
+scalariformSettings

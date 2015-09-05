@@ -7,7 +7,7 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Terminated
 import scala.math.Ordering
-import com.justindb.{Record, Key, Node, Ring}
+import com.justindb.{ Record, Key, Node, Ring }
 import com.justindb.HashApi.Hash
 import com.justindb.HashApi
 
