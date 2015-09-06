@@ -61,7 +61,7 @@ class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
       val tester = TestProbe()
       val actorRef = TestActorRef[ConsistentHashingActor]
 
-      tester.send(actorRef, ConsistentHashingActor.AddRecord(Key("naive-key"), Record(5)))
+      tester.send(actorRef, ConsistentHashingActor.AddRecord(Key("naive-key"), Record("value")))
       tester.expectMsg(ConsistentHashingActor.NodeFailure("Ring is empty, try again later."))
     }
 
