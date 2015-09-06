@@ -6,10 +6,10 @@ object HashApi {
 
   type Hash = String
 
-  def makeHash(key: Key): Hash = {
+  def makeHash(forKey: Key): Hash = {
     MessageDigest
       .getInstance("MD5")
-      .digest(key.value.getBytes)
+      .digest(forKey.value.getBytes)
       .map("%02x".format(_))
       .mkString
   }

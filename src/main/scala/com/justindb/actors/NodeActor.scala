@@ -21,21 +21,22 @@ class NodeActor extends Actor {
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   override def receive: Receive = {
-    case AddRecordToNode(record) => store = store + (record.key -> record.v)
-    case GetRecordFromNode(key) => sender() ! store(key)
+    case AddRecordToNode(key, record) => store = store + (key -> record.v)
+    case GetRecordFromNode(key) => sender() ! store(key) // todo: potentially dangerous operation - use more safety API
     case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up) foreach register
     case MemberUp(m) => register(m)
   }
 
   def register(member: Member): Unit = {
     if (member.hasRole("ringrole")) {
-      context.actorSelection(RootActorPath(member.address) / "user" / "ringrole") ! ConsistentHashingActor.NodeRegistration(Key.uuid)
+      val actor = context.actorSelection(RootActorPath(member.address) / "user" / "ringrole")
+      actor ! ConsistentHashingActor.NodeRegistration(Key.uuid)
     }
   }
 }
 
 object NodeActor {
   sealed trait NodeActorMsg
-  case class AddRecordToNode[T](r: Record[T]) extends NodeActorMsg
-  case class GetRecordFromNode(k: Key) extends NodeActorMsg
+  case class AddRecordToNode[T](forKey: Key, r: Record[T]) extends NodeActorMsg
+  case class GetRecordFromNode(forKey: Key) extends NodeActorMsg
 }

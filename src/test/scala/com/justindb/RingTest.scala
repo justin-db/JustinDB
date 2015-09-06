@@ -1,7 +1,7 @@
 package com.justindb
 
 import org.scalatest._
-import com.justindb.{Ring, Node}
+import com.justindb.{ Ring, Node }
 
 class RingTest extends FlatSpec with Matchers {
 

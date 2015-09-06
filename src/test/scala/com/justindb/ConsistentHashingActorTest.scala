@@ -2,7 +2,7 @@ import com.justindb.actors._
 import com.justindb._
 import akka.actor.ActorSystem
 import akka.actor.Actor
-import akka.testkit.{TestKit, TestActorRef, TestProbe}
+import akka.testkit.{ TestKit, TestActorRef, TestProbe }
 import org.scalatest.Matchers
 import org.scalatest.WordSpecLike
 import org.scalatest.BeforeAndAfterAll
@@ -12,13 +12,13 @@ import scala.concurrent.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.language.postfixOps
-import scala.util.{Success, Failure}
+import scala.util.{ Success, Failure }
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
-  with WordSpecLike
-  with Matchers
-  with BeforeAndAfterAll {
+    with WordSpecLike
+    with Matchers
+    with BeforeAndAfterAll {
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
@@ -61,7 +61,7 @@ class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
       val tester = TestProbe()
       val actorRef = TestActorRef[ConsistentHashingActor]
 
-      tester.send(actorRef, ConsistentHashingActor.AddRecord(Record(Key("naive-key"), "value")))
+      tester.send(actorRef, ConsistentHashingActor.AddRecord(Key("naive-key"), Record(5)))
       tester.expectMsg(ConsistentHashingActor.NodeFailure("Ring is empty, try again later."))
     }
 
