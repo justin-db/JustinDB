@@ -1,0 +1,31 @@
+package justin.merkle_trees
+
+trait MerkleDigest[T] {
+  def digest(t: T): Digest
+}
+
+object MerkleDigest {
+
+  implicit object CRC32 extends MerkleDigest[Block] {
+    import java.util.zip.CRC32
+    import java.nio.ByteBuffer
+
+    override def digest(t: Block): Digest = {
+      val digest = new CRC32()
+      digest.update(t)
+
+      val buffer = ByteBuffer.allocate(8)
+      buffer.putLong(digest.getValue)
+
+      Digest(buffer.array())
+    }
+  }
+}
+
+case class Digest(hash: Array[Byte]) extends AnyVal
+
+object Digest {
+  implicit class DigestOps(that: Digest) {
+    def +(other: Digest): Digest = Digest(that.hash ++ other.hash)
+  }
+}
