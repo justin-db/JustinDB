@@ -15,7 +15,7 @@ import scala.language.postfixOps
 import scala.util.{ Success, Failure }
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ConsistentHashingActorTest extends TestKit(ActorSystem("testSystem"))
+class ConsistentHashingActorTest extends TestKit(ActorSystem("dispositor-system"))
     with WordSpecLike
     with Matchers
     with BeforeAndAfterAll {
