@@ -15,12 +15,12 @@ object MerkleTree {
 
   private def blockToLeaf(b: Block)(implicit ev: MerkleDigest[Block]) = MerkleLeaf(ev.digest(b))
 
-  private def buildTree(leafs: Seq[MerkleLeaf])(implicit ev: MerkleDigest[Block]) = Try {
+  def buildTree(leafs: Seq[MerkleLeaf])(implicit ev: MerkleDigest[Block]) = Try {
     var trees: Seq[MerkleTree] = leafs
 
     while (trees.length > 1) {
       trees = trees.grouped(2)
-        .map { case (n1 :: n2 :: Nil) => mergeTrees(n1, n2) }
+        .map(x => mergeTrees(x(0), x(1)))
         .toSeq
     }
     trees.head
