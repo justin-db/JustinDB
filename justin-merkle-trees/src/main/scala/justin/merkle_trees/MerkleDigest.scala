@@ -22,10 +22,6 @@ object MerkleDigest {
   }
 }
 
-case class Digest(hash: Array[Byte]) extends AnyVal
-
-object Digest {
-  implicit class DigestOps(that: Digest) {
-    def +(other: Digest): Digest = Digest(that.hash ++ other.hash)
-  }
+case class Digest(hash: Array[Byte]) extends AnyVal {
+  def +(that: Digest): Digest = Digest(this.hash ++ that.hash)
 }

@@ -1,6 +1,5 @@
 package justin.merkle_trees
 
-import Digest.DigestOps
 import scala.util.Try
 
 sealed trait MerkleTree { def hash: Digest }
