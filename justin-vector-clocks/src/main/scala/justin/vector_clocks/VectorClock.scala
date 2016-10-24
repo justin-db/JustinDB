@@ -14,7 +14,9 @@ object VectorClock {
   def empty(id: UUID): VectorClock = VectorClock(Map(VectorId(id) -> Counter(0)))
 
   def increase(vc: VectorClock, id: VectorId): VectorClock = {
-    val updatedCounter = vc.clock.getOrElse(id, Counter(0)).addOne
+    val searchedCounter = vc.clock.getOrElse(id, Counter(0))
+    val updatedCounter = searchedCounter.addOne
+
     VectorClock(vc.clock + (id -> updatedCounter))
   }
 
