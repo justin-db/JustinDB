@@ -13,7 +13,9 @@ object Counter {
   }
 }
 
-case class VectorClock(private val clock: Map[VectorId, Counter])
+case class VectorClock(private val clock: Map[VectorId, Counter]) {
+  def byKey(id: VectorId): Option[Counter] = clock.get(id)
+}
 
 object VectorClock {
 
