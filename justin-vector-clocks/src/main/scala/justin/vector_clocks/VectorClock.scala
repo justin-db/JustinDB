@@ -21,7 +21,6 @@ object VectorClock {
   }
 
   def merge(receiverId: VectorId, vc1: VectorClock, vc2: VectorClock): VectorClock = {
-
     val mergedClocks = vc1.clock ++ vc2.clock
 
     val mergedCounter = (vc1.clock.get(receiverId), vc2.clock.get(receiverId)) match {
