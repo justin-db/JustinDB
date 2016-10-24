@@ -19,4 +19,20 @@ object VectorClock {
       VectorClock(vc.clock + (id -> updatedCounter))
     }
   }
+
+  def merge(receiverId: VectorId, vc1: VectorClock, vc2: VectorClock): VectorClock = {
+
+    val mergedClocks = vc1.clock ++ vc2.clock
+
+    val mergedCounter = (vc1.clock.get(receiverId), vc2.clock.get(receiverId)) match {
+      case (Some(counter1), Some(counter2)) => scala.math.max(counter1.value, counter2.value)
+      case (None, Some(counter2))           => counter2.value
+      case (Some(counter1), None)           => counter1.value
+      case (None, None)                     => 0
+    }
+
+    val counter = Counter(mergedCounter + 1)
+
+    VectorClock(mergedClocks + (receiverId -> counter))
+  }
 }
