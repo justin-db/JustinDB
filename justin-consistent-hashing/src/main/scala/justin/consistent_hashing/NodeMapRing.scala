@@ -7,7 +7,6 @@ case class NodeId(id: Int) extends AnyVal
 case class NodeMapRing(private val ring: Map[RingKey, NodeId]) {
   def getByKey(key: RingKey): Option[NodeId] = ring.get(key)
   def size: Int = ring.size
-
   def nodesId: Set[NodeId] = ring.values.toSet
 }
 
