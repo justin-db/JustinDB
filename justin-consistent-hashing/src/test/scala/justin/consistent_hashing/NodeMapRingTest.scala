@@ -10,7 +10,18 @@ class NodeMapRingTest extends FlatSpec with Matchers {
     val N = 3  // nr of nodes
     val S = 50 // nr of slices
 
-    NodeMapRing.apply(N, S)
+    val ring = NodeMapRing.apply(N, S)
+
+    ring.size shouldBe S
+    ring.nodesId.size shouldBe N
   }
 
+  it should "has expected set of node ids" in {
+    val N = 3  // nr of nodes
+    val S = 50 // nr of slices
+
+    val ring = NodeMapRing.apply(N, S)
+
+    ring.nodesId shouldBe Set(NodeId(0), NodeId(1), NodeId(2))
+  }
 }
