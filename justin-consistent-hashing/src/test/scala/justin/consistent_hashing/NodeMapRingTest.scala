@@ -12,7 +12,7 @@ class NodeMapRingTest extends FlatSpec with Matchers {
 
     val ring = NodeMapRing.apply(N, S)
 
-    ring.size shouldBe S
+    ring.size         shouldBe S
     ring.nodesId.size shouldBe N
   }
 
