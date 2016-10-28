@@ -8,10 +8,10 @@ class UUID2RingKeyTest extends FlatSpec with Matchers {
 
   behavior of "UUID to RingKey mapper"
 
-  it should "use inner hashCode of UUID to map to RingKey" in {
+  it should "use inner hashCode with scala.math.abs on it" in {
     val uid = UUID.randomUUID()
     val uidHashCode = uid.hashCode()
 
-    UUID2RingKey(uid) shouldBe uidHashCode
+    UUID2RingKey(uid) shouldBe scala.math.abs(uidHashCode)
   }
 }
