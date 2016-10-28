@@ -2,7 +2,7 @@ package justin.consistent_hashing
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class GetNodeIdByKeyTest extends FlatSpec with Matchers {
+class GetNodeIdByRingKeyTest extends FlatSpec with Matchers {
 
   behavior of "GetNodeIdByKey"
 
