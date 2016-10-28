@@ -1,7 +1,6 @@
 package justin.consistent_hashing
 
 import java.util.UUID
-
 import justin.consistent_hashing.NodeMapRing.RingKey
 
 object UUID2RingKey extends (UUID => NodeMapRing.RingKey) {
