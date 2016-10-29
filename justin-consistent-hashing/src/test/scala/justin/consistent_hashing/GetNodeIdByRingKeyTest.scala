@@ -8,7 +8,7 @@ class GetNodeIdByRingKeyTest extends FlatSpec with Matchers {
 
   behavior of "Get NodeId By RingKey"
 
-  it should "assign Id to correct NodeId" in {
+  it should "assign Key to correct NodeId" in {
     val ring = NodeMapRing.apply(N = 3, S = 30)
     val getByKey = new GetNodeIdByRingKey(ring, uuid => 30)
 
