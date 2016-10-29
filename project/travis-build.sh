@@ -18,13 +18,14 @@ fi
 function buildJVM {
     INIT="clean"
     COMPILE="compile"
+    COVERAGE="coverage"
     TEST="test"
 
-    COMMAND=";$INIT;$COMPILE;$TEST"
-     echo
-     echo "Executing JVM tests (with coverage): sbt -Dsbt.profile=coverage $COMMAND"
-     echo
-     sbt -Dsbt.profile=coverage "$COMMAND"
+    COMMAND=";$INIT;$COVERAGE;$COMPILE;$TEST"
+    echo
+    echo "Executing JVM tests (with coverage): sbt -Dsbt.profile=coverage $COMMAND"
+    echo
+    sbt -Dsbt.profile=coverage "$COMMAND"
 }
 
 # Execute everything
