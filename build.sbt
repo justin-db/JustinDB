@@ -3,7 +3,7 @@ import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 val akkaVersion = "2.4.11"
 
-val project = Project(id = "justin-db", base = file("."))
+lazy val justin_db = (project in file("justin-db"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
     name := "justin-db",
@@ -43,3 +43,33 @@ val project = Project(id = "justin-db", base = file("."))
   .configs (MultiJvm)
 
 fork in run := true
+
+lazy val justin_merkle_trees = (project in file("justin-merkle-trees")).settings(
+  name := "justin-merkle-trees",
+  version := "0.0.1",
+  scalaVersion := "2.11.8",
+  libraryDependencies ++= Seq(
+    "org.scalactic" %% "scalactic" % "3.0.0",
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
+)
+
+lazy val justin_vector_clocks = (project in file("justin-vector-clocks")).settings(
+  name := "justin-vector-clocks",
+  version := "0.0.1",
+  scalaVersion := "2.11.8",
+  libraryDependencies ++= Seq(
+    "org.scalactic" %% "scalactic" % "3.0.0",
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
+)
+
+lazy val justin_consistent_hashing = (project in file("justin-consistent-hashing")).settings(
+  name := "justin-consistent-hashing",
+  version := "0.0.1",
+  scalaVersion := "2.11.8",
+  libraryDependencies ++= Seq(
+    "org.scalactic" %% "scalactic" % "3.0.0",
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
+)
