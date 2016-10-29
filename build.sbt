@@ -41,6 +41,7 @@ lazy val justin_db = (project in file("justin-db"))
     }
   )
   .configs (MultiJvm)
+  .dependsOn(justin_merkle_trees, justin_vector_clocks, justin_consistent_hashing)
 
 fork in run := true
 
