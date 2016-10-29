@@ -21,10 +21,10 @@ function buildJVM {
     TEST="test"
 
     COMMAND=";$INIT;$COMPILE;$TEST"
-    echo
-    echo "Executing JVM tests: sbt \"$COMMAND\""
-    echo
-    sbt "$COMMAND"
+     echo
+     echo "Executing JVM tests (with coverage): sbt -Dsbt.profile=coverage $COMMAND"
+     echo
+     sbt -Dsbt.profile=coverage "$COMMAND"
 }
 
 # Execute everything
