@@ -20,7 +20,7 @@ function buildJVM {
     COMPILE="compile"
     TEST="test"
 
-    COMMAND="$INIT;$COMPILE;$TEST"
+    COMMAND=";$INIT;$COMPILE;$TEST"
     echo
     echo "Executing JVM tests: sbt \"$COMMAND\""
     echo
