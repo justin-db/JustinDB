@@ -1,6 +1,7 @@
 # JustinDB
 
 [![Build Status](https://travis-ci.org/speedcom/JustinDB.svg?branch=master)](https://travis-ci.org/speedcom/JustinDB)
+[![codecov](https://codecov.io/gh/speedcom/JustinDB/branch/master/graph/badge.svg)](https://codecov.io/gh/speedcom/JustinDB)
 
 **Distributed Key-Value Storage built on top of Scala/Akka**
 
