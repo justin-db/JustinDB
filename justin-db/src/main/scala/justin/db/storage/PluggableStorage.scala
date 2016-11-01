@@ -1,5 +1,4 @@
-package justin.db
-
+package justin.db.storage
 
 trait PluggableStorage {
   def get(key: String): Option[String]
@@ -17,6 +16,7 @@ class InMemStorage extends PluggableStorage {
 
 class FilePerKeyStorage extends PluggableStorage {
   import java.io.{File, PrintWriter}
+
   import FilePerKeyStorage._
 
   override def get(key: String): Option[String] = {
