@@ -20,6 +20,14 @@ object MerkleDigest {
       Digest(buffer.array())
     }
   }
+
+  implicit object MD5 extends MerkleDigest[Block] {
+    import java.security.MessageDigest
+
+    override def digest(t: Block): Digest = {
+      Digest(MessageDigest.getInstance("MD5").digest(t))
+    }
+  }
 }
 
 case class Digest(hash: Array[Byte]) extends AnyVal {
