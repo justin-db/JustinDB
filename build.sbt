@@ -3,6 +3,8 @@ import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 val akkaVersion = "2.4.11"
 
+fork in run := true
+
 lazy val justin_db = (project in file("justin-db"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
@@ -41,9 +43,27 @@ lazy val justin_db = (project in file("justin-db"))
     }
   )
   .configs (MultiJvm)
-  .dependsOn(justin_merkle_trees, justin_vector_clocks, justin_consistent_hashing)
+  .dependsOn(justin_merkle_trees, justin_vector_clocks, justin_consistent_hashing, justin_db_storage_in_mem, justin_db_storage_file_per_key)
 
-fork in run := true
+lazy val justin_db_storage_in_mem = (project in file("justin-db/storage/in-mem")).settings(
+  name := "justin-db-storage-in-mem",
+  version := "0.0.1",
+  scalaVersion := "2.11.8",
+  libraryDependencies ++= Seq(
+    "org.scalactic" %% "scalactic" % "3.0.0",
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
+)
+
+lazy val justin_db_storage_file_per_key = (project in file("justin-db/storage/file-per-key")).settings(
+  name := "justin-db-storage-file-per-key",
+  version := "0.0.1",
+  scalaVersion := "2.11.8",
+  libraryDependencies ++= Seq(
+    "org.scalactic" %% "scalactic" % "3.0.0",
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
+)
 
 lazy val justin_merkle_trees = (project in file("justin-merkle-trees")).settings(
   name := "justin-merkle-trees",
