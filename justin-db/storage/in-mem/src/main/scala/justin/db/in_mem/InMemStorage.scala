@@ -1,4 +1,4 @@
-package in_mem
+package justin.db.in_mem
 
 import justin.db.storage.PluggableStorage
 
