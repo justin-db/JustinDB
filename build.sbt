@@ -33,37 +33,37 @@ lazy val core = (project in file("justin-db"))
     }
   )
   .configs (MultiJvm)
-  .dependsOn(justin_merkle_trees, justin_vector_clocks, justin_consistent_hashing)
+  .dependsOn(merkleTrees, vectorClocks, consistentHashing)
 
-lazy val justin_db_storage_in_mem = (project in file("justin-db/storage/in-mem")).settings(
+lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
   version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.dbStorageInMem
 ).dependsOn(core)
 
-lazy val justin_db_storage_file_per_key = (project in file("justin-db/storage/file-per-key")).settings(
+lazy val dbStorageFilePerKey = (project in file("justin-db/storage/file-per-key")).settings(
   name := "justin-db-storage-file-per-key",
   version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.dbStorageFilePerKey
 ).dependsOn(core)
 
-lazy val justin_merkle_trees = (project in file("justin-merkle-trees")).settings(
+lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
   name := "justin-merkle-trees",
   version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.merkleTrees
 )
 
-lazy val justin_vector_clocks = (project in file("justin-vector-clocks")).settings(
+lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
   name := "justin-vector-clocks",
   version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.vectorClocks
 )
 
-lazy val justin_consistent_hashing = (project in file("justin-consistent-hashing")).settings(
+lazy val consistentHashing = (project in file("justin-consistent-hashing")).settings(
   name := "justin-consistent-hashing",
   version := "0.0.1",
   scalaVersion := Version.scala,
