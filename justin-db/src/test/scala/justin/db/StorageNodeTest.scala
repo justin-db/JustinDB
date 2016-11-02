@@ -15,4 +15,14 @@ class StorageNodeTest extends FlatSpec with Matchers {
     list shouldBe List(StorageNodeId(2), StorageNodeId(3), StorageNodeId(4))
     list.contains(nodeId) shouldBe false
   }
+
+  it should "build empty preference list when factor replication is 0" in {
+    val nodeId = StorageNodeId(1)
+    val replicationFactor = ReplicationFactor(0)
+
+    val list = StorageNode.buildPreferenceList(baseId = nodeId, replicationFactor = replicationFactor)
+
+    list shouldBe List.empty[StorageNodeId]
+    list.contains(nodeId) shouldBe false
+  }
 }
