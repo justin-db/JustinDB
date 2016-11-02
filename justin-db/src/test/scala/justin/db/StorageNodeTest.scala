@@ -13,5 +13,6 @@ class StorageNodeTest extends FlatSpec with Matchers {
     val list = StorageNode.buildPreferenceList(baseId = nodeId, replicationFactor = replicationFactor)
 
     list shouldBe List(StorageNodeId(2), StorageNodeId(3), StorageNodeId(4))
+    list.contains(nodeId) shouldBe false
   }
 }
