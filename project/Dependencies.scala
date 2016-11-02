@@ -37,6 +37,8 @@ object Dependencies {
     kamonSigar
   ) ++ genericTest
 
+  val httpClient = genericTest
+
   val dbStorageInMem = genericTest
 
   val dbStorageFilePerKey = genericTest

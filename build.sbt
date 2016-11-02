@@ -35,6 +35,13 @@ lazy val core = (project in file("justin-db"))
   .configs (MultiJvm)
   .dependsOn(merkleTrees, vectorClocks, consistentHashing)
 
+lazy val httpClient = (project in file("justin-db/client/http")).settings(
+  name := "justin-db-client-http",
+  version := "0.0.1",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.httpClient
+).dependsOn(core)
+
 lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
   version := "0.0.1",
