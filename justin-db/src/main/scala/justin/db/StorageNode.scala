@@ -1,11 +1,21 @@
 package justin.db
 
 import akka.actor.Actor
+import akka.cluster.Cluster
+import akka.cluster.ClusterEvent.MemberUp
 import justin.db.storage.PluggableStorage
 
 case class StorageNodeId(id: Int) extends AnyVal
 
 class StorageNode(nodeId: StorageNodeId, preferenceList: List[StorageNodeId], storage: PluggableStorage) extends Actor {
+
+  val cluster = Cluster(context.system)
+
+  // subscribe to cluster changes, MemberUp
+  // re-subscribe when restart
+  override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
+  override def postStop(): Unit = cluster.unsubscribe(self)
+
   override def receive: Receive = ???
 }
 
