@@ -11,8 +11,6 @@ class StorageNode(nodeId: StorageNodeId, preferenceList: List[StorageNodeId], st
 
   val cluster = Cluster(context.system)
 
-  // subscribe to cluster changes, MemberUp
-  // re-subscribe when restart
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
