@@ -10,34 +10,41 @@ object Version {
 }
 
 object Library {
-  val akkaActor            = "com.typesafe.akka" %% "akka-actor"              % Version.akka
-  val akkaRemote           = "com.typesafe.akka" %% "akka-remote"             % Version.akka
-  val akkaCluster          = "com.typesafe.akka" %% "akka-cluster"            % Version.akka
-  val akkaClusterMetrics   = "com.typesafe.akka" %% "akka-cluster-metrics"    % Version.akka
-  val akkaClusterTools     = "com.typesafe.akka" %% "akka-cluster-tools"      % Version.akka
-  val akkaMultiNodeTestkit = "com.typesafe.akka" %% "akka-multi-node-testkit" % Version.akka
+  val akkaActor            = "com.typesafe.akka" %% "akka-actor"                        % Version.akka
+  val akkaSfl4j            = "com.typesafe.akka" %% "akka-slf4j"                        % Version.akka
+  val akkaStream           = "com.typesafe.akka" %% "akka-stream"                       % Version.akka
 
-  val kamonSigar           = "io.kamon"           % "sigar-loader"            % Version.sigarLoader
+  // http
+  val akkaHttpCore         = "com.typesafe.akka" %% "akka-http-core"                    % Version.akka
+  val akkaHttp             = "com.typesafe.akka" %% "akka-http-experimental"            % Version.akka
+  val akkaSprayJson        = "com.typesafe.akka" %% "akka-http-spray-json-experimental" % Version.akka
+  val akkaHttpTestkit      = "com.typesafe.akka" %% "akka-http-testkit"                 % Version.akka
 
-  val scalactic            = "org.scalactic"     %% "scalactic"               % Version.scalatest
-  val scalatest            = "org.scalatest"     %% "scalatest"               % Version.scalatest
+  // cluster
+  val akkaRemote           = "com.typesafe.akka" %% "akka-remote"                       % Version.akka
+  val akkaCluster          = "com.typesafe.akka" %% "akka-cluster"                      % Version.akka
+  val akkaClusterMetrics   = "com.typesafe.akka" %% "akka-cluster-metrics"              % Version.akka
+  val akkaClusterTools     = "com.typesafe.akka" %% "akka-cluster-tools"                % Version.akka
+  val akkaMultiNodeTestkit = "com.typesafe.akka" %% "akka-multi-node-testkit"           % Version.akka
+
+  val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
+
+  val scalactic            = "org.scalactic"     %% "scalactic"                         % Version.scalatest
+  val scalatest            = "org.scalatest"     %% "scalatest"                         % Version.scalatest
 }
 
 object Dependencies {
   import Library._
 
-  val genericTest = Seq(
-    scalactic,
-    scalatest % "test"
-  )
+  private val genericTest = Seq(scalactic, scalatest % "test")
 
-  val core = Seq(
-    akkaActor, akkaRemote, akkaMultiNodeTestkit,
-    akkaCluster, akkaClusterMetrics, akkaClusterTools,
-    kamonSigar
-  ) ++ genericTest
+  private val akkaCommon = Seq(akkaActor, akkaSfl4j)
+  private val akkaHttpCommon = Seq(akkaHttpCore, akkaHttp, akkaSprayJson, akkaHttpTestkit)
+  private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
-  val httpClient = genericTest
+  val core = akkaCommon ++ akkaClusterCommon ++ genericTest
+
+  val httpClient = akkaCommon ++ Seq(akkaStream) ++ akkaHttpCommon ++ genericTest
 
   val dbStorageInMem = genericTest
 
