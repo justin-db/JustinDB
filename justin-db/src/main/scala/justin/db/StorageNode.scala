@@ -1,6 +1,6 @@
 package justin.db
 
-import akka.actor.Actor
+import akka.actor.{Actor, Props}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
 import justin.db.storage.PluggableStorage
@@ -20,6 +20,10 @@ class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Acto
 }
 
 object StorageNode {
+
+  def props(nodeId: StorageNodeId, storage: PluggableStorage): Props = {
+    Props(new StorageNode(nodeId, storage))
+  }
 
   def buildPreferenceList(baseId: StorageNodeId, replicationFactor: ReplicationFactor): List[StorageNodeId] = {
     val floor   = baseId.id + 1
