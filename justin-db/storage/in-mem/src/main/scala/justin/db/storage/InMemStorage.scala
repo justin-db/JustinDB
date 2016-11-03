@@ -1,6 +1,4 @@
-package justin.db.in_mem
-
-import justin.db.storage.PluggableStorage
+package justin.db.storage
 
 class InMemStorage extends PluggableStorage {
   import scala.collection.mutable
