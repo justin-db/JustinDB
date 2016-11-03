@@ -25,4 +25,8 @@ class StorageNodeTest extends FlatSpec with Matchers {
     list shouldBe List.empty[StorageNodeId]
     list.contains(nodeId) shouldBe false
   }
+
+  it should "has defined role \"StorageNode\"" in {
+    StorageNode.role shouldBe "StorageNode"
+  }
 }
