@@ -23,6 +23,8 @@ object StorageNode {
 
   def role: String = "StorageNode"
 
+  def name(nodeId: StorageNodeId): String = s"id-${nodeId.id}"
+
   def props(nodeId: StorageNodeId, storage: PluggableStorage): Props = {
     Props(new StorageNode(nodeId, storage))
   }
