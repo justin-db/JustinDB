@@ -21,6 +21,8 @@ class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Acto
 
 object StorageNode {
 
+  def role: String = "StorageNode"
+
   def props(nodeId: StorageNodeId, storage: PluggableStorage): Props = {
     Props(new StorageNode(nodeId, storage))
   }
