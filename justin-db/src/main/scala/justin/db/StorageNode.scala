@@ -19,7 +19,7 @@ class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Acto
 
   override def receive: Receive = {
     case GetValue(id)        => sender() ! storage.get(id.toString)
-    case PutValue(id, value) => storage.put(id.toString, value)
+    case PutValue(id, value) => storage.put(id.toString, value); sender() ! "ack" // TODO: send back more meaningful value
     case t                   => println("msg: " + t)
   }
 }
