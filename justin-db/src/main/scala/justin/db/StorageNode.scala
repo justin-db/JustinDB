@@ -14,10 +14,13 @@ class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Acto
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  override def receive: Receive = ???
+  override def receive: Receive = {
+    case t => println("msg: " + t)
+  }
 }
 
 object StorageNode {
+
   def buildPreferenceList(baseId: StorageNodeId, replicationFactor: ReplicationFactor): List[StorageNodeId] = {
     val floor   = baseId.id + 1
     val ceiling = baseId.id + replicationFactor.n
