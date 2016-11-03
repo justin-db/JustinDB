@@ -7,30 +7,42 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
-
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import justin.db.client.Unmarshallers.UUIDUnmarshaller
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.ExecutionContext
 
 object StorageNodeRouter {
+  import Unmarshallers.UuidFormat
+
   case class Result(value: String)
   implicit val valueFormat = jsonFormat1(Result)
+
+  case class PutValue(id: UUID, value: String, w: Int)
+  implicit val putValueFormat = jsonFormat3(PutValue)
 }
 
 class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
   import StorageNodeRouter._
 
   def routes: Route = {
-    // TODO: id should be mapped to real UUID type
-    (get & path("get") & pathEndOrSingleSlash & parameters('id.as[String], 'r.as[Int])) { (id, r) =>
+    (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
       complete {
-        client.get(UUID.fromString(id), ReadFactor(r)).map[ToResponseMarshallable] {
+        client.get(uuid, ReadFactor(r)).map[ToResponseMarshallable] {
           case GetValueResponse.Found(value)  => OK         -> Result(value)
-          case GetValueResponse.NotFound      => NotFound   -> Result(s"Not found value with id $id")
+          case GetValueResponse.NotFound      => NotFound   -> Result(s"Not found value with id ${uuid.toString}")
           case GetValueResponse.Failure(err)  => BadRequest -> Result(err)
         }
       }
-    }
+    } ~
+      (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
+        complete {
+          client.write(putValue.id, putValue.value, WriteFactor(putValue.w)).map[ToResponseMarshallable] {
+            case WriteValueResponse.Success      => NoContent
+            case WriteValueResponse.Failure(err) => BadRequest -> Result(err)
+          }
+        }
+      }
   }
 }
