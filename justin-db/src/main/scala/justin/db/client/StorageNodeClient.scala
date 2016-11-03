@@ -18,8 +18,8 @@ object GetValueResponse {
 
 sealed trait WriteValueResponse
 object WriteValueResponse {
-  case object Success extends GetValueResponse
-  case class Failure(error: String) extends GetValueResponse
+  case object Success extends WriteValueResponse
+  case class Failure(error: String) extends WriteValueResponse
 }
 
 case class ReadFactor(r: Int) extends AnyVal
