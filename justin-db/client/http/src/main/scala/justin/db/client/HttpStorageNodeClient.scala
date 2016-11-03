@@ -5,8 +5,7 @@ import java.util.UUID
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-
-import justin.db.StorageNode.GetValue
+import justin.db.StorageNode.{GetValue, PutValue}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,5 +22,9 @@ class HttpStorageNodeClient(storageNodeActor: ActorRef)(implicit ex: ExecutionCo
     }.recover { case _ => GetValueResponse.Failure(s"[Failure] Couldn't get value with id ${id.toString}") }
   }
 
-  override def write(value: String, w: WriteFactor): Future[GetValueResponse] = ???
+  override def write(id: UUID, value: String, w: WriteFactor): Future[WriteValueResponse] = {
+    (storageNodeActor ? PutValue(id, value)).mapTo[String].map {
+      case "ack" => WriteValueResponse.Success
+    }.recover { case _ => WriteValueResponse.Failure(s"[Failure] Couldn't store value $value with id ${id.toString}") }
+  }
 }
