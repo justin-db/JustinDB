@@ -40,7 +40,7 @@ lazy val httpClient = (project in file("justin-db/client/http")).settings(
   version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.httpClient
-).dependsOn(core)
+).dependsOn(core, dbStorageInMem)
 
 lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
