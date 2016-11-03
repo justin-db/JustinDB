@@ -7,7 +7,7 @@ import justin.db.storage.PluggableStorage
 
 case class StorageNodeId(id: Int) extends AnyVal
 
-class StorageNode(nodeId: StorageNodeId, preferenceList: List[StorageNodeId], storage: PluggableStorage) extends Actor {
+class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Actor {
 
   val cluster = Cluster(context.system)
 
