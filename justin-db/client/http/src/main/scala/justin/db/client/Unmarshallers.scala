@@ -2,8 +2,11 @@ package justin.db.client
 
 import java.util.UUID
 
+import akka.http.scaladsl.unmarshalling._
+import akka.stream.Materializer
 import spray.json.{JsString, JsValue, JsonFormat, _}
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 object Unmarshallers {
@@ -19,5 +22,11 @@ object Unmarshallers {
       }
     }
     override def write(obj: UUID): JsValue = JsString(obj.toString)
+  }
+
+  object UUIDUnmarshaller extends FromStringUnmarshaller[UUID] {
+    override def apply(value: String)(implicit ec: ExecutionContext, materializer: Materializer): Future[UUID] = {
+      Future.apply(UUID.fromString(value))
+    }
   }
 }
