@@ -12,12 +12,8 @@ case class NodeMapRing(private val ring: Map[RingKey, NodeId]) {
   lazy val nodesId: Set[NodeId] = ring.values.toSet
 
   lazy val swap: Map[NodeId, List[RingKey]] = {
-    val initial = Map.empty[NodeId, List[RingKey]]
-    ring.foldLeft(initial) { case (finalMap, (ringKey, nodeId)) =>
-      val currentNodeVals = finalMap.getOrElse(nodeId, List.empty[RingKey])
-      val finalVals = (ringKey :: currentNodeVals).sorted
-      finalMap + (nodeId -> finalVals)
-    }
+    ring.groupBy { case (_, v) => v }
+      .mapValues(_.keys.toList.sorted)
   }
 }
 
