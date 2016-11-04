@@ -1,5 +1,6 @@
 package justin.db
 
+// TODO: preference list should take into account how Ring actually is build (current version is rather naive)
 object BuildPreferenceList {
   def apply(baseId: StorageNodeId, replicationFactor: ReplicationFactor): List[StorageNodeId] = {
     val floor   = baseId.id + 1
