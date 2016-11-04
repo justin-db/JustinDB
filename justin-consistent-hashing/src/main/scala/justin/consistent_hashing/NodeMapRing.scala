@@ -21,12 +21,11 @@ object NodeMapRing {
   type RingKey = Int
 
   def apply(N: Int = 3, S: Int = 50): NodeMapRing = {
-    val slices = (nodeId: NodeId) => nodeId.id until S by N
-    val slice = (nodeId: NodeId) => slices(nodeId).map(ringKey => (ringKey, nodeId))
-    val nodesIds = (0 until N).map(NodeId)
+    val ring = for {
+      id      <- 0 until N
+      ringKey <- id until S by N
+    } yield (ringKey, NodeId(id))
 
-    val ring = nodesIds.flatMap(slice).toMap
-
-    NodeMapRing(ring)
+    NodeMapRing(ring.toMap)
   }
 }
