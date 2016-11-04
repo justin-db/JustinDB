@@ -6,7 +6,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.db.storage.InMemStorage
-import justin.db.{StorageNodeActor$, StorageNodeId}
+import justin.db.{StorageNodeActor, StorageNodeId}
 
 object Main extends App {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
