@@ -6,7 +6,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.db.storage.InMemStorage
-import justin.db.{StorageNodeActor, StorageNodeId}
+import justin.db.{StorageNodeActor, StorageNodeActorId}
 
 object Main extends App {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
@@ -19,7 +19,7 @@ object Main extends App {
   val logger = Logging(system, getClass)
 
   val storage             = new InMemStorage() // TODO: make it configurable
-  val nodeId              = StorageNodeId(config.getInt("node.id"))
+  val nodeId              = StorageNodeActorId(config.getInt("node.id"))
   val storageNodeActorRef = system.actorOf(StorageNodeActor.props(nodeId, storage), name = StorageNodeActor.name(nodeId))
   val client              = new HttpStorageNodeClient(storageNodeActorRef)
   val router              = new StorageNodeRouter(client)

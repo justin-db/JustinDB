@@ -8,9 +8,9 @@ import akka.cluster.ClusterEvent.MemberUp
 import justin.db.StorageNodeActor.{GetValue, PutValue}
 import justin.db.storage.PluggableStorage
 
-case class StorageNodeId(id: Int) extends AnyVal
+case class StorageNodeActorId(id: Int) extends AnyVal
 
-class StorageNodeActor(nodeId: StorageNodeId, storage: PluggableStorage) extends Actor {
+class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -32,9 +32,9 @@ object StorageNodeActor {
 
   def role: String = "StorageNode"
 
-  def name(nodeId: StorageNodeId): String = s"id-${nodeId.id}"
+  def name(nodeId: StorageNodeActorId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: StorageNodeId, storage: PluggableStorage): Props = {
+  def props(nodeId: StorageNodeActorId, storage: PluggableStorage): Props = {
     Props(new StorageNodeActor(nodeId, storage))
   }
 }
