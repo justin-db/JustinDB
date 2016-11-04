@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import justin.db.StorageNode.{GetValue, PutValue}
+import justin.db.StorageNodeActor.{GetValue, PutValue}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}

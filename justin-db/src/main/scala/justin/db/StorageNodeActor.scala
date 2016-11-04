@@ -5,12 +5,12 @@ import java.util.UUID
 import akka.actor.{Actor, Props}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
-import justin.db.StorageNode.{GetValue, PutValue}
+import justin.db.StorageNodeActor.{GetValue, PutValue}
 import justin.db.storage.PluggableStorage
 
 case class StorageNodeId(id: Int) extends AnyVal
 
-class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Actor {
+class StorageNodeActor(nodeId: StorageNodeId, storage: PluggableStorage) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -24,7 +24,7 @@ class StorageNode(nodeId: StorageNodeId, storage: PluggableStorage) extends Acto
   }
 }
 
-object StorageNode {
+object StorageNodeActor {
 
   sealed trait StorageNodeReq
   case class GetValue(id: UUID) extends StorageNodeReq
@@ -35,6 +35,6 @@ object StorageNode {
   def name(nodeId: StorageNodeId): String = s"id-${nodeId.id}"
 
   def props(nodeId: StorageNodeId, storage: PluggableStorage): Props = {
-    Props(new StorageNode(nodeId, storage))
+    Props(new StorageNodeActor(nodeId, storage))
   }
 }
