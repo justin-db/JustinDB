@@ -1,10 +1,8 @@
 package justin.consistent_hashing
 
-import justin.consistent_hashing.NodeMapRing.RingKey
+case class NodeMapRing(private val ring: Map[NodeMapRing.RingKey, NodeId]) {
+  import NodeMapRing.RingKey
 
-case class NodeId(id: Int) extends AnyVal
-
-case class NodeMapRing(private val ring: Map[RingKey, NodeId]) {
   def getByKey(key: RingKey): Option[NodeId] = ring.get(key)
 
   lazy val size: Int = ring.size
