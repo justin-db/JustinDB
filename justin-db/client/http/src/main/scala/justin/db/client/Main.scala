@@ -18,11 +18,13 @@ object Main extends App {
 
   val logger = Logging(system, getClass)
 
-  val storage             = new InMemStorage() // TODO: make it configurable
-  val nodeId              = StorageNodeActorId(config.getInt("node.id"))
-  val storageNodeActorRef = system.actorOf(StorageNodeActor.props(nodeId, storage), name = StorageNodeActor.name(nodeId))
-  val client              = new HttpStorageNodeClient(storageNodeActorRef)
-  val router              = new StorageNodeRouter(client)
+  val storageNodeActorRef = {
+    val nodeId                = StorageNodeActorId(config.getInt("node.id"))
+    val storageNodeActorProps = StorageNodeActor.props(nodeId, new InMemStorage())
+    system.actorOf(storageNodeActorProps, name = StorageNodeActor.name(nodeId))
+  }
+
+  val router = new StorageNodeRouter(new HttpStorageNodeClient(storageNodeActorRef))
 
   Http()
     .bindAndHandle(router.routes, config.getString("http.interface"), config.getInt("http.port"))
