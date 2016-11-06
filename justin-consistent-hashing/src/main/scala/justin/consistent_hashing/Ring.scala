@@ -3,7 +3,7 @@ package justin.consistent_hashing
 case class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
   import Ring.RingPartitionId
 
-  def getByPartitionId(id: RingPartitionId): Option[NodeId] = ring.get(id)
+  def getNodeId(id: RingPartitionId): Option[NodeId] = ring.get(id)
 
   lazy val size: Int = ring.size
 

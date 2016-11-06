@@ -9,6 +9,6 @@ object UUID2PartitionId extends (UUID => Ring.RingPartitionId) {
 
 class GetNodeIdByPartitionId(ring: Ring, uUID2RingKey: UUID => RingPartitionId = UUID2PartitionId) extends (UUID => Option[NodeId]) {
   override def apply(id: UUID): Option[NodeId] = {
-    ring.getByPartitionId(uUID2RingKey(id) % ring.size)
+    ring.getNodeId(uUID2RingKey(id) % ring.size)
   }
 }
