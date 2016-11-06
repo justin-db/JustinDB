@@ -5,6 +5,7 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
+import justin.consistent_hashing.Ring
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorId}
 
@@ -19,8 +20,11 @@ object Main extends App {
   val logger = Logging(system, getClass)
 
   val storageNodeActorRef = {
-    val nodeId                = StorageNodeActorId(config.getInt("node.id"))
-    val storageNodeActorProps = StorageNodeActor.props(nodeId, new InMemStorage())
+    val nodeId  = StorageNodeActorId(config.getInt("node.id"))
+    val ring    = Ring(N = config.getInt("ring.cluster-nodes-size"), S = config.getInt("ring.creation-size"))
+    val storage = new InMemStorage()
+
+    val storageNodeActorProps = StorageNodeActor.props(nodeId, storage, ring)
     system.actorOf(storageNodeActorProps, name = StorageNodeActor.name(nodeId))
   }
 

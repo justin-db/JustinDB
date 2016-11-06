@@ -5,12 +5,13 @@ import java.util.UUID
 import akka.actor.{Actor, Props}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
+import justin.consistent_hashing.Ring
 import justin.db.StorageNodeActor.{GetValue, PutValue}
 import justin.db.storage.PluggableStorage
 
 case class StorageNodeActorId(id: Int) extends AnyVal
 
-class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage) extends Actor {
+class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -34,7 +35,7 @@ object StorageNodeActor {
 
   def name(nodeId: StorageNodeActorId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: StorageNodeActorId, storage: PluggableStorage): Props = {
-    Props(new StorageNodeActor(nodeId, storage))
+  def props(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring): Props = {
+    Props(new StorageNodeActor(nodeId, storage, ring))
   }
 }
