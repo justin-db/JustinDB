@@ -26,7 +26,7 @@ object Ring {
     */
   def apply(N: Int = 5, S: Int = 64): Ring = {
     val ring = for {
-      id      <- 0 until N
+      id          <- 0 until N
       partitionId <- id until S by N
     } yield (partitionId, NodeId(id))
 
