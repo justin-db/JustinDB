@@ -10,7 +10,7 @@ case class NodeMapRing(private val ring: Map[NodeMapRing.RingPartitionId, NodeId
   lazy val nodesId: Set[NodeId] = ring.values.toSet
 
   lazy val swap: Map[NodeId, List[RingPartitionId]] = {
-    ring.groupBy { case (_, v) => v }
+    ring.groupBy { case (_, nodeId) => nodeId }
       .mapValues(_.keys.toList.sorted)
   }
 }
