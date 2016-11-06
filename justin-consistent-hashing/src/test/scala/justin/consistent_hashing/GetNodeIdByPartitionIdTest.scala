@@ -9,7 +9,7 @@ class GetNodeIdByPartitionIdTest extends FlatSpec with Matchers {
   behavior of "Get NodeId By PartitionId"
 
   it should "assign PartitionId to correct NodeId" in {
-    val ring = NodeMapRing.apply(N = 3, S = 30)
+    val ring = Ring.apply(N = 3, S = 30)
     val getByKey = new GetNodeIdByPartitionId(ring, uuid => 30)
 
     getByKey(UUID.randomUUID()) shouldBe Some(NodeId(0))

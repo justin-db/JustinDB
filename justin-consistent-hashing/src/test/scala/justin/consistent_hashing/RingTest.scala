@@ -2,15 +2,15 @@ package justin.consistent_hashing
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class NodeMapRingTest extends FlatSpec with Matchers {
+class RingTest extends FlatSpec with Matchers {
 
-  behavior of "Node Map Ring"
+  behavior of "Ring"
 
   it should "be initialized with declaration of nr of Nodes and nr of ring partitions per node" in {
     val N = 3  // nr of nodes
     val S = 50 // nr of partitions
 
-    val ring = NodeMapRing.apply(N, S)
+    val ring = Ring.apply(N, S)
 
     ring.size         shouldBe S
     ring.nodesId.size shouldBe N
@@ -20,7 +20,7 @@ class NodeMapRingTest extends FlatSpec with Matchers {
     val N = 3  // nr of nodes
     val S = 50 // nr of partitions
 
-    val ring = NodeMapRing.apply(N, S)
+    val ring = Ring.apply(N, S)
 
     ring.nodesId shouldBe Set(NodeId(0), NodeId(1), NodeId(2))
   }
@@ -29,7 +29,7 @@ class NodeMapRingTest extends FlatSpec with Matchers {
     val N = 5  // nr of nodes - recommended by Riak database team
     val S = 64 // nr of partitions - recommended by Riak database team
 
-    val ring = NodeMapRing.apply(N, S)
+    val ring = Ring.apply(N, S)
 
     val expectedSwappedRing = Map(
       NodeId(0) -> List(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60),
