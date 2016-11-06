@@ -3,6 +3,13 @@ import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 fork in run := true
 
+// Force building with Java 8
+initialize := {
+  val required = "1.8"
+  val current = sys.props("java.specification.version")
+  assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
+}
+
 lazy val core = (project in file("justin-db"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
