@@ -14,7 +14,6 @@ lazy val core = (project in file("justin-db"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
     name := "justin-db",
-    version := "0.0.1",
     scalaVersion := Version.scala,
     scalacOptions in Compile ++= Seq("-encoding", "UTF-8", "-target:jvm-1.8", "-deprecation", "-feature", "-unchecked", "-Xlog-reflective-calls", "-Xlint"),
     javacOptions in Compile ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked", "-Xlint:deprecation"),
@@ -40,42 +39,36 @@ lazy val core = (project in file("justin-db"))
 
 lazy val httpClient = (project in file("justin-db/client/http")).settings(
   name := "justin-db-client-http",
-  version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.httpClient
 ).dependsOn(core, dbStorageInMem)
 
 lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
-  version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.dbStorageInMem
 ).dependsOn(core)
 
 lazy val dbStorageFilePerKey = (project in file("justin-db/storage/file-per-key")).settings(
   name := "justin-db-storage-file-per-key",
-  version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.dbStorageFilePerKey
 ).dependsOn(core)
 
 lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
   name := "justin-merkle-trees",
-  version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.merkleTrees
 )
 
 lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
   name := "justin-vector-clocks",
-  version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.vectorClocks
 )
 
 lazy val consistentHashing = (project in file("justin-consistent-hashing")).settings(
   name := "justin-consistent-hashing",
-  version := "0.0.1",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.consistentHashing
 )
