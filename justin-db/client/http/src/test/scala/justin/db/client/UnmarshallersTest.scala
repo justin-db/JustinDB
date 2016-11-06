@@ -16,4 +16,10 @@ class UnmarshallersTest extends FlatSpec with Matchers {
     Unmarshallers.UuidFormat.read(jsString) shouldBe uuid
   }
 
+  it should "decode UUID into JSON" in {
+    val uuid = UUID.randomUUID()
+    val expectedJSON = Unmarshallers.UuidFormat.write(uuid)
+
+    expectedJSON shouldBe JsString(uuid.toString)
+  }
 }
