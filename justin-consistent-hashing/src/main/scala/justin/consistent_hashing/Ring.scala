@@ -18,11 +18,17 @@ case class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
 object Ring {
   type RingPartitionId = Int
 
-  def apply(N: Int = 3, S: Int = 50): Ring = {
+  /**
+    *
+    * @param N - nr of initial cluster size of nodes
+    * @param S - nr of partitions Ring consists of
+    * @return representation of Ring
+    */
+  def apply(N: Int = 5, S: Int = 64): Ring = {
     val ring = for {
       id      <- 0 until N
-      ringKey <- id until S by N
-    } yield (ringKey, NodeId(id))
+      partitionId <- id until S by N
+    } yield (partitionId, NodeId(id))
 
     Ring(ring.toMap)
   }
