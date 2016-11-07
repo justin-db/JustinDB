@@ -22,23 +22,29 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   val nodeFromRing = new GetNodeIdByPartitionId(ring)
 
   override def receive: Receive = {
-    case GetValue(id) =>
-      sender() ! storage.get(id.toString)
-    case pv @ PutValue(valueId, data) =>
-      sender() ! "ack"
-    case state: CurrentClusterState =>
-      state.members.filter(_.status == MemberStatus.Up) foreach register
+    case GetValue(id)                 => sender() ! storage.get(id.toString)
+    case pv @ PutValue(valueId, data) => handlePutValue(pv); sender() ! "ack"
+    case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
     case NodeRegistration(senderNodeId) if !clusterMembers.contains(senderNodeId) =>
       clusterMembers = clusterMembers + (senderNodeId -> sender())
       sender() ! NodeRegistration(nodeId)
     case MemberUp(m) => register(m)
-    case t => println("not handled msg: " + t)
+    case t           => println("not handled msg: " + t)
+  }
+
+  private def handlePutValue(pv: PutValue) = {
+    nodeFromRing(pv.id).foreach {
+      case selectedNodeId if selectedNodeId.id == nodeId.id =>
+        storage.put(pv.id.toString, pv.value)
+      case selectedNodeId =>
+        val storageNodeActorId = StorageNodeActorId(selectedNodeId.id)
+        clusterMembers.get(storageNodeActorId).foreach(_ ! pv)
+    }
   }
 
   private def register(member: Member) = {
-    val rootActorPath = RootActorPath(member.address)
-    val name = if(nodeId.id == 1) "id-0" else "id-1"
-    context.actorSelection(rootActorPath / "user" / s"$name") ! NodeRegistration(nodeId)
+    val name = if(nodeId.id == 1) "id-0" else "id-1" // TODO: should send to every logic NodeId
+    context.actorSelection(RootActorPath(member.address) / "user" / s"$name") ! NodeRegistration(nodeId)
   }
 }
 
