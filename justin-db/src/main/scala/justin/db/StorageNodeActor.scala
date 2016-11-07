@@ -13,26 +13,27 @@ case class StorageNodeActorId(id: Int) extends AnyVal
 
 class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring) extends Actor {
 
-  val cluster        = Cluster(context.system)
-  var clusterMembers = Map.empty[StorageNodeActorId, ActorRef]
+  val cluster = Cluster(context.system)
 
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   val nodeFromRing = new GetNodeIdByPartitionId(ring)
 
-  override def receive: Receive = {
+  override def receive: Receive = receive(Map.empty[StorageNodeActorId, ActorRef])
+
+  private def receive(clusterMembers: Map[StorageNodeActorId, ActorRef]): Receive = {
     case GetValue(id)                 => sender() ! storage.get(id.toString)
-    case pv @ PutValue(valueId, data) => handlePutValue(pv); sender() ! "ack"
+    case pv @ PutValue(valueId, data) => handlePutValue(pv, clusterMembers); sender() ! "ack"
     case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
     case NodeRegistration(senderNodeId) if !clusterMembers.contains(senderNodeId) =>
-      clusterMembers = clusterMembers + (senderNodeId -> sender())
+      context.become(receive(clusterMembers + (senderNodeId -> sender())))
       sender() ! NodeRegistration(nodeId)
     case MemberUp(m) => register(m)
     case t           => println("not handled msg: " + t)
   }
 
-  private def handlePutValue(pv: PutValue) = {
+  private def handlePutValue(pv: PutValue, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
     nodeFromRing(pv.id).foreach {
       case selectedNodeId if selectedNodeId.id == nodeId.id =>
         storage.put(pv.id.toString, pv.value)
