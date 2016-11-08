@@ -1,12 +1,12 @@
 package justin.db.replication
 
+import justin.consistent_hashing.Ring.RingPartitionId
 import justin.consistent_hashing.RingSize
-import justin.db.StorageNodeActorId
 
 object BuildPreferenceList {
-  def apply(baseId: StorageNodeActorId, n: N, ringSize: RingSize): List[StorageNodeActorId] = {
+  def apply(baseId: RingPartitionId, n: N, ringSize: RingSize): List[RingPartitionId] = {
     (0 until n.n)
-      .map(idx => StorageNodeActorId((baseId.id + idx) % ringSize.size))
+      .map(idx => (baseId + idx) % ringSize.size)
       .toList
   }
 }
