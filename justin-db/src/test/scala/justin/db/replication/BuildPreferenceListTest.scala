@@ -9,7 +9,7 @@ class BuildPreferenceListTest extends FlatSpec with Matchers {
 
   it should "build preference list" in {
     val nodeId = StorageNodeActorId(1)
-    val replicationFactor = ReplicationFactor(3)
+    val replicationFactor = N(3)
 
     val list = BuildPreferenceList(nodeId, replicationFactor)
 
@@ -19,7 +19,7 @@ class BuildPreferenceListTest extends FlatSpec with Matchers {
 
   it should "build empty preference list when factor replication is 0" in {
     val nodeId = StorageNodeActorId(1)
-    val replicationFactor = ReplicationFactor(0)
+    val replicationFactor = N(0)
 
     val list = BuildPreferenceList(nodeId, replicationFactor)
 
