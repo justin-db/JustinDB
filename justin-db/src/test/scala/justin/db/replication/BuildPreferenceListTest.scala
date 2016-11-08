@@ -1,29 +1,29 @@
 package justin.db.replication
 
-import justin.db.StorageNodeActorId
+import justin.consistent_hashing.RingSize
 import org.scalatest.{FlatSpec, Matchers}
 
 class BuildPreferenceListTest extends FlatSpec with Matchers {
 
-  behavior of "Builder of Preference List"
+  behavior of "Preference List"
 
-  it should "build preference list" in {
-    val nodeId = StorageNodeActorId(1)
-    val replicationFactor = N(3)
+  it should "has size of defined nr of replicas" in {
+    val n = N(3) // nr of replicas
+    val ringSize = RingSize(64)
+    val basePartitionId = 1
 
-    val list = BuildPreferenceList(nodeId, replicationFactor)
+    val expectedSize = 3
 
-    list shouldBe List(StorageNodeActorId(2), StorageNodeActorId(3), StorageNodeActorId(4))
-    list.contains(nodeId) shouldBe false
+    BuildPreferenceList.apply(basePartitionId, n, ringSize).size shouldBe expectedSize
   }
 
-  it should "build empty preference list when factor replication is 0" in {
-    val nodeId = StorageNodeActorId(1)
-    val replicationFactor = N(0)
+  it should "has defined head of preference-list as a \"basePartitionId\" (coordinator)" in {
+    val n = N(3) // nr of replicas
+    val ringSize = RingSize(64)
+    val basePartitionId = 1
 
-    val list = BuildPreferenceList(nodeId, replicationFactor)
+    val coordinator = BuildPreferenceList.apply(basePartitionId, n, ringSize).head
 
-    list shouldBe List.empty[StorageNodeActorId]
-    list.contains(nodeId) shouldBe false
+    coordinator shouldBe basePartitionId
   }
 }
