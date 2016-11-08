@@ -1,6 +1,6 @@
 package justin.consistent_hashing
 
-case class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
+class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
   import Ring.RingPartitionId
 
   def getNodeId(id: RingPartitionId): Option[NodeId] = ring.get(id)
@@ -25,11 +25,11 @@ object Ring {
     * @return representation of Ring
     */
   def apply(N: Int = 5, S: Int = 64): Ring = {
-    val ring = for {
+    val partitions2Nodes = for {
       id          <- 0 until N
       partitionId <- id until S by N
     } yield (partitionId, NodeId(id))
 
-    Ring(ring.toMap)
+    new Ring(partitions2Nodes.toMap)
   }
 }
