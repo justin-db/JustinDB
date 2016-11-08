@@ -41,4 +41,10 @@ class RingTest extends FlatSpec with Matchers {
 
     ring.swap shouldBe expectedSwappedRing
   }
+
+  it should "start indexing of partitions from 0" in {
+    val ring = Ring.apply(N = 5, S = 64)
+
+    ring.getNodeId(0) shouldBe defined
+  }
 }
