@@ -9,6 +9,7 @@ import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import justin.db.client.Unmarshallers.UUIDUnmarshaller
+import justin.db.replication.{R, W}
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.ExecutionContext
@@ -29,7 +30,7 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
   def routes: Route = {
     (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
       complete {
-        client.get(uuid, ReadFactor(r)).map[ToResponseMarshallable] {
+        client.get(uuid, R(r)).map[ToResponseMarshallable] {
           case GetValueResponse.Found(value)  => OK         -> Result(value)
           case GetValueResponse.NotFound      => NotFound   -> Result(s"Not found value with id ${uuid.toString}")
           case GetValueResponse.Failure(err)  => BadRequest -> Result(err)
@@ -38,7 +39,7 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
     } ~
       (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
         complete {
-          client.write(putValue.id, putValue.value, WriteFactor(putValue.w)).map[ToResponseMarshallable] {
+          client.write(putValue.id, putValue.value, W(putValue.w)).map[ToResponseMarshallable] {
             case WriteValueResponse.Success      => NoContent
             case WriteValueResponse.Failure(err) => BadRequest -> Result(err)
           }

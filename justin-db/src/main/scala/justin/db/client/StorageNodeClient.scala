@@ -1,12 +1,12 @@
 package justin.db.client
 
 import java.util.UUID
-
+import justin.db.replication.{R, W}
 import scala.concurrent.Future
 
 trait StorageNodeClient {
-  def get(id: UUID, r: ReadFactor): Future[GetValueResponse]
-  def write(id: UUID, value: String, w: WriteFactor): Future[WriteValueResponse]
+  def get(id: UUID, r: R): Future[GetValueResponse]
+  def write(id: UUID, value: String, w: W): Future[WriteValueResponse]
 }
 
 sealed trait GetValueResponse
@@ -21,6 +21,3 @@ object WriteValueResponse {
   case object Success extends WriteValueResponse
   case class Failure(error: String) extends WriteValueResponse
 }
-
-case class ReadFactor(r: Int) extends AnyVal
-case class WriteFactor(w: Int) extends AnyVal
