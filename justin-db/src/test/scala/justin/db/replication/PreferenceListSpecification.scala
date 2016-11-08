@@ -6,13 +6,23 @@ import org.scalacheck.Prop._
 
 class PreferenceListSpecification extends Properties("PreferenceList") {
 
-  property("head of preference-list is base partitionId") = {
+  property("head of preference-list is initial partitionId") = {
     val ringSize = RingSize(64)
     val n = N(3)
-    val paritionIdGen = Gen.choose(0, ringSize.size)
+    val partitionIdGen = Gen.choose(0, ringSize.size-1)
 
-    forAll(paritionIdGen) { baseParitionId: Int =>
-      BuildPreferenceList(baseParitionId, n, ringSize).head == baseParitionId
+    forAll(partitionIdGen) { basePartitionId: Int =>
+      BuildPreferenceList(basePartitionId, n, ringSize).head == basePartitionId
+    }
+  }
+
+  property("size of preference-list is always the same as configured number of replicas") = {
+    val ringSize = RingSize(64)
+    val basePartitionId = 0
+    val replicaNrGen = Gen.choose(0, 1000)
+
+    forAll(replicaNrGen) { n: Int =>
+      BuildPreferenceList(basePartitionId, N(n), ringSize).size == n
     }
   }
 }
