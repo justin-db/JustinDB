@@ -26,4 +26,14 @@ class PreferenceListTest extends FlatSpec with Matchers {
 
     coordinator shouldBe basePartitionId
   }
+
+  it should "ring when partitions finished" in {
+    val n = N(5) // nr of replicas
+    val ringSize = RingSize(64)
+    val basePartitionId = 62
+
+    val list = BuildPreferenceList.apply(basePartitionId, n, ringSize)
+
+    list shouldBe List(62, 63, 0, 1, 2)
+  }
 }
