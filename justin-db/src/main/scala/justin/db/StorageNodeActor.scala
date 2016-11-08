@@ -18,7 +18,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  val nodeFromRing = new GetNodeIdByUUID(ring, UUID2PartitionId)
+  val nodeFromRing = new GetNodeIdByUUID(ring, new UUID2PartitionId(ring.size))
 
   override def receive: Receive = receive(Map.empty[StorageNodeActorId, ActorRef])
 

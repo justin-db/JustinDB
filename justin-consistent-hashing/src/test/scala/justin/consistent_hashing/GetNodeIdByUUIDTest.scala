@@ -10,7 +10,7 @@ class GetNodeIdByUUIDTest extends FlatSpec with Matchers {
 
   it should "assign UUID to correct NodeId" in {
     val ring = Ring.apply(N = 3, S = 30)
-    val getByKey = new GetNodeIdByUUID(ring, uuid => 30)
+    val getByKey = new GetNodeIdByUUID(ring, uuid => 0)
 
     getByKey(UUID.randomUUID()) shouldBe Some(NodeId(0))
   }

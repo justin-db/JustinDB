@@ -12,7 +12,7 @@ class RingTest extends FlatSpec with Matchers {
 
     val ring = Ring.apply(N, S)
 
-    ring.size         shouldBe S
+    ring.size.size    shouldBe S
     ring.nodesId.size shouldBe N
   }
 

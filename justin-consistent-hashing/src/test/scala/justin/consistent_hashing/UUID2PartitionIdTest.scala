@@ -9,9 +9,12 @@ class UUID2PartitionIdTest extends FlatSpec with Matchers {
   behavior of "UUID to PartitionId function"
 
   it should "use inner hashCode with scala.math.abs on it" in {
-    val uid = UUID.randomUUID()
+    val uid         = UUID.randomUUID()
     val uidHashCode = uid.hashCode()
+    val ringSize    = RingSize(2)
 
-    UUID2PartitionId(uid) shouldBe scala.math.abs(uidHashCode)
+    val expectedPartitionId = scala.math.abs(uidHashCode) % ringSize.size
+
+    new UUID2PartitionId(ringSize).apply(uid) shouldBe expectedPartitionId
   }
 }
