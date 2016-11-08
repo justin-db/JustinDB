@@ -6,14 +6,13 @@ class RingTest extends FlatSpec with Matchers {
 
   behavior of "Ring"
 
-  it should "be initialized with declaration of nr of Nodes and nr of ring partitions per node" in {
+  it should "define its size by nr of partitions" in {
     val N = 3  // nr of nodes
     val S = 50 // nr of partitions
 
     val ring = Ring.apply(N, S)
 
-    ring.size.size    shouldBe S
-    ring.nodesId.size shouldBe N
+    ring.size.size shouldBe S
   }
 
   it should "has expected set of node ids" in {
