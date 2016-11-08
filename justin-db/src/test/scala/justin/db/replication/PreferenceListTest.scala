@@ -3,7 +3,7 @@ package justin.db.replication
 import justin.consistent_hashing.RingSize
 import org.scalatest.{FlatSpec, Matchers}
 
-class BuildPreferenceListTest extends FlatSpec with Matchers {
+class PreferenceListTest extends FlatSpec with Matchers {
 
   behavior of "Preference List"
 
