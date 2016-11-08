@@ -24,7 +24,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
 
   private def receive(clusterMembers: Map[StorageNodeActorId, ActorRef]): Receive = {
     case GetValue(id)                 => sender() ! storage.get(id.toString)
-    case pv @ PutValue(valueId, data) => handlePutValue(pv, clusterMembers); sender() ! "ack"
+    case pv @ PutValue(valueId, data) => handlePutValue(sender(), pv, clusterMembers)
     case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
     case NodeRegistration(senderNodeId) if !clusterMembers.contains(senderNodeId) =>
       context.become(receive(clusterMembers + (senderNodeId -> sender())))
@@ -33,10 +33,11 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
     case t           => println("not handled msg: " + t)
   }
 
-  private def handlePutValue(pv: PutValue, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
+  private def handlePutValue(sender: ActorRef, pv: PutValue, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
     nodeFromRing(pv.id).foreach {
       case selectedNodeId if selectedNodeId.id == nodeId.id =>
         storage.put(pv.id.toString, pv.value)
+        sender ! "ack"
       case selectedNodeId =>
         val storageNodeActorId = StorageNodeActorId(selectedNodeId.id)
         clusterMembers.get(storageNodeActorId).foreach(_ ! pv)
