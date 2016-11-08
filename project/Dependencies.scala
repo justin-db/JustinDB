@@ -6,6 +6,7 @@ object Version {
 
   val akka        = "2.4.11"
   val scalatest   = "3.0.0"
+  val scalacheck  = "1.13.4"
   val sigarLoader = "1.6.6-rev002"
 }
 
@@ -31,6 +32,7 @@ object Library {
 
   val scalactic            = "org.scalactic"     %% "scalactic"                         % Version.scalatest
   val scalatest            = "org.scalatest"     %% "scalatest"                         % Version.scalatest
+  val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
 }
 
 object Dependencies {
@@ -42,7 +44,7 @@ object Dependencies {
   private val akkaHttpCommon = Seq(akkaHttpCore, akkaHttp, akkaSprayJson, akkaHttpTestkit)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
-  val core = akkaCommon ++ akkaClusterCommon ++ genericTest
+  val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test")
 
   val httpClient = akkaCommon ++ Seq(akkaStream) ++ akkaHttpCommon ++ genericTest
 
