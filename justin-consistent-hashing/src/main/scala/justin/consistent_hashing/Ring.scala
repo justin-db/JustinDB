@@ -5,7 +5,7 @@ class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
 
   def getNodeId(id: RingPartitionId): Option[NodeId] = ring.get(id)
 
-  lazy val size: Int = ring.size
+  lazy val size: RingSize = RingSize(ring.size)
 
   lazy val nodesId: Set[NodeId] = ring.values.toSet
 
@@ -14,6 +14,8 @@ class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
       .mapValues(_.keys.toList.sorted)
   }
 }
+
+case class RingSize(size: Int) extends AnyVal
 
 object Ring {
   type RingPartitionId = Int
