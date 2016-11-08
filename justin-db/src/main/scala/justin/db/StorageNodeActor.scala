@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import justin.consistent_hashing.{GetNodeIdByPartitionId, Ring}
+import justin.consistent_hashing.{GetNodeIdByUUID, Ring, UUID2PartitionId}
 import justin.db.StorageNodeActor.{GetValue, NodeRegistration, PutValue}
 import justin.db.storage.PluggableStorage
 
@@ -18,7 +18,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  val nodeFromRing = new GetNodeIdByPartitionId(ring)
+  val nodeFromRing = new GetNodeIdByUUID(ring, UUID2PartitionId)
 
   override def receive: Receive = receive(Map.empty[StorageNodeActorId, ActorRef])
 
