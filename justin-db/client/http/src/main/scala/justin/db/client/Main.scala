@@ -6,6 +6,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.Ring
+import justin.db.replication.{N, R, ReplicationConfig, W}
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorId}
 
@@ -23,6 +24,11 @@ object Main extends App {
     val nodeId  = StorageNodeActorId(config.getInt("node.id"))
     val ring    = Ring(N = config.getInt("ring.cluster-nodes-size"), S = config.getInt("ring.creation-size"))
     val storage = new InMemStorage()
+    val replicationConfig = ReplicationConfig(
+      n = N(config.getInt("justin-db.replication.N")),
+      r = R(config.getInt("justin-db.replication.R")),
+      w = W(config.getInt("justin-db.replication.W"))
+    )
 
     val storageNodeActorProps = StorageNodeActor.props(nodeId, storage, ring)
     system.actorOf(storageNodeActorProps, name = StorageNodeActor.name(nodeId))
