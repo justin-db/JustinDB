@@ -1,5 +1,6 @@
-package justin.db
+package justin.db.replication
 
+import justin.db.StorageNodeActorId
 import org.scalatest.{FlatSpec, Matchers}
 
 class BuildPreferenceListTest extends FlatSpec with Matchers {

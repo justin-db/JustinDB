@@ -1,4 +1,6 @@
-package justin.db
+package justin.db.replication
+
+import justin.db.StorageNodeActorId
 
 // TODO: preference list should take into account how Ring actually is build (current version is rather naive)
 object BuildPreferenceList {
