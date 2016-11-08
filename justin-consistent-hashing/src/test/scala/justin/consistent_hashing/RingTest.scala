@@ -47,4 +47,13 @@ class RingTest extends FlatSpec with Matchers {
 
     ring.getNodeId(0) shouldBe defined
   }
+
+  it should "end indexing of partitions with index that is minus one of ring's size" in {
+    val ring = Ring.apply(N = 5, S = 64)
+
+    val lastIdx = ring.size.size - 1
+
+    ring.getNodeId(lastIdx)     shouldBe defined
+    ring.getNodeId(lastIdx + 1) should not be defined
+  }
 }
