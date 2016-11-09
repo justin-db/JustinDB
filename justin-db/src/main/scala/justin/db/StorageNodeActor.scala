@@ -7,7 +7,7 @@ import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.consistent_hashing.{GetNodeIdByUUID, Ring, UUID2PartitionId}
 import justin.db.StorageNodeActor.{GetValue, NodeRegistration, PutValue}
-import justin.db.replication.N
+import justin.db.replication.{PreferenceList, N}
 import justin.db.storage.PluggableStorage
 
 case class StorageNodeActorId(id: Int) extends AnyVal

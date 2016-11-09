@@ -14,7 +14,7 @@ class PreferenceListTest extends FlatSpec with Matchers {
 
     val expectedSize = 3
 
-    BuildPreferenceList.apply(basePartitionId, n, ringSize).size shouldBe expectedSize
+    PreferenceList.apply(basePartitionId, n, ringSize).size shouldBe expectedSize
   }
 
   it should "has defined head of preference-list as a \"basePartitionId\" (coordinator)" in {
@@ -22,7 +22,7 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val ringSize = RingSize(64)
     val basePartitionId = 1
 
-    val coordinator = BuildPreferenceList.apply(basePartitionId, n, ringSize).head
+    val coordinator = PreferenceList.apply(basePartitionId, n, ringSize).head
 
     coordinator shouldBe basePartitionId
   }
@@ -32,7 +32,7 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val ringSize = RingSize(64)
     val basePartitionId = 62
 
-    val list = BuildPreferenceList.apply(basePartitionId, n, ringSize)
+    val list = PreferenceList.apply(basePartitionId, n, ringSize)
 
     list shouldBe List(62, 63, 0, 1, 2)
   }
