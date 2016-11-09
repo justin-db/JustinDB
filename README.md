@@ -5,7 +5,7 @@
 
 **Distributed Key-Value Storage built on top of Scala/Akka**
 
-### Why akka:
+### Why akka
 Its a toolkit and runtime for building highly concurrent applications which comes
 with ideas that have been around from some time - actor model.
 Besides that it has many welcome features around clustering:
@@ -16,3 +16,6 @@ Besides that it has many welcome features around clustering:
 4. fault tolerance
 
 PS: This project has dedicated book - http://speedcom.gitbooks.io/justindb/
+
+### System Requirements
+JustinDB works with Java 8 and newer.
