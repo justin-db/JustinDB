@@ -6,7 +6,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.Ring
-import justin.db.replication.{N, R, ReplicationConfig, W}
+import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorId}
 
@@ -21,17 +21,15 @@ object Main extends App {
   val logger = Logging(system, getClass)
 
   val storageNodeActorRef = {
-    val nodeId  = StorageNodeActorId(config.getInt("node.id"))
-    val ring    = Ring(N = config.getInt("ring.cluster-nodes-size"), S = config.getInt("ring.creation-size"))
-    val storage = new InMemStorage()
-    val replicationConfig = ReplicationConfig(
-      n = N(config.getInt("justin-db.replication.N")),
-      r = R(config.getInt("justin-db.replication.R")),
-      w = W(config.getInt("justin-db.replication.W"))
-    )
+    val nodeId      = StorageNodeActorId(config.getInt("node.id"))
+    val ring        = Ring(config.getInt("ring.cluster-nodes-size"), config.getInt("ring.creation-size"))
+    val storage     = new InMemStorage()
+    val replication = N(config.getInt("justin-db.replication.N"))
 
-    val storageNodeActorProps = StorageNodeActor.props(nodeId, storage, ring)
-    system.actorOf(storageNodeActorProps, name = StorageNodeActor.name(nodeId))
+    system.actorOf(
+      props = StorageNodeActor.props(nodeId, storage, ring, replication),
+      name  = StorageNodeActor.name(nodeId)
+    )
   }
 
   val router = new StorageNodeRouter(new HttpStorageNodeClient(storageNodeActorRef))

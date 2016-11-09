@@ -1,7 +1,5 @@
 package justin.db.replication
 
-case class ReplicationConfig(n: N, r: R, w: W)
-
 /**
   * the number of nodes to replicate to
   */

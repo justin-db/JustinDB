@@ -7,11 +7,12 @@ import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.consistent_hashing.{GetNodeIdByUUID, Ring, UUID2PartitionId}
 import justin.db.StorageNodeActor.{GetValue, NodeRegistration, PutValue}
+import justin.db.replication.N
 import justin.db.storage.PluggableStorage
 
 case class StorageNodeActorId(id: Int) extends AnyVal
 
-class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring) extends Actor {
+class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring, replication: N) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -60,7 +61,7 @@ object StorageNodeActor {
 
   def name(nodeId: StorageNodeActorId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring): Props = {
-    Props(new StorageNodeActor(nodeId, storage, ring))
+  def props(nodeId: StorageNodeActorId, storage: PluggableStorage, ring: Ring, replication: N): Props = {
+    Props(new StorageNodeActor(nodeId, storage, ring, replication))
   }
 }
