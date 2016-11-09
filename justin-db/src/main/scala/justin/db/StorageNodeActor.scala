@@ -26,11 +26,16 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
     case pv @ PutValue(valueId, data) => handlePutValue(pv, clusterMembers); sender() ! "ack"
     case ReplicatedPutValue(pv)       => saveValue(pv)
     case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
-    case NodeRegistration(senderNodeId) if !clusterMembers.contains(senderNodeId) =>
-      context.become(receive(clusterMembers + (senderNodeId -> sender())))
+    case NodeRegistration(senderNodeId) if notRegistered(senderNodeId, clusterMembers) =>
+      val updatedClusterMembers = clusterMembers + (senderNodeId -> sender())
+      context.become(receive(updatedClusterMembers))
       sender() ! NodeRegistration(nodeId)
-    case MemberUp(m) => register(m)
-    case t           => println("not handled msg: " + t)
+    case MemberUp(m)                  => register(m)
+    case t                            => println("not handled msg: " + t)
+  }
+
+  private def notRegistered(tryingToRegisterNodeId: StorageNodeActorId, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
+    !clusterMembers.contains(tryingToRegisterNodeId)
   }
 
   private def saveValue(pv: PutValue) = storage.put(pv.id.toString, pv.value)
