@@ -5,9 +5,9 @@ import java.util.UUID
 import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import justin.consistent_hashing.{GetNodeIdByUUID, Ring, UUID2PartitionId}
+import justin.consistent_hashing.{Ring, UUID2PartitionId}
 import justin.db.StorageNodeActor.{GetValue, NodeRegistration, PutValue}
-import justin.db.replication.{PreferenceList, N}
+import justin.db.replication.{N, PreferenceList}
 import justin.db.storage.PluggableStorage
 
 case class StorageNodeActorId(id: Int) extends AnyVal
@@ -18,8 +18,6 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
 
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
-
-  val nodeFromRing = new GetNodeIdByUUID(ring, new UUID2PartitionId(ring.size))
 
   override def receive: Receive = receive(Map.empty[StorageNodeActorId, ActorRef])
 
@@ -35,12 +33,15 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   }
 
   private def handlePutValue(pv: PutValue, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
-    nodeFromRing(pv.id).foreach {
-      case selectedNodeId if selectedNodeId.id == nodeId.id =>
-        storage.put(pv.id.toString, pv.value)
-      case selectedNodeId =>
-        val storageNodeActorId = StorageNodeActorId(selectedNodeId.id)
-        clusterMembers.get(storageNodeActorId).foreach(_ ! pv)
+    val basePartitionId = new UUID2PartitionId(ring.size).apply(pv.id)
+    val nodesId = for {
+      partitionId <- PreferenceList.apply(basePartitionId, replication, ring.size)
+      nodeId      <- ring.getNodeId(partitionId)
+    } yield nodeId
+
+    nodesId.foreach {
+      case selectedNodeId if selectedNodeId.id == nodeId.id => storage.put(pv.id.toString, pv.value)
+      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! pv)
     }
   }
 
