@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.consistent_hashing.{Ring, UUID2PartitionId}
-import justin.db.StorageNodeActor.{GetValue, NodeRegistration, PutValue}
+import justin.db.StorageNodeActor.{GetValue, NodeRegistration, PutValue, ReplicatedPutValue}
 import justin.db.replication.{N, PreferenceList}
 import justin.db.storage.PluggableStorage
 
@@ -24,6 +24,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   private def receive(clusterMembers: Map[StorageNodeActorId, ActorRef]): Receive = {
     case GetValue(id)                 => sender() ! storage.get(id.toString)
     case pv @ PutValue(valueId, data) => handlePutValue(pv, clusterMembers); sender() ! "ack"
+    case ReplicatedPutValue(pv)       => saveValue(pv)
     case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
     case NodeRegistration(senderNodeId) if !clusterMembers.contains(senderNodeId) =>
       context.become(receive(clusterMembers + (senderNodeId -> sender())))
@@ -32,16 +33,18 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
     case t           => println("not handled msg: " + t)
   }
 
+  private def saveValue(pv: PutValue) = storage.put(pv.id.toString, pv.value)
+
   private def handlePutValue(pv: PutValue, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
     val basePartitionId = new UUID2PartitionId(ring.size).apply(pv.id)
-    val nodesId = for {
+    val uniqueNodesId = (for {
       partitionId <- PreferenceList.apply(basePartitionId, replication, ring.size)
       nodeId      <- ring.getNodeId(partitionId)
-    } yield nodeId
+    } yield nodeId).distinct
 
-    nodesId.foreach {
-      case selectedNodeId if selectedNodeId.id == nodeId.id => storage.put(pv.id.toString, pv.value)
-      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! pv)
+    uniqueNodesId.foreach {
+      case selectedNodeId if selectedNodeId.id == nodeId.id => saveValue(pv)
+      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! ReplicatedPutValue(pv))
     }
   }
 
@@ -56,6 +59,7 @@ object StorageNodeActor {
   sealed trait StorageNodeReq
   case class GetValue(id: UUID) extends StorageNodeReq
   case class PutValue(id: UUID, value: String) extends StorageNodeReq
+  case class ReplicatedPutValue(pv: PutValue) extends StorageNodeReq
   case class NodeRegistration(nodeId: StorageNodeActorId) extends StorageNodeReq
 
   def role: String = "StorageNode"
