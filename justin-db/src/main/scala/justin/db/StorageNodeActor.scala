@@ -22,16 +22,16 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   override def receive: Receive = receive(Map.empty[StorageNodeActorId, ActorRef])
 
   private def receive(clusterMembers: Map[StorageNodeActorId, ActorRef]): Receive = {
-    case GetValue(id)                 => sender() ! storage.get(id.toString)
-    case pv @ PutValue(valueId, data) => handlePutValue(pv, clusterMembers); sender() ! "ack"
-    case PutReplicatedValue(pv)       => saveValue(pv)
-    case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
+    case GetValue(id)                      => sender() ! storage.get(id.toString)
+    case pv @ PutValue(valueId, data)      => handlePutValue(pv, clusterMembers); sender() ! "ack"
+    case PutReplicatedValue(valueId, data) => saveValue(PutValue(valueId, data))
+    case state: CurrentClusterState        => state.members.filter(_.status == MemberStatus.Up).foreach(register)
     case RegisterNode(senderNodeId) if notRegistered(senderNodeId, clusterMembers) =>
       val updatedClusterMembers = clusterMembers + (senderNodeId -> sender())
       context.become(receive(updatedClusterMembers))
       sender() ! RegisterNode(nodeId)
-    case MemberUp(m)                  => register(m)
-    case t                            => println("not handled msg: " + t)
+    case MemberUp(m)                       => register(m)
+    case t                                 => println("not handled msg: " + t)
   }
 
   private def notRegistered(tryingToRegisterNodeId: StorageNodeActorId, clusterMembers: Map[StorageNodeActorId, ActorRef]) = {
@@ -49,7 +49,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
 
     uniqueNodesId.foreach {
       case selectedNodeId if selectedNodeId.id == nodeId.id => saveValue(pv)
-      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! PutReplicatedValue(pv))
+      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! PutReplicatedValue(pv.id, pv.value))
     }
   }
 
@@ -64,7 +64,7 @@ object StorageNodeActor {
   sealed trait StorageNodeReq
   case class GetValue(id: UUID) extends StorageNodeReq
   case class PutValue(id: UUID, value: String) extends StorageNodeReq
-  case class PutReplicatedValue(pv: PutValue) extends StorageNodeReq
+  case class PutReplicatedValue(id: UUID, value: String) extends StorageNodeReq
   case class RegisterNode(nodeId: StorageNodeActorId) extends StorageNodeReq
 
   def role: String = "StorageNode"
