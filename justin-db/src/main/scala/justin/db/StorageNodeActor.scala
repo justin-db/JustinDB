@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.consistent_hashing.{Ring, UUID2PartitionId}
-import justin.db.StorageNodeActor.{GetValue, RegisterNode, PutValue, ReplicatedPutValue}
+import justin.db.StorageNodeActor.{GetValue, RegisterNode, PutValue, PutReplicatedValue}
 import justin.db.replication.{N, PreferenceList}
 import justin.db.storage.PluggableStorage
 
@@ -24,7 +24,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
   private def receive(clusterMembers: Map[StorageNodeActorId, ActorRef]): Receive = {
     case GetValue(id)                 => sender() ! storage.get(id.toString)
     case pv @ PutValue(valueId, data) => handlePutValue(pv, clusterMembers); sender() ! "ack"
-    case ReplicatedPutValue(pv)       => saveValue(pv)
+    case PutReplicatedValue(pv)       => saveValue(pv)
     case state: CurrentClusterState   => state.members.filter(_.status == MemberStatus.Up).foreach(register)
     case RegisterNode(senderNodeId) if notRegistered(senderNodeId, clusterMembers) =>
       val updatedClusterMembers = clusterMembers + (senderNodeId -> sender())
@@ -49,7 +49,7 @@ class StorageNodeActor(nodeId: StorageNodeActorId, storage: PluggableStorage, ri
 
     uniqueNodesId.foreach {
       case selectedNodeId if selectedNodeId.id == nodeId.id => saveValue(pv)
-      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! ReplicatedPutValue(pv))
+      case selectedNodeId => clusterMembers.get(StorageNodeActorId(selectedNodeId.id)).foreach(_ ! PutReplicatedValue(pv))
     }
   }
 
@@ -64,7 +64,7 @@ object StorageNodeActor {
   sealed trait StorageNodeReq
   case class GetValue(id: UUID) extends StorageNodeReq
   case class PutValue(id: UUID, value: String) extends StorageNodeReq
-  case class ReplicatedPutValue(pv: PutValue) extends StorageNodeReq
+  case class PutReplicatedValue(pv: PutValue) extends StorageNodeReq
   case class RegisterNode(nodeId: StorageNodeActorId) extends StorageNodeReq
 
   def role: String = "StorageNode"
