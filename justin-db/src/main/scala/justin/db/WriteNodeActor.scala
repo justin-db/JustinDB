@@ -14,9 +14,13 @@ class WriteNodeActor(w: W, storageNodeActors: List[StorageNodeActorRef]) extends
   var okWrites = 0
 
   override def receive: Receive = {
-    case WriteNodeActor.SuccessfulWrite if okWrites+1 == w.w => parentStorageNodeActor ! StorageNodeActor.SuccessfulWrite
-    case WriteNodeActor.SuccessfulWrite                      => okWrites += 1
-    case WriteNodeActor.PropagateData(id, value)             => storageNodeActors.foreach(_.storageNodeActor ! PutReplicatedValue(id, value))
+    case WriteNodeActor.SuccessfulWrite if okWrites+1 == w.w =>
+      parentStorageNodeActor ! StorageNodeActor.SuccessfulWrite
+      context.stop(self)
+    case WriteNodeActor.SuccessfulWrite                      =>
+      okWrites += 1
+    case WriteNodeActor.PropagateData(id, value)             =>
+      storageNodeActors.foreach(_.storageNodeActor ! PutReplicatedValue(id, value))
   }
 }
 
