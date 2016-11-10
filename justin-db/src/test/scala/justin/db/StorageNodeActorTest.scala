@@ -1,5 +1,6 @@
 package justin.db
 
+import justin.consistent_hashing.NodeId
 import org.scalatest.{FlatSpec, Matchers}
 
 class StorageNodeActorTest extends FlatSpec with Matchers {
@@ -11,9 +12,9 @@ class StorageNodeActorTest extends FlatSpec with Matchers {
   }
 
   it should "define name for actor with combination of its id" in {
-    StorageNodeActor.name(StorageNodeActorId(0))   shouldBe "id-0"
-    StorageNodeActor.name(StorageNodeActorId(10))  shouldBe "id-10"
-    StorageNodeActor.name(StorageNodeActorId(20))  shouldBe "id-20"
-    StorageNodeActor.name(StorageNodeActorId(999)) shouldBe "id-999"
+    StorageNodeActor.name(NodeId(0))   shouldBe "id-0"
+    StorageNodeActor.name(NodeId(10))  shouldBe "id-10"
+    StorageNodeActor.name(NodeId(20))  shouldBe "id-20"
+    StorageNodeActor.name(NodeId(999)) shouldBe "id-999"
   }
 }
