@@ -5,10 +5,10 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
-import justin.consistent_hashing.Ring
+import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
-import justin.db.{StorageNodeActor, StorageNodeActorId}
+import justin.db.StorageNodeActor
 
 object Main extends App {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
@@ -21,7 +21,7 @@ object Main extends App {
   val logger = Logging(system, getClass)
 
   val storageNodeActorRef = {
-    val nodeId      = StorageNodeActorId(config.getInt("node.id"))
+    val nodeId      = NodeId(config.getInt("node.id"))
     val ring        = Ring(config.getInt("ring.cluster-nodes-size"), config.getInt("ring.creation-size"))
     val storage     = new InMemStorage()
     val replication = N(config.getInt("justin-db.replication.N"))
