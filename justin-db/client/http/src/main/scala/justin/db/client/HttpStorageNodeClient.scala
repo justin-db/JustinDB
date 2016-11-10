@@ -24,7 +24,7 @@ class HttpStorageNodeClient(storageNodeActor: ActorRef)(implicit ex: ExecutionCo
   }
 
   override def write(id: UUID, value: String, w: W): Future[WriteValueResponse] = {
-    (storageNodeActor ? PutValue(id, value)).mapTo[String].map {
+    (storageNodeActor ? PutValue(w, id, value)).mapTo[String].map {
       case "ack" => WriteValueResponse.Success
     }.recover { case _ => WriteValueResponse.Failure(s"[Failure] Couldn't store value $value with id ${id.toString}") }
   }
