@@ -2,7 +2,7 @@ package justin.db
 
 import java.util.UUID
 
-import akka.actor.Actor
+import akka.actor.{Actor, Props}
 import justin.db.StorageNodeActor.PutReplicatedValue
 import justin.db.replication.W
 
@@ -25,4 +25,8 @@ object WriteNodeActor {
   sealed trait WriteNodeMsg
   case class PropagateData(id: UUID, value: String) extends WriteNodeMsg
   case object SuccessfulWrite extends WriteNodeMsg
+
+  def props(w: W, storageNodeActors: List[StorageNodeActorRef]): Props = {
+    Props(new WriteNodeActor(w, storageNodeActors))
+  }
 }
