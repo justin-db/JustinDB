@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import justin.consistent_hashing.{NodeId, Ring, UUID2PartitionId}
+import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.StorageNodeActor.{GetValue, PutReplicatedValue, PutValue, RegisterNode}
 import justin.db.replication.{N, PreferenceList, W}
 import justin.db.storage.PluggableStorage
@@ -41,7 +41,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
   private def saveValue(id: UUID, value: String) = storage.put(id.toString, value)
 
   private def handlePutValue(pv: PutValue, clusterMembers: Map[NodeId, ActorRef]) = {
-    val basePartitionId = new UUID2PartitionId(ring.size).apply(pv.id)
+    val basePartitionId = new UUID2RingPartitionId(ring.size).apply(pv.id)
     val uniqueNodesId = (for {
       partitionId <- PreferenceList.apply(basePartitionId, replication, ring.size)
       nodeId      <- ring.getNodeId(partitionId)
