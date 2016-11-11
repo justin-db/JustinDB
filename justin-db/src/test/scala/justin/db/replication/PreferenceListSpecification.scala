@@ -1,6 +1,6 @@
 package justin.db.replication
 
-import justin.consistent_hashing.RingSize
+import justin.db.consistent_hashing.RingSize
 import org.scalacheck.{Gen, Properties}
 import org.scalacheck.Prop._
 

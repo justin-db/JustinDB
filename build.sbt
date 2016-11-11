@@ -35,7 +35,7 @@ lazy val core = (project in file("justin-db"))
     }
   )
   .configs (MultiJvm)
-  .dependsOn(merkleTrees, vectorClocks, consistentHashing)
+  .dependsOn(merkleTrees, vectorClocks)
 
 lazy val httpClient = (project in file("justin-db/client/http")).settings(
   name := "justin-db-client-http",
@@ -65,10 +65,4 @@ lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
   name := "justin-vector-clocks",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.vectorClocks
-)
-
-lazy val consistentHashing = (project in file("justin-consistent-hashing")).settings(
-  name := "justin-consistent-hashing",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.consistentHashing
 )

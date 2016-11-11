@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
+import justin.db.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.StorageNodeActor.{GetValue, PutReplicatedValue, PutValue, RegisterNode}
 import justin.db.replication.{N, PreferenceList, W}
 import justin.db.storage.PluggableStorage

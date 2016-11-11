@@ -55,6 +55,4 @@ object Dependencies {
   val merkleTrees = genericTest
 
   val vectorClocks = genericTest
-
-  val consistentHashing = genericTest
 }

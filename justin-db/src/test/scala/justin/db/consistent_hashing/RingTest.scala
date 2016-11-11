@@ -1,4 +1,4 @@
-package justin.consistent_hashing
+package justin.db.consistent_hashing
 
 import org.scalatest.{FlatSpec, Matchers}
 
