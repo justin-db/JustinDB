@@ -5,17 +5,16 @@ class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
 
   def getNodeId(id: RingPartitionId): Option[NodeId] = ring.get(id)
 
-  lazy val size: RingSize = RingSize(ring.size)
+  lazy val size = ring.size
 
   lazy val nodesId: Set[NodeId] = ring.values.toSet
 
   lazy val swap: Map[NodeId, List[RingPartitionId]] = {
-    ring.groupBy { case (_, nodeId) => nodeId }
-      .mapValues(_.keys.toList.sorted)
+    ring.groupBy(_._2).mapValues(_.keys.toList.sorted)
   }
-}
 
-case class RingSize(size: Int) extends AnyVal
+  def nextPartitionId(id: RingPartitionId): RingPartitionId = (id + 1) % ring.size
+}
 
 object Ring {
   type RingPartitionId = Int
