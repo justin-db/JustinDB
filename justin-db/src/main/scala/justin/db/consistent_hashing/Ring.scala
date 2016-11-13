@@ -15,6 +15,8 @@ class Ring(private val ring: Map[RingPartitionId, NodeId]) {
   }
 
   def nextPartitionId(id: RingPartitionId): RingPartitionId = (id + 1) % ring.size
+
+  override def toString: String = ring.toString()
 }
 
 object Ring {
