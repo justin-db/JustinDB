@@ -22,14 +22,14 @@ object Ring {
 
   /**
     *
-    * @param N - nr of initial cluster size of nodes
-    * @param S - nr of partitions Ring consists of
+    * @param nodesSize - nr of initial cluster size of nodes
+    * @param partitionsSize - nr of partitions Ring consists of
     * @return representation of Ring
     */
-  def apply(N: Int = 5, S: Int = 64): Ring = {
+  def apply(nodesSize: Int = 5, partitionsSize: Int = 64): Ring = {
     val partitions2Nodes = for {
-      id          <- 0 until N
-      partitionId <- id until S by N
+      id          <- 0 until nodesSize
+      partitionId <- id until partitionsSize by nodesSize
     } yield (partitionId, NodeId(id))
 
     new Ring(partitions2Nodes.toMap)
