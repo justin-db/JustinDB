@@ -41,15 +41,12 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
   private def saveValue(id: UUID, value: String) = storage.put(id.toString, value)
 
   private def handlePutValue(pv: PutValue, clusterMembers: Map[NodeId, ActorRef]) = {
-    val basePartitionId = new UUID2RingPartitionId(ring.size).apply(pv.id)
-    val uniqueNodesId = (for {
-      partitionId <- PreferenceList.apply(basePartitionId, replication, ring.size)
-      nodeId      <- ring.getNodeId(partitionId)
-    } yield nodeId).distinct
+    val basePartitionId = new UUID2RingPartitionId(ring).apply(pv.id)
+    val preferenceList  = PreferenceList(basePartitionId, replication, ring)
 
-    uniqueNodesId.foreach {
-      case selectedNodeId if selectedNodeId == nodeId => saveValue(pv.id, pv.value)
-      case selectedNodeId => clusterMembers.get(NodeId(selectedNodeId.id)).foreach(_ ! PutReplicatedValue(pv.id, pv.value))
+    preferenceList.foreach {
+      case nId if nId == nodeId => saveValue(pv.id, pv.value)
+      case nId => clusterMembers.get(nId).foreach(_ ! PutReplicatedValue(pv.id, pv.value))
     }
   }
 
