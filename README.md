@@ -15,8 +15,8 @@ Besides that it has many welcome features around clustering:
 3. self maintenance
 4. fault tolerance
 
-### Book
-This project has dedicated book - http://speedcom.gitbooks.io/justindb/
-
 ### System Requirements
 JustinDB works with Java 8 and newer.
+
+# Book
+This project has dedicated book - http://speedcom.gitbooks.io/justindb/
