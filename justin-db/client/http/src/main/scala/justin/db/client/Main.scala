@@ -7,7 +7,7 @@ import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
-import justin.db.StorageNodeActor
+import justin.db.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.consistent_hashing.{NodeId, Ring}
 
 object Main extends App {
@@ -20,7 +20,7 @@ object Main extends App {
 
   val logger = Logging(system, getClass)
 
-  val storageNodeActorRef = {
+  val storageNodeActorRef = StorageNodeActorRef {
     val nodeId      = NodeId(config.getInt("node.id"))
     val ring        = Ring(config.getInt("ring.cluster-nodes-size"), config.getInt("ring.creation-size"))
     val storage     = new InMemStorage()
