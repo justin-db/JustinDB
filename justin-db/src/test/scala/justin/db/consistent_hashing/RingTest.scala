@@ -12,7 +12,7 @@ class RingTest extends FlatSpec with Matchers {
 
     val ring = Ring.apply(N, S)
 
-    ring.size.size shouldBe S
+    ring.size shouldBe S
   }
 
   it should "has expected set of node ids" in {
@@ -50,7 +50,7 @@ class RingTest extends FlatSpec with Matchers {
   it should "end indexing of partitions with index that is minus one of ring's size" in {
     val ring = Ring.apply(nodesSize = 5, partitionsSize = 64)
 
-    val lastIdx = ring.size.size - 1
+    val lastIdx = ring.size - 1
 
     ring.getNodeId(lastIdx)     shouldBe defined
     ring.getNodeId(lastIdx + 1) should not be defined

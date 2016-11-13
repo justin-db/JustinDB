@@ -1,6 +1,6 @@
 package justin.db.replication
 
-import justin.db.consistent_hashing.RingSize
+import justin.db.consistent_hashing.Ring
 import org.scalatest.{FlatSpec, Matchers}
 
 class PreferenceListTest extends FlatSpec with Matchers {
@@ -9,31 +9,21 @@ class PreferenceListTest extends FlatSpec with Matchers {
 
   it should "has size of defined nr of replicas" in {
     val n = N(3) // nr of replicas
-    val ringSize = RingSize(64)
+    val ring = Ring(nodesSize = 5, partitionsSize = 64)
     val basePartitionId = 1
 
     val expectedSize = 3
 
-    PreferenceList.apply(basePartitionId, n, ringSize).size shouldBe expectedSize
+    PreferenceList(basePartitionId, n, ring).size shouldBe expectedSize
   }
 
-  it should "has defined head of preference-list as a \"basePartitionId\" (coordinator)" in {
+  it should "has defined first node in the list to be the one taken from Ring with initial partitionId" in {
     val n = N(3) // nr of replicas
-    val ringSize = RingSize(64)
-    val basePartitionId = 1
+    val ring = Ring(nodesSize = 5, partitionsSize = 64)
+    val initialPartitionId = 1
 
-    val coordinator = PreferenceList.apply(basePartitionId, n, ringSize).head
+    val coordinator = PreferenceList.apply(initialPartitionId, n, ring).head
 
-    coordinator shouldBe basePartitionId
-  }
-
-  it should "ring when partitions finished" in {
-    val n = N(5) // nr of replicas
-    val ringSize = RingSize(64)
-    val basePartitionId = 62
-
-    val list = PreferenceList.apply(basePartitionId, n, ringSize)
-
-    list shouldBe List(62, 63, 0, 1, 2)
+    coordinator shouldBe ring.getNodeId(initialPartitionId).get
   }
 }
