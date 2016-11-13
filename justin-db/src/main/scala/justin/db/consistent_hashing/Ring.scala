@@ -1,7 +1,8 @@
 package justin.db.consistent_hashing
 
-class Ring(private val ring: Map[Ring.RingPartitionId, NodeId]) {
-  import Ring.RingPartitionId
+import Ring.RingPartitionId
+
+class Ring(private val ring: Map[RingPartitionId, NodeId]) {
 
   def getNodeId(id: RingPartitionId): Option[NodeId] = ring.get(id)
 
