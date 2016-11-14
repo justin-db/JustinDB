@@ -19,34 +19,30 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  override def receive: Receive = receive(Map.empty[NodeId, ActorRef])
+  override def receive: Receive = receive(ClusterMembers.empty)
 
-  private def receive(clusterMembers: Map[NodeId, ActorRef]): Receive = {
+  private def receive(clusterMembers: ClusterMembers): Receive = {
     case GetValue(id)                      => sender() ! storage.get(id.toString)
     case pv: PutValue                      => handlePutValue(pv, clusterMembers); sender() ! "ack"
     case PutReplicatedValue(valueId, data) => saveValue(valueId, data); sender() ! WriteNodeActor.SuccessfulWrite
     case state: CurrentClusterState        => state.members.filter(_.status == MemberStatus.Up).foreach(register)
-    case RegisterNode(senderNodeId) if notRegistered(senderNodeId, clusterMembers) =>
-      val updatedClusterMembers = clusterMembers + (senderNodeId -> sender())
-      context.become(receive(updatedClusterMembers))
+    case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
+      val members = clusterMembers.add(senderNodeId, StorageNodeActorRef(sender()))
+      context.become(receive(members))
       sender() ! RegisterNode(nodeId)
     case MemberUp(m)                       => register(m)
     case t                                 => println("not handled msg: " + t)
   }
 
-  private def notRegistered(tryingToRegisterNodeId: NodeId, clusterMembers: Map[NodeId, ActorRef]) = {
-    !clusterMembers.contains(tryingToRegisterNodeId)
-  }
-
   private def saveValue(id: UUID, value: String) = storage.put(id.toString, value)
 
-  private def handlePutValue(pv: PutValue, clusterMembers: Map[NodeId, ActorRef]) = {
+  private def handlePutValue(pv: PutValue, clusterMembers: ClusterMembers) = {
     val basePartitionId = new UUID2RingPartitionId(ring).apply(pv.id)
     val preferenceList  = PreferenceList(basePartitionId, replication, ring)
 
     preferenceList.foreach {
       case nId if nId == nodeId => saveValue(pv.id, pv.value)
-      case nId => clusterMembers.get(nId).foreach(_ ! PutReplicatedValue(pv.id, pv.value))
+      case nId => clusterMembers.get(nId).foreach(_.storageNodeActor ! PutReplicatedValue(pv.id, pv.value))
     }
   }
 
