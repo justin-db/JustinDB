@@ -56,4 +56,14 @@ class ClusterMembersTest extends FlatSpec with Matchers {
     exists shouldBe true
   }
 
+  it should "give positive result when asking for non-existent element with \"notContains\" method" in {
+    // given
+    val emptyClusterMembers = ClusterMembers.empty
+
+    // when
+    val notExists = emptyClusterMembers.notContains(NodeId(1))
+
+    // then
+    notExists shouldBe true
+  }
 }
