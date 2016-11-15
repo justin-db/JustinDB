@@ -1,7 +1,8 @@
 package justin.db.storage
 
-// TODO: make it async
+import scala.concurrent.Future
+
 trait PluggableStorage {
-  def get(key: String): Option[String]
-  def put(key: String, value: String): Unit
+  def get(key: String): Future[Option[String]]
+  def put(key: String, value: String): Future[Unit]
 }
