@@ -41,8 +41,12 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
   }
 
   private def register(member: Member) = {
-    val name = if(nodeId.id == 1) "id-0" else "id-1" // TODO: should send to every logic NodeId
-    context.actorSelection(RootActorPath(member.address) / "user" / s"$name") ! RegisterNode(nodeId)
+    val siblingNodes = ring.nodesId.filterNot(_ == nodeId)
+    val nodesNames   = siblingNodes.map(StorageNodeActor.name)
+
+    nodesNames.foreach { name =>
+      context.actorSelection(RootActorPath(member.address) / "user" / s"$name") ! RegisterNode(nodeId)
+    }
   }
 }
 
