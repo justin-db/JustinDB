@@ -7,7 +7,7 @@ object Version {
   val akka        = "2.4.11"
   val scalatest   = "3.0.1"
   val scalacheck  = "1.13.4"
-  val sigarLoader = "1.6.6-rev002"
+  val sigarLoader = "1.6.6"
 }
 
 object Library {
