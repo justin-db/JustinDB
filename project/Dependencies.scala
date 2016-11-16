@@ -4,7 +4,8 @@ object Version {
   val scala       = "2.11.8"
   val scalaBinary = scala.substring(0,4)
 
-  val akka        = "2.4.11"
+  val akka        = "2.4.12"
+  val akkaHttp    = "3.0.0-RC1"
   val scalatest   = "3.0.1"
   val scalacheck  = "1.13.4"
   val sigarLoader = "1.6.6"
@@ -13,13 +14,13 @@ object Version {
 object Library {
   val akkaActor            = "com.typesafe.akka" %% "akka-actor"                        % Version.akka
   val akkaSfl4j            = "com.typesafe.akka" %% "akka-slf4j"                        % Version.akka
-  val akkaStream           = "com.typesafe.akka" %% "akka-stream"                       % Version.akka
+  val akkaTestkit          = "com.typesafe.akka" %% "akka-testkit"                      % Version.akka
 
   // http
-  val akkaHttpCore         = "com.typesafe.akka" %% "akka-http-core"                    % Version.akka
-  val akkaHttp             = "com.typesafe.akka" %% "akka-http-experimental"            % Version.akka
-  val akkaSprayJson        = "com.typesafe.akka" %% "akka-http-spray-json-experimental" % Version.akka
-  val akkaHttpTestkit      = "com.typesafe.akka" %% "akka-http-testkit"                 % Version.akka
+  val akkaHttp             = "com.typesafe.akka" %% "akka-http"                         % Version.akkaHttp
+  val akkaHttpSprayJson    = "com.typesafe.akka" %% "akka-http-spray-json"              % Version.akkaHttp
+  val akkaHttpTestkit      = "com.typesafe.akka" %% "akka-http-testkit"                 % Version.akkaHttp
+  val akkaStream           = "com.typesafe.akka" %% "akka-stream"                       % Version.akka
 
   // cluster
   val akkaRemote           = "com.typesafe.akka" %% "akka-remote"                       % Version.akka
@@ -40,13 +41,13 @@ object Dependencies {
 
   private val genericTest = Seq(scalactic, scalatest % "test")
 
-  private val akkaCommon = Seq(akkaActor, akkaSfl4j)
-  private val akkaHttpCommon = Seq(akkaHttpCore, akkaHttp, akkaSprayJson, akkaHttpTestkit)
+  private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit)
+  private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit, akkaStream)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test")
 
-  val httpClient = akkaCommon ++ Seq(akkaStream) ++ akkaHttpCommon ++ genericTest
+  val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest
 
   val dbStorageInMem = genericTest
 
