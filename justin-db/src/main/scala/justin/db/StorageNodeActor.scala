@@ -49,8 +49,16 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
 object StorageNodeActor {
 
   sealed trait StorageNodeCmd
+
+  // read part
   case class GetValue(id: UUID) extends StorageNodeCmd
+
+  // write part
   case class PutValue(w: W, id: UUID, value: String) extends StorageNodeCmd
+  case object SuccessfulWrite extends StorageNodeCmd
+  case object UnsuccessfulWrite extends StorageNodeCmd
+
+  // cluster part
   case class RegisterNode(nodeId: NodeId) extends StorageNodeCmd
 
   def role: String = "StorageNode"
