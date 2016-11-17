@@ -6,13 +6,15 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor.{GetValue, PutValue, RegisterNode}
+import justin.db.StorageNodeActor.{GetValue, RegisterNode, StorageNodeWriteData}
 import justin.db.replication.{N, W}
 import justin.db.storage.PluggableStorage
 
+import scala.concurrent.ExecutionContext
+
 case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N) extends Actor {
+class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -23,21 +25,28 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
 
   private def receive(clusterMembers: ClusterMembers): Receive = {
     // READ part
-    case GetValue(id)                      => sender() ! storage.get(id.toString)
+    case GetValue(id) => sender() ! storage.get(id.toString)
 
     // WRITE part
-    case pv: PutValue                      => sender() ! "ack" // TODO: finish
+    case cmd: StorageNodeWriteData.Replicate => writeData(sender(), clusterMembers, cmd)
+    case cmd: StorageNodeWriteData.Local     => writeData(sender(), clusterMembers, cmd)
 
     // CLUSTER part
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       val storageActorRef = StorageNodeActorRef(sender())
       context.become(receive(clusterMembers.add(senderNodeId, storageActorRef)))
       sender() ! RegisterNode(nodeId)
-    case MemberUp(m)                       => register(m)
-    case state: CurrentClusterState        => state.members.filter(_.status == MemberStatus.Up).foreach(register)
+    case MemberUp(m)                => register(m)
+    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(register)
 
     // NOT HANDLED
-    case t                                 => println("[StorageNodeActor] not handled msg: " + t)
+    case t                          => println("[StorageNodeActor] not handled msg: " + t)
+  }
+
+  private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
+    new StorageNodeWriteService(nodeId, clusterMembers, ring, n, storage)
+      .apply(writeCmd)
+      .foreach { resp => sender ! resp }
   }
 
   private def register(member: Member) = {
@@ -52,24 +61,30 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
 
 object StorageNodeActor {
 
-  sealed trait StorageNodeCmd
-
   // read part
-  case class GetValue(id: UUID) extends StorageNodeCmd
+  case class GetValue(id: UUID)
 
   // write part
-  case class PutValue(w: W, id: UUID, value: String) extends StorageNodeCmd
-  case object SuccessfulWrite extends StorageNodeCmd
-  case object UnsuccessfulWrite extends StorageNodeCmd
+  sealed trait StorageNodeWriteData
+  object StorageNodeWriteData {
+    case class Local(data: Data)           extends StorageNodeWriteData
+    case class Replicate(w: W, data: Data) extends StorageNodeWriteData
+  }
+
+  sealed trait StorageNodeWritingResult
+  object StorageNodeWritingResult {
+    case object SuccessfulWrite extends StorageNodeWritingResult
+    case object FailedWrite     extends StorageNodeWritingResult
+  }
 
   // cluster part
-  case class RegisterNode(nodeId: NodeId) extends StorageNodeCmd
+  case class RegisterNode(nodeId: NodeId)
 
   def role: String = "StorageNode"
 
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N): Props = {
-    Props(new StorageNodeActor(nodeId, storage, ring, replication))
+  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext): Props = {
+    Props(new StorageNodeActor(nodeId, storage, ring, n))
   }
 }
