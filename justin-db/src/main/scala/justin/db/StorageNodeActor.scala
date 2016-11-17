@@ -28,7 +28,13 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
     case GetValue(id)                      => sender() ! storage.get(id.toString)
 
     // WRITE part
-    case PutValue                          => sender() ! "ack" // TODO: finish
+    case PutValue(w, data)                 =>
+      val originalSender = sender()
+      val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
+      writeData.apply(StorageNodeWriteData.Replicate(w, data)).map {
+        case StorageNodeWritingResult.SuccessfulWrite => originalSender ! StorageNodeActor.SuccessfulWrite
+        case StorageNodeWritingResult.FailedWrite     => originalSender ! StorageNodeActor.UnsuccessfulWrite
+      }
     case PutLocalValue(data)               =>
       val originalSender = sender()
       val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
