@@ -16,36 +16,50 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
   private val remoteSaving = new RemoteDataSavingService()
 
   override def apply(cmd: StorageNodeWriteData): Future[StorageNodeWritingResult] = cmd match {
-    case StorageNodeWriteData.Local(id, value)        =>
-      localSaving.apply(id, value)
-    case StorageNodeWriteData.Replicate(w, id, value) =>
-      val basePartitionId = new UUID2RingPartitionId(ring).apply(id)
-      val preferenceList  = PreferenceList(basePartitionId, n, ring)
-
-      val localWriteNodeOpt   = preferenceList.find(_ == nodeId)
-      val remoteWriteNodeRefs = preferenceList.filterNot(_ == nodeId)
-        .distinct
-        .flatMap(clusterMembers.get)
-
-      val writesResultsFt = localWriteNodeOpt match {
-        case Some(_) => localSaving(id, value).zip(remoteSaving(remoteWriteNodeRefs, id, value)).map { case (a, b) => a :: b }
-        case None    => remoteSaving(remoteWriteNodeRefs, id, value)
+    case StorageNodeWriteData.Local(data)        =>
+      localSaving.apply(data)
+    case StorageNodeWriteData.Replicate(w, data) =>
+      for {
+        preferenceList <- Future.successful(buildPreferenceList(data))
+        allWrites      <- writeToTargets(data, localTargetOpt(preferenceList), remoteTargets(preferenceList))
+        okWrites        = allWrites.count(_ == StorageNodeWritingResult.SuccessfulWrite)
+      } yield {
+        okWrites >= w.w match {
+          case true  => StorageNodeWritingResult.SuccessfulWrite
+          case false => StorageNodeWritingResult.FailedWrite
+        }
       }
-      val successfulWritesFt = writesResultsFt.map(_.filter(_ == StorageNodeWritingResult.SuccessfulWrite))
+  }
 
-      successfulWritesFt.map(ok =>
-        if(ok.size >= w.w)
-          StorageNodeWritingResult.SuccessfulWrite
-        else
-          StorageNodeWritingResult.FailedWrite
-      )
+  private def buildPreferenceList(data: Data) = {
+    val basePartitionId = new UUID2RingPartitionId(ring).apply(data.id)
+    PreferenceList(basePartitionId, n, ring)
+  }
+
+  private def localTargetOpt(preferenceList: List[NodeId]): Option[NodeId] = {
+    preferenceList.find(_ == nodeId)
+  }
+
+  private def remoteTargets(preferenceList: List[NodeId]) = {
+    preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
+  }
+
+  private def writeToTargets(data: Data, localTargetOpt: Option[NodeId], remoteTargets: List[StorageNodeActorRef]) = {
+    lazy val remoteSaves = remoteSaving.apply(remoteTargets, data)
+    lazy val localSave   = localSaving.apply(data)
+
+    localTargetOpt.fold(remoteSaves) { _ =>
+      localSave.zip(remoteSaves).map { case (lSaveResult, rSaveResults) => lSaveResult :: rSaveResults }
+    }
   }
 }
 
+case class Data(id: UUID, value: String)
+
 sealed trait StorageNodeWriteData
 object StorageNodeWriteData {
-  case class Local(id: UUID, value: String)           extends StorageNodeWriteData
-  case class Replicate(w: W, id: UUID, value: String) extends StorageNodeWriteData
+  case class Local(data: Data)           extends StorageNodeWriteData
+  case class Replicate(w: W, data: Data) extends StorageNodeWriteData
 }
 
 sealed trait StorageNodeWritingResult
@@ -55,8 +69,8 @@ object StorageNodeWritingResult {
 }
 
 class LocalDataSavingService(storage: PluggableStorage)(implicit ec: ExecutionContext) {
-  def apply(id: UUID, value: String): Future[StorageNodeWritingResult] = {
-    storage.put(id.toString, value)
+  def apply(data: Data): Future[StorageNodeWritingResult] = {
+    storage.put(data.id.toString, data.value)
       .map(_ => StorageNodeWritingResult.SuccessfulWrite)
       .recover { case _ => StorageNodeWritingResult.FailedWrite }
   }
@@ -69,8 +83,8 @@ class RemoteDataSavingService(implicit ec: ExecutionContext) {
 
   private implicit val timeout = Timeout(3.seconds) // TODO: tune this value
 
-  def apply(storageNodeRefs: List[StorageNodeActorRef], id: UUID, value: String): Future[List[StorageNodeWritingResult]] = {
-    val msg = StorageNodeActor.PutLocalValue(id, value)
+  def apply(storageNodeRefs: List[StorageNodeActorRef], data: Data): Future[List[StorageNodeWritingResult]] = {
+    val msg = StorageNodeActor.PutLocalValue(data.id, data.value)
     Future.sequence(storageNodeRefs.map(putLocalValue(_, msg)))
   }
 
