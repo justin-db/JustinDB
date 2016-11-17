@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 
 case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N)(implicit ec: ExecutionContext) extends Actor {
+class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -48,7 +48,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
       case StorageNodeActor.PutValue(w, data)   => StorageNodeWriteData.Replicate(w, data)
       case StorageNodeActor.PutLocalValue(data) => StorageNodeWriteData.Local(data)
     }
-    val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
+    val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, n, storage)
     writeData.apply(cmd).map {
       case StorageNodeWritingResult.SuccessfulWrite => sender ! StorageNodeActor.SuccessfulWrite
       case StorageNodeWritingResult.FailedWrite     => sender ! StorageNodeActor.UnsuccessfulWrite
@@ -86,7 +86,7 @@ object StorageNodeActor {
 
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N)(implicit ec: ExecutionContext): Props = {
-    Props(new StorageNodeActor(nodeId, storage, ring, replication))
+  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext): Props = {
+    Props(new StorageNodeActor(nodeId, storage, ring, n))
   }
 }
