@@ -1,5 +1,6 @@
 package justin.db
 
+import justin.db.StorageNodeActor.StorageNodeWritingResult
 import justin.db.storage.PluggableStorage
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,7 +1,8 @@
 package justin.db
 
+import justin.db.StorageNodeActor.{StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
-import justin.db.replication.{N, PreferenceList, W}
+import justin.db.replication.{N, PreferenceList}
 import justin.db.storage.PluggableStorage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,8 +15,7 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
   private val remoteSaving = new RemoteDataSavingService()
 
   override def apply(cmd: StorageNodeWriteData): Future[StorageNodeWritingResult] = cmd match {
-    case StorageNodeWriteData.Local(data)        =>
-      localSaving.apply(data)
+    case StorageNodeWriteData.Local(data)        => localSaving.apply(data)
     case StorageNodeWriteData.Replicate(w, data) =>
       for {
         preferenceList <- Future.successful(buildPreferenceList(data))
@@ -52,16 +52,4 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
       localSave.zip(remoteSaves).map { case (lSaveResult, rSaveResults) => lSaveResult :: rSaveResults }
     }
   }
-}
-
-sealed trait StorageNodeWriteData
-object StorageNodeWriteData {
-  case class Local(data: Data)           extends StorageNodeWriteData
-  case class Replicate(w: W, data: Data) extends StorageNodeWriteData
-}
-
-sealed trait StorageNodeWritingResult
-object StorageNodeWritingResult {
-  case object SuccessfulWrite extends StorageNodeWritingResult
-  case object FailedWrite     extends StorageNodeWritingResult
 }

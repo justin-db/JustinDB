@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor.{GetValue, PutLocalValue, PutValue, RegisterNode}
+import justin.db.StorageNodeActor.{GetValue, RegisterNode, StorageNodeWriteData}
 import justin.db.replication.{N, W}
 import justin.db.storage.PluggableStorage
 
@@ -25,11 +25,11 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 
   private def receive(clusterMembers: ClusterMembers): Receive = {
     // READ part
-    case GetValue(id)               => sender() ! storage.get(id.toString)
+    case GetValue(id) => sender() ! storage.get(id.toString)
 
     // WRITE part
-    case cmd: PutValue              => writeData(sender(), clusterMembers, cmd)
-    case cmd: PutLocalValue         => writeData(sender(), clusterMembers, cmd)
+    case cmd: StorageNodeWriteData.Replicate => writeData(sender(), clusterMembers, cmd)
+    case cmd: StorageNodeWriteData.Local     => writeData(sender(), clusterMembers, cmd)
 
     // CLUSTER part
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
@@ -43,16 +43,9 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
     case t                          => println("[StorageNodeActor] not handled msg: " + t)
   }
 
-  private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeActor.WriteDataReq) = {
-    val cmd = writeCmd match {
-      case StorageNodeActor.PutValue(w, data)   => StorageNodeWriteData.Replicate(w, data)
-      case StorageNodeActor.PutLocalValue(data) => StorageNodeWriteData.Local(data)
-    }
+  private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
     val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, n, storage)
-    writeData.apply(cmd).map {
-      case StorageNodeWritingResult.SuccessfulWrite => sender ! StorageNodeActor.SuccessfulWrite
-      case StorageNodeWritingResult.FailedWrite     => sender ! StorageNodeActor.UnsuccessfulWrite
-    }
+    writeData.apply(writeCmd).foreach { resp => sender ! resp }
   }
 
   private def register(member: Member) = {
@@ -67,20 +60,24 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 
 object StorageNodeActor {
 
-  sealed trait StorageNodeCmd
-
   // read part
-  case class GetValue(id: UUID) extends StorageNodeCmd
+  case class GetValue(id: UUID)
 
   // write part
-  sealed trait WriteDataReq
-  case class PutValue(w: W, data: Data) extends StorageNodeCmd with WriteDataReq
-  case class PutLocalValue(data: Data)  extends StorageNodeCmd with WriteDataReq
-  case object SuccessfulWrite           extends StorageNodeCmd
-  case object UnsuccessfulWrite         extends StorageNodeCmd
+  sealed trait StorageNodeWriteData
+  object StorageNodeWriteData {
+    case class Local(data: Data)           extends StorageNodeWriteData
+    case class Replicate(w: W, data: Data) extends StorageNodeWriteData
+  }
+
+  sealed trait StorageNodeWritingResult
+  object StorageNodeWritingResult {
+    case object SuccessfulWrite extends StorageNodeWritingResult
+    case object FailedWrite     extends StorageNodeWritingResult
+  }
 
   // cluster part
-  case class RegisterNode(nodeId: NodeId) extends StorageNodeCmd
+  case class RegisterNode(nodeId: NodeId)
 
   def role: String = "StorageNode"
 
