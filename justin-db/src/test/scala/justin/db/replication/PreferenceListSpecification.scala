@@ -19,7 +19,7 @@ class PreferenceListSpecification extends Properties("PreferenceList") {
   property("size of preference-list is always the same as configured number of replicas") = {
     val ring = Ring.apply(nodesSize = 5, partitionsSize = 64)
     val basePartitionId = 0
-    val replicaNrGen = Gen.choose(0, 1000)
+    val replicaNrGen = Gen.choose(1, 1000)
 
     forAll(replicaNrGen) { n: Int =>
       PreferenceList(basePartitionId, N(n), ring).size == n
