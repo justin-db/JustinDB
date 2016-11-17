@@ -88,7 +88,11 @@ class RemoteDataSavingService(implicit ec: ExecutionContext) {
 
   private def putLocalValue(node: StorageNodeActorRef, msg: StorageNodeActor.PutLocalValue): Future[StorageNodeWritingResult] = {
     (node.storageNodeActor ? msg)
-      .map(_ => StorageNodeWritingResult.SuccessfulWrite)
-      .recover { case _ => StorageNodeWritingResult.FailedWrite }
+      .map {
+        case StorageNodeActor.SuccessfulWrite   => StorageNodeWritingResult.SuccessfulWrite
+        case StorageNodeActor.UnsuccessfulWrite => StorageNodeWritingResult.FailedWrite
+      }.recover {
+        case _ => StorageNodeWritingResult.FailedWrite
+      }
   }
 }
