@@ -2,12 +2,12 @@ package justin.db
 
 import justin.db.StorageNodeActor.{StorageNodeWriteData, StorageNodeWritingResult}
 
+import akka.pattern.ask
+import akka.util.Timeout
+import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoteDataSavingService(implicit ec: ExecutionContext) {
-  import akka.pattern.ask
-  import akka.util.Timeout
-  import scala.concurrent.duration._
 
   private implicit val timeout = Timeout(3.seconds) // TODO: tune this value
 
