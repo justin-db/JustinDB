@@ -66,14 +66,6 @@ object StorageNodeWritingResult {
   case object FailedWrite     extends StorageNodeWritingResult
 }
 
-class LocalDataSavingService(storage: PluggableStorage)(implicit ec: ExecutionContext) {
-  def apply(data: Data): Future[StorageNodeWritingResult] = {
-    storage.put(data.id.toString, data.value)
-      .map(_ => StorageNodeWritingResult.SuccessfulWrite)
-      .recover { case _ => StorageNodeWritingResult.FailedWrite }
-  }
-}
-
 class RemoteDataSavingService(implicit ec: ExecutionContext) {
   import akka.pattern.ask
   import akka.util.Timeout
