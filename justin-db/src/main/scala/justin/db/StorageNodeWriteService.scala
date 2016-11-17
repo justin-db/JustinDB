@@ -1,7 +1,5 @@
 package justin.db
 
-import java.util.UUID
-
 import justin.db.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.replication.{N, PreferenceList, W}
 import justin.db.storage.PluggableStorage
@@ -21,7 +19,9 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
     case StorageNodeWriteData.Replicate(w, data) =>
       for {
         preferenceList <- Future.successful(buildPreferenceList(data))
-        allWrites      <- writeToTargets(data, localTargetOpt(preferenceList), remoteTargets(preferenceList))
+        localTarget     = buildLocalTargetOpt(preferenceList)
+        remoteTargets   = buildRemoteTargets(preferenceList)
+        allWrites      <- writeToTargets(data, localTarget, remoteTargets)
         okWrites        = allWrites.count(_ == StorageNodeWritingResult.SuccessfulWrite)
       } yield {
         okWrites >= w.w match {
@@ -36,11 +36,11 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
     PreferenceList(basePartitionId, n, ring)
   }
 
-  private def localTargetOpt(preferenceList: List[NodeId]): Option[NodeId] = {
+  private def buildLocalTargetOpt(preferenceList: List[NodeId]): Option[NodeId] = {
     preferenceList.find(_ == nodeId)
   }
 
-  private def remoteTargets(preferenceList: List[NodeId]) = {
+  private def buildRemoteTargets(preferenceList: List[NodeId]) = {
     preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
   }
 
@@ -53,8 +53,6 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
     }
   }
 }
-
-case class Data(id: UUID, value: String)
 
 sealed trait StorageNodeWriteData
 object StorageNodeWriteData {
