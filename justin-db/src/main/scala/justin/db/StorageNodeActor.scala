@@ -10,9 +10,11 @@ import justin.db.StorageNodeActor.{GetValue, PutLocalValue, PutValue, RegisterNo
 import justin.db.replication.{N, W}
 import justin.db.storage.PluggableStorage
 
+import scala.concurrent.ExecutionContext
+
 case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N) extends Actor {
+class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N)(implicit ec: ExecutionContext) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -27,7 +29,13 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
 
     // WRITE part
     case PutValue                          => sender() ! "ack" // TODO: finish
-    case PutLocalValue                     => ???
+    case PutLocalValue(data)               =>
+      val originalSender = sender()
+      val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
+      writeData.apply(StorageNodeWriteData.Local(data)).map {
+        case StorageNodeWritingResult.SuccessfulWrite => originalSender ! StorageNodeActor.SuccessfulWrite
+        case StorageNodeWritingResult.FailedWrite     => originalSender ! StorageNodeActor.UnsuccessfulWrite
+      }
 
     // CLUSTER part
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
@@ -71,7 +79,7 @@ object StorageNodeActor {
 
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N): Props = {
+  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, replication: N)(implicit ec: ExecutionContext): Props = {
     Props(new StorageNodeActor(nodeId, storage, ring, replication))
   }
 }
