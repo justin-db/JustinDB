@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor.{GetValue, PutValue, RegisterNode}
+import justin.db.StorageNodeActor.{GetValue, PutLocalValue, PutValue, RegisterNode}
 import justin.db.replication.{N, W}
 import justin.db.storage.PluggableStorage
 
@@ -26,7 +26,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
     case GetValue(id)                      => sender() ! storage.get(id.toString)
 
     // WRITE part
-    case pv: PutValue                      => sender() ! "ack" // TODO: finish
+    case PutValue                          => sender() ! "ack" // TODO: finish
+    case PutLocalValue                     => ???
 
     // CLUSTER part
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
@@ -59,6 +60,7 @@ object StorageNodeActor {
 
   // write part
   case class PutValue(w: W, id: UUID, value: String) extends StorageNodeCmd
+  case class PutLocalValue(id: UUID, value: String) extends StorageNodeCmd
   case object SuccessfulWrite extends StorageNodeCmd
   case object UnsuccessfulWrite extends StorageNodeCmd
 
