@@ -8,6 +8,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import justin.db.Data
 import justin.db.client.Unmarshallers.UUIDUnmarshaller
 import justin.db.replication.{R, W}
 import spray.json.DefaultJsonProtocol._
@@ -39,7 +40,7 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
     } ~
       (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
         complete {
-          client.write(putValue.id, putValue.value, W(putValue.w)).map[ToResponseMarshallable] {
+          client.write(W(putValue.w), Data(putValue.id, putValue.value)).map[ToResponseMarshallable] {
             case WriteValueResponse.Success      => NoContent
             case WriteValueResponse.Failure(err) => BadRequest -> Result(err)
           }

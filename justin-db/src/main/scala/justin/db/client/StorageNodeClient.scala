@@ -1,12 +1,15 @@
 package justin.db.client
 
 import java.util.UUID
+
+import justin.db.Data
 import justin.db.replication.{R, W}
+
 import scala.concurrent.Future
 
 trait StorageNodeClient {
   def get(id: UUID, r: R): Future[GetValueResponse]
-  def write(id: UUID, value: String, w: W): Future[WriteValueResponse]
+  def write(w: W, data: Data): Future[WriteValueResponse]
 }
 
 sealed trait GetValueResponse

@@ -59,10 +59,10 @@ object StorageNodeActor {
   case class GetValue(id: UUID) extends StorageNodeCmd
 
   // write part
-  case class PutValue(w: W, id: UUID, value: String) extends StorageNodeCmd
-  case class PutLocalValue(id: UUID, value: String) extends StorageNodeCmd
-  case object SuccessfulWrite extends StorageNodeCmd
-  case object UnsuccessfulWrite extends StorageNodeCmd
+  case class PutValue(w: W, data: Data) extends StorageNodeCmd
+  case class PutLocalValue(data: Data)  extends StorageNodeCmd
+  case object SuccessfulWrite           extends StorageNodeCmd
+  case object UnsuccessfulWrite         extends StorageNodeCmd
 
   // cluster part
   case class RegisterNode(nodeId: NodeId) extends StorageNodeCmd

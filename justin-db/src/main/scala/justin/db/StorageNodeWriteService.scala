@@ -82,7 +82,7 @@ class RemoteDataSavingService(implicit ec: ExecutionContext) {
   private implicit val timeout = Timeout(3.seconds) // TODO: tune this value
 
   def apply(storageNodeRefs: List[StorageNodeActorRef], data: Data): Future[List[StorageNodeWritingResult]] = {
-    val msg = StorageNodeActor.PutLocalValue(data.id, data.value)
+    val msg = StorageNodeActor.PutLocalValue(data)
     Future.sequence(storageNodeRefs.map(putLocalValue(_, msg)))
   }
 
