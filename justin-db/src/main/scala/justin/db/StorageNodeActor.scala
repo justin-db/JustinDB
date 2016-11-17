@@ -44,8 +44,9 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
   }
 
   private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
-    val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, n, storage)
-    writeData.apply(writeCmd).foreach { resp => sender ! resp }
+    new StorageNodeWriteService(nodeId, clusterMembers, ring, n, storage)
+      .apply(writeCmd)
+      .foreach { resp => sender ! resp }
   }
 
   private def register(member: Member) = {
