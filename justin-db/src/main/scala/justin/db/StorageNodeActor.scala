@@ -25,34 +25,34 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, re
 
   private def receive(clusterMembers: ClusterMembers): Receive = {
     // READ part
-    case GetValue(id)                      => sender() ! storage.get(id.toString)
+    case GetValue(id)               => sender() ! storage.get(id.toString)
 
     // WRITE part
-    case PutValue(w, data)                 =>
-      val originalSender = sender()
-      val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
-      writeData.apply(StorageNodeWriteData.Replicate(w, data)).map {
-        case StorageNodeWritingResult.SuccessfulWrite => originalSender ! StorageNodeActor.SuccessfulWrite
-        case StorageNodeWritingResult.FailedWrite     => originalSender ! StorageNodeActor.UnsuccessfulWrite
-      }
-    case PutLocalValue(data)               =>
-      val originalSender = sender()
-      val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
-      writeData.apply(StorageNodeWriteData.Local(data)).map {
-        case StorageNodeWritingResult.SuccessfulWrite => originalSender ! StorageNodeActor.SuccessfulWrite
-        case StorageNodeWritingResult.FailedWrite     => originalSender ! StorageNodeActor.UnsuccessfulWrite
-      }
+    case cmd: PutValue              => writeData(sender(), clusterMembers, cmd)
+    case cmd: PutLocalValue         => writeData(sender(), clusterMembers, cmd)
 
     // CLUSTER part
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       val storageActorRef = StorageNodeActorRef(sender())
       context.become(receive(clusterMembers.add(senderNodeId, storageActorRef)))
       sender() ! RegisterNode(nodeId)
-    case MemberUp(m)                       => register(m)
-    case state: CurrentClusterState        => state.members.filter(_.status == MemberStatus.Up).foreach(register)
+    case MemberUp(m)                => register(m)
+    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(register)
 
     // NOT HANDLED
-    case t                                 => println("[StorageNodeActor] not handled msg: " + t)
+    case t                          => println("[StorageNodeActor] not handled msg: " + t)
+  }
+
+  private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeActor.WriteDataReq) = {
+    val cmd = writeCmd match {
+      case StorageNodeActor.PutValue(w, data)   => StorageNodeWriteData.Replicate(w, data)
+      case StorageNodeActor.PutLocalValue(data) => StorageNodeWriteData.Local(data)
+    }
+    val writeData = new StorageNodeWriteService(nodeId, clusterMembers, ring, replication, storage)
+    writeData.apply(cmd).map {
+      case StorageNodeWritingResult.SuccessfulWrite => sender ! StorageNodeActor.SuccessfulWrite
+      case StorageNodeWritingResult.FailedWrite     => sender ! StorageNodeActor.UnsuccessfulWrite
+    }
   }
 
   private def register(member: Member) = {
@@ -73,8 +73,9 @@ object StorageNodeActor {
   case class GetValue(id: UUID) extends StorageNodeCmd
 
   // write part
-  case class PutValue(w: W, data: Data) extends StorageNodeCmd
-  case class PutLocalValue(data: Data)  extends StorageNodeCmd
+  sealed trait WriteDataReq
+  case class PutValue(w: W, data: Data) extends StorageNodeCmd with WriteDataReq
+  case class PutLocalValue(data: Data)  extends StorageNodeCmd with WriteDataReq
   case object SuccessfulWrite           extends StorageNodeCmd
   case object UnsuccessfulWrite         extends StorageNodeCmd
 
