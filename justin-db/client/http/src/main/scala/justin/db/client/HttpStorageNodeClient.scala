@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.pattern.ask
 import akka.util.Timeout
-import justin.db.StorageNodeActor.{GetValue, StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.StorageNodeActor.{StorageNodeReadData, StorageNodeReadingResult, StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.{Data, StorageNodeActorRef}
 import justin.db.replication.{R, W}
 
@@ -16,16 +16,19 @@ class HttpStorageNodeClient(storageNodeActor: StorageNodeActorRef)(implicit ex: 
   implicit val timeout = Timeout(5.seconds) // TODO: tune this value
 
   override def get(id: UUID, r: R): Future[GetValueResponse] = {
-    (storageNodeActor.storageNodeActor ? GetValue(id)).mapTo[Option[String]].map {
-      case Some(value) => GetValueResponse.Found(value)
-      case None        => GetValueResponse.NotFound
-    }.recover { case _ => GetValueResponse.Failure(s"[Failure] Couldn't get value with id ${id.toString}") }
+    lazy val errorMsg = s"[Failure] Couldn't read value with id ${id.toString}"
+
+    (storageNodeActor.storageNodeActor ? StorageNodeReadData.Replicated(r, id)).mapTo[StorageNodeReadingResult].map {
+      case StorageNodeReadingResult.Found(data) => GetValueResponse.Found(data.value)
+      case StorageNodeReadingResult.NotFound    => GetValueResponse.NotFound
+      case StorageNodeReadingResult.FailedRead  => GetValueResponse.Failure(errorMsg)
+    }.recover { case _                          => GetValueResponse.Failure(errorMsg) }
   }
 
   override def write(w: W, data: Data): Future[WriteValueResponse] = {
-    lazy val errorMsg = s"[Failure] Couldn't store value ${data.value} with id ${data.id.toString}"
+    lazy val errorMsg = s"[Failure] Couldn't write data: $data"
 
-    (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).map {
+    (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {
       case StorageNodeWritingResult.SuccessfulWrite => WriteValueResponse.Success
       case StorageNodeWritingResult.FailedWrite     => WriteValueResponse.Failure(errorMsg)
     }.recover { case _                              => WriteValueResponse.Failure(errorMsg) }
