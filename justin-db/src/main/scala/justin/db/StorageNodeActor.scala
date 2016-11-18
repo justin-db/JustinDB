@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor.{RegisterNode, StorageNodeReadData, StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.StorageNodeActor._
 import justin.db.replication.{N, R, W}
 import justin.db.storage.PluggableStorage
 
@@ -25,8 +25,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 
   private def receive(clusterMembers: ClusterMembers): Receive = {
     // READ part
-    case cmd: StorageNodeReadData.Replicated => ???
-    case cmd: StorageNodeReadData.Local      => ???
+    case cmd: StorageNodeReadData.Replicated => readData(sender(), clusterMembers, cmd)
+    case cmd: StorageNodeReadData.Local      => readData(sender(), clusterMembers, cmd)
 
     // WRITE part
     case cmd: StorageNodeWriteData.Replicate => writeData(sender(), clusterMembers, cmd)
@@ -42,6 +42,14 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 
     // NOT HANDLED
     case t                          => println("[StorageNodeActor] not handled msg: " + t)
+  }
+
+  private def readData(sender: ActorRef, clusterMembers: ClusterMembers, readCmd: StorageNodeReadData) = {
+    def sendBack(msg: StorageNodeReadingResult) = sender ! msg
+
+    new StorageNodeReadService(nodeId, clusterMembers, ring, n, storage)
+      .apply(readCmd)
+      .foreach(sendBack)
   }
 
   private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
