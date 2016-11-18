@@ -6,8 +6,8 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor.{GetValue, RegisterNode, StorageNodeWriteData, StorageNodeWritingResult}
-import justin.db.replication.{N, W}
+import justin.db.StorageNodeActor.{RegisterNode, StorageNodeReadData, StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.replication.{N, R, W}
 import justin.db.storage.PluggableStorage
 
 import scala.concurrent.ExecutionContext
@@ -25,7 +25,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 
   private def receive(clusterMembers: ClusterMembers): Receive = {
     // READ part
-    case GetValue(id) => sender() ! storage.get(id.toString)
+    case cmd: StorageNodeReadData.Replicated => ???
+    case cmd: StorageNodeReadData.Local      => ???
 
     // WRITE part
     case cmd: StorageNodeWriteData.Replicate => writeData(sender(), clusterMembers, cmd)
@@ -65,7 +66,18 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 object StorageNodeActor {
 
   // read part
-  case class GetValue(id: UUID)
+  sealed trait StorageNodeReadData
+  object StorageNodeReadData {
+    case class Local(id: UUID)            extends StorageNodeReadData
+    case class Replicated(r: R, id: UUID) extends StorageNodeReadData
+  }
+
+  sealed trait StorageNodeReadingResult
+  object StorageNodeReadingResult {
+    case class Found(d: Data) extends StorageNodeReadingResult
+    case object NotFound      extends StorageNodeReadingResult
+    case object FailedRead    extends StorageNodeReadingResult
+  }
 
   // write part
   sealed trait StorageNodeWriteData
