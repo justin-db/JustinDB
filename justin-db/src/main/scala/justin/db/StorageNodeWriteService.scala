@@ -36,7 +36,7 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
     PreferenceList(basePartitionId, n, ring)
   }
 
-  private def buildLocalTargetOpt(preferenceList: List[NodeId]): Option[NodeId] = {
+  private def buildLocalTargetOpt(preferenceList: List[NodeId]) = {
     preferenceList.find(_ == nodeId)
   }
 
