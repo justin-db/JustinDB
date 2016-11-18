@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor.{GetValue, RegisterNode, StorageNodeWriteData}
+import justin.db.StorageNodeActor.{GetValue, RegisterNode, StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.replication.{N, W}
 import justin.db.storage.PluggableStorage
 
@@ -44,9 +44,11 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
   }
 
   private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
+    def sendBack(msg: StorageNodeWritingResult) = sender ! msg
+
     new StorageNodeWriteService(nodeId, clusterMembers, ring, n, storage)
       .apply(writeCmd)
-      .foreach { resp => sender ! resp }
+      .foreach(sendBack)
   }
 
   private def register(member: Member) = {
