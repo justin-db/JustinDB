@@ -52,12 +52,13 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
   }
 
   private def register(member: Member) = {
-    val siblingNodes = ring.nodesId.filterNot(_ == nodeId)
-    val nodesNames   = siblingNodes.map(StorageNodeActor.name)
+    val nodesRefs = for {
+      siblingNodeId <- ring.nodesId.filterNot(_ == nodeId)
+      nodeName       = StorageNodeActor.name(siblingNodeId)
+      nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
+    } yield nodeRef
 
-    nodesNames.foreach { name =>
-      context.actorSelection(RootActorPath(member.address) / "user" / s"$name") ! RegisterNode(nodeId)
-    }
+    nodesRefs.foreach(_ ! RegisterNode(nodeId))
   }
 }
 
