@@ -2,7 +2,7 @@ package justin.db
 
 import java.util.UUID
 
-import justin.db.StorageNodeActor.StorageNodeReadingResult
+import justin.db.StorageNodeActorProtocol._
 import justin.db.storage.PluggableStorage
 
 import scala.concurrent.{ExecutionContext, Future}

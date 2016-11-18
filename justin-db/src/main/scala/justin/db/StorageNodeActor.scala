@@ -1,13 +1,11 @@
 package justin.db
 
-import java.util.UUID
-
 import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
+import justin.db.StorageNodeActorProtocol._
 import justin.db.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActor._
-import justin.db.replication.{N, R, W}
+import justin.db.replication.N
 import justin.db.storage.PluggableStorage
 
 import scala.concurrent.ExecutionContext
@@ -72,36 +70,6 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
 }
 
 object StorageNodeActor {
-
-  // read part
-  sealed trait StorageNodeReadData
-  object StorageNodeReadData {
-    case class Local(id: UUID)            extends StorageNodeReadData
-    case class Replicated(r: R, id: UUID) extends StorageNodeReadData
-  }
-
-  sealed trait StorageNodeReadingResult
-  object StorageNodeReadingResult {
-    case class Found(d: Data) extends StorageNodeReadingResult
-    case object NotFound      extends StorageNodeReadingResult
-    case object FailedRead    extends StorageNodeReadingResult
-  }
-
-  // write part
-  sealed trait StorageNodeWriteData
-  object StorageNodeWriteData {
-    case class Local(data: Data)           extends StorageNodeWriteData
-    case class Replicate(w: W, data: Data) extends StorageNodeWriteData
-  }
-
-  sealed trait StorageNodeWritingResult
-  object StorageNodeWritingResult {
-    case object SuccessfulWrite extends StorageNodeWritingResult
-    case object FailedWrite     extends StorageNodeWritingResult
-  }
-
-  // cluster part
-  case class RegisterNode(nodeId: NodeId)
 
   def role: String = "StorageNode"
 

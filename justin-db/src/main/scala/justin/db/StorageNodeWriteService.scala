@@ -1,6 +1,6 @@
 package justin.db
 
-import justin.db.StorageNodeActor.{StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.StorageNodeActorProtocol._
 import justin.db.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.replication.{N, PreferenceList}
 import justin.db.storage.PluggableStorage
