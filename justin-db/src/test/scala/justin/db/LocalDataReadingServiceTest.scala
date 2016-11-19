@@ -28,4 +28,19 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
     // then
     whenReady(result) { _ == StorageNodeReadingResult.Found(Data(id, "value")) }
   }
+
+  it should "not found data for non-existing key" in {
+    // given
+    val service = new LocalDataReadingService(new PluggableStorage {
+      override def get(key: String): Future[Option[String]] = Future.successful(None)
+      override def put(key: String, value: String): Future[Unit] = ???
+    })
+    val id = UUID.randomUUID()
+
+    // when
+    val result = service.apply(id)
+
+    // then
+    whenReady(result) { _ == StorageNodeReadingResult.NotFound }
+  }
 }
