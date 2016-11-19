@@ -28,4 +28,19 @@ class LocalDataSavingServiceTest extends FlatSpec with Matchers with ScalaFuture
     // then
     whenReady(result) { _ == StorageNodeWritingResult.SuccessfulWrite }
   }
+
+  it should "recover for failed write" in {
+    // given
+    val service = new LocalDataSavingService(new PluggableStorage {
+      override def get(key: String): Future[Option[String]] = ???
+      override def put(key: String, value: String): Future[Unit] = Future.failed(new Exception)
+    })
+    val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
+
+    // when
+    val result = service.apply(data)
+
+    // then
+    whenReady(result) { _ == StorageNodeWritingResult.FailedWrite }
+  }
 }
