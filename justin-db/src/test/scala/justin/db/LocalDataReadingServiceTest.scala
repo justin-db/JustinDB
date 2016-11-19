@@ -43,4 +43,19 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
     // then
     whenReady(result) { _ == StorageNodeReadingResult.NotFound }
   }
+
+  it should "recover failure reading" in {
+    // given
+    val service = new LocalDataReadingService(new PluggableStorage {
+      override def get(key: String): Future[Option[String]] = Future.failed(new Exception)
+      override def put(key: String, value: String): Future[Unit] = ???
+    })
+    val id = UUID.randomUUID()
+
+    // when
+    val result = service.apply(id)
+
+    // then
+    whenReady(result) { _ == StorageNodeReadingResult.FailedRead }
+  }
 }
