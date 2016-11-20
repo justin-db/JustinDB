@@ -16,7 +16,7 @@ class HttpStorageNodeClient(storageNodeActor: StorageNodeActorRef)(implicit ex: 
   implicit val timeout = Timeout(5.seconds) // TODO: tune this value
 
   override def get(id: UUID, r: R): Future[GetValueResponse] = {
-    lazy val errorMsg = s"[Failure] Couldn't read value with id ${id.toString}"
+    lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}"
 
     (storageNodeActor.storageNodeActor ? StorageNodeReadData.Replicated(r, id)).mapTo[StorageNodeReadingResult].map {
       case StorageNodeReadingResult.Found(data) => GetValueResponse.Found(data.value)
@@ -26,7 +26,7 @@ class HttpStorageNodeClient(storageNodeActor: StorageNodeActorRef)(implicit ex: 
   }
 
   override def write(w: W, data: Data): Future[WriteValueResponse] = {
-    lazy val errorMsg = s"[Failure] Couldn't write data: $data"
+    lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't write data: $data"
 
     (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {
       case StorageNodeWritingResult.SuccessfulWrite => WriteValueResponse.Success
