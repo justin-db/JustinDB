@@ -30,6 +30,20 @@ class RemoteDataSavingServiceTest extends TestKit(ActorSystem("test-system"))
     whenReady(writingResult) { _ shouldBe List(StorageNodeWritingResult.SuccessfulWrite, StorageNodeWritingResult.FailedWrite) }
   }
 
+  it should "recover failed behavior of actor" in {
+    // given
+    val service = new RemoteDataSavingService()(system.dispatcher)
+    val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
+    val storageActorRef = testActorRef(new Exception)
+    val storageNodeRefs = List(StorageNodeActorRef(storageActorRef))
+
+    // when
+    val writingResult = service.apply(storageNodeRefs, data)
+
+    // then
+    whenReady(writingResult) { _ shouldBe List(StorageNodeWritingResult.FailedWrite) }
+  }
+
   private def testActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {

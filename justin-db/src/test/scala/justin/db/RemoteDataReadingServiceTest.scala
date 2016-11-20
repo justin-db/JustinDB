@@ -36,6 +36,7 @@ class RemoteDataReadingServiceTest extends TestKit(ActorSystem("test-system"))
     val id = UUID.randomUUID()
     val storageActorRef = testActorRef(new Exception)
     val storageNodeRefs = List(StorageNodeActorRef(storageActorRef))
+
     // when
     val readingResult = service.apply(storageNodeRefs, id)
 
