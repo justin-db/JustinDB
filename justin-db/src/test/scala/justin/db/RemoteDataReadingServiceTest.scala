@@ -30,7 +30,20 @@ class RemoteDataReadingServiceTest extends TestKit(ActorSystem("test-system"))
     whenReady(readingResult) { _ === List(StorageNodeReadingResult.NotFound, StorageNodeReadingResult.Found(Data(id, "value"))) }
   }
 
-  private def testActorRef(msgBack: StorageNodeReadingResult) = {
+  it should "recover failed behavior of actor" in {
+    // given
+    val service = new RemoteDataReadingService()(system.dispatcher)
+    val id = UUID.randomUUID()
+    val storageActorRef = testActorRef(new Exception)
+    val storageNodeRefs = List(StorageNodeActorRef(storageActorRef))
+    // when
+    val readingResult = service.apply(storageNodeRefs, id)
+
+    // then
+    whenReady(readingResult) { _ shouldBe List(StorageNodeReadingResult.FailedRead) }
+  }
+
+  private def testActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
         case StorageNodeReadData.Local(id) => sender() ! msgBack
