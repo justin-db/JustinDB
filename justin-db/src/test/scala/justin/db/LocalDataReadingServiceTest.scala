@@ -26,7 +26,7 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
     val result = service.apply(id)
 
     // then
-    whenReady(result) { _ == StorageNodeReadingResult.Found(Data(id, "value")) }
+    whenReady(result) { _ shouldBe StorageNodeReadingResult.Found(Data(id, "value")) }
   }
 
   it should "not found data for non-existing key" in {
@@ -41,7 +41,7 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
     val result = service.apply(id)
 
     // then
-    whenReady(result) { _ == StorageNodeReadingResult.NotFound }
+    whenReady(result) { _ shouldBe StorageNodeReadingResult.NotFound }
   }
 
   it should "recover failure reading" in {
@@ -56,6 +56,6 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
     val result = service.apply(id)
 
     // then
-    whenReady(result) { _ == StorageNodeReadingResult.FailedRead }
+    whenReady(result) { _ shouldBe StorageNodeReadingResult.FailedRead }
   }
 }

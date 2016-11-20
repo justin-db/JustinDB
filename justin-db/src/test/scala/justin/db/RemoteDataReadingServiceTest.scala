@@ -27,7 +27,7 @@ class RemoteDataReadingServiceTest extends TestKit(ActorSystem("test-system"))
     val readingResult = service.apply(storageNodeRefs, id)
 
     // then
-    whenReady(readingResult) { _ === List(StorageNodeReadingResult.NotFound, StorageNodeReadingResult.Found(Data(id, "value"))) }
+    whenReady(readingResult) { _ shouldBe List(StorageNodeReadingResult.NotFound, StorageNodeReadingResult.Found(Data(id, "value"))) }
   }
 
   it should "recover failed behavior of actor" in {

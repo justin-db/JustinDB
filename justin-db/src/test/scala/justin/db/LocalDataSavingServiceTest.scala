@@ -26,7 +26,7 @@ class LocalDataSavingServiceTest extends FlatSpec with Matchers with ScalaFuture
     val result = service.apply(data)
 
     // then
-    whenReady(result) { _ == StorageNodeWritingResult.SuccessfulWrite }
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite }
   }
 
   it should "recover for failed write" in {
@@ -41,6 +41,6 @@ class LocalDataSavingServiceTest extends FlatSpec with Matchers with ScalaFuture
     val result = service.apply(data)
 
     // then
-    whenReady(result) { _ == StorageNodeWritingResult.FailedWrite }
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.FailedWrite }
   }
 }
