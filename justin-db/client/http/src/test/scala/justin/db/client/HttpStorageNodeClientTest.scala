@@ -60,6 +60,19 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
   }
 
+  it should "recover actor's reading behavior" in {
+    // given
+    val id       = UUID.randomUUID()
+    val actorRef = getTestActorRef(msgBack = new Exception)
+    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+
+    // when
+    val result = client.get(id, R(1))
+
+    // then
+    whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
+  }
+
   /**
     * WRITE part
     */
@@ -109,7 +122,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     TestKit.shutdownActorSystem(system)
   }
 
-  private def getTestActorRef(msgBack: => StorageNodeReadingResult) = {
+  private def getTestActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
         case StorageNodeReadData.Replicated(r, id) => sender() ! msgBack
