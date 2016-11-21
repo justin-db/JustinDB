@@ -77,6 +77,20 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe WriteValueResponse.Success }
   }
 
+  it should "handle actor's FailedWrite message for data saving" in {
+    // given
+    val id       = UUID.randomUUID()
+    val data     = Data(id, "value")
+    val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.FailedWrite)
+    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+
+    // when
+    val result = client.write(W(1), data)
+
+    // then
+    whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't write data: $data") }
+  }
+
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
