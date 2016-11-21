@@ -18,6 +18,9 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
 
   behavior of "HTTP Storage Node Client"
 
+  /**
+    * GET part
+    */
   it should "handle actor's Found message for asked data" in {
     // given
     val id       = UUID.randomUUID()
@@ -56,6 +59,10 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // then
     whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
   }
+
+  /**
+    * WRITE part
+    */
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
