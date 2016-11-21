@@ -44,6 +44,19 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe GetValueResponse.NotFound }
   }
 
+  it should "handle actor's FailedRead message for asked data" in {
+    // given
+    val id       = UUID.randomUUID()
+    val actorRef = readTestActorRef(msgBack = StorageNodeReadingResult.FailedRead)
+    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+
+    // when
+    val result = client.get(id, R(1))
+
+    // then
+    whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
+  }
+
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
