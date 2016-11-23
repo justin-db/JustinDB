@@ -28,7 +28,23 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
+  it should "get NotFound result for specific id and r" in {
+    val value  = "value"
+    val id     = UUID.randomUUID().toString
+    val r      = 1
+    val router = new StorageNodeRouter(notFound(value))
+
+    Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
+      status                       shouldBe StatusCodes.NotFound
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(s"Not found value with id $id"))
+    }
+  }
+
   private def getFound(value: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(value))
+  }
+
+  private def notFound(value: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.NotFound)
   }
 }
