@@ -22,4 +22,8 @@ class CounterTest extends FlatSpec with Matchers {
 
     max shouldBe counter2
   }
+
+  it should "create new Counter with 0 value using zero method from companion object" in {
+    Counter.zero shouldBe Counter(0)
+  }
 }
