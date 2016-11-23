@@ -39,7 +39,7 @@ class VectorClockTest extends FlatSpec with Matchers {
 
     val merged = VectorClock.merge(receiverId, vc1, vc2)
 
-    merged.byKey(id1).get shouldBe Counter(110)
-    merged.byKey(id2).get shouldBe Counter(99)
+    merged.get(id1).get shouldBe Counter(110)
+    merged.get(id2).get shouldBe Counter(99)
   }
 }

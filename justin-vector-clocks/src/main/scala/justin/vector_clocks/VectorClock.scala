@@ -3,7 +3,7 @@ package justin.vector_clocks
 import java.util.UUID
 
 case class VectorClock(private val clock: Map[VectorId, Counter]) {
-  def byKey(id: VectorId): Option[Counter] = clock.get(id)
+  def get(id: VectorId): Option[Counter] = clock.get(id)
 
   def increase(id: VectorId): VectorClock = {
     val searchedCounter = clock.getOrElse(id, Counter.zero)
