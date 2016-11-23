@@ -2,17 +2,6 @@ package justin.vector_clocks
 
 import java.util.UUID
 
-case class VectorId(uuid: UUID) extends AnyVal
-case class Counter(value: Int) extends AnyVal {
-  def addOne: Counter = this.copy(value = value + 1)
-}
-
-object Counter {
-  def max(c1: Counter, c2: Counter): Counter = {
-    Counter(scala.math.max(c1.value, c2.value))
-  }
-}
-
 case class VectorClock(private val clock: Map[VectorId, Counter]) {
   def byKey(id: VectorId): Option[Counter] = clock.get(id)
 }
@@ -43,3 +32,5 @@ object VectorClock {
     VectorClock(mergedClocks + (receiverId -> counter))
   }
 }
+
+case class VectorId(uuid: UUID) extends AnyVal
