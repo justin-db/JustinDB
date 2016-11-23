@@ -8,4 +8,6 @@ object Counter {
   def max(c1: Counter, c2: Counter): Counter = {
     Counter(scala.math.max(c1.value, c2.value))
   }
+
+  def zero: Counter = Counter(0)
 }
