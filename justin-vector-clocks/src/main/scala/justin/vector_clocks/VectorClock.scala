@@ -15,7 +15,7 @@ case class VectorClock(private val clock: Map[VectorId, Counter]) {
 
 object VectorClock {
 
-  def empty(id: UUID): VectorClock = VectorClock(Map(VectorId(id) -> Counter(0)))
+  def empty(id: UUID): VectorClock = VectorClock(Map(VectorId(id) -> Counter.zero))
 
   def merge(receiverId: VectorId, vc1: VectorClock, vc2: VectorClock): VectorClock = {
     val mergedClocks = vc1.clock ++ vc2.clock
