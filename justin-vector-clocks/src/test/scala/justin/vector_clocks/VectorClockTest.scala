@@ -20,7 +20,7 @@ class VectorClockTest extends FlatSpec with Matchers {
     val id = UUID.randomUUID()
     val vc = VectorClock.empty(id)
 
-    val increased = VectorClock.increase(vc, VectorId(id))
+    val increased = vc.increase(VectorId(id))
 
     increased shouldBe VectorClock(Map(VectorId(id) -> Counter(1)))
   }
