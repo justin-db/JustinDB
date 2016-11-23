@@ -83,7 +83,22 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
+  it should "get BadRequest result for unsuccessfully written data" in {
+    val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
+    val error    = "unsuccessfully written data"
+    val router   = new StorageNodeRouter(unsuccessfulWrite(error))
+
+    Post("/put", putValue) ~> Route.seal(router.routes) ~> check {
+      status                       shouldBe StatusCodes.BadRequest
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(error))
+    }
+  }
+
   private def successfulWrite(putValue: PutValue) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
     override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success)
+  }
+
+  private def unsuccessfulWrite(error: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+    override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Failure(error))
   }
 }
