@@ -2,4 +2,6 @@ package justin.db
 
 import java.util.UUID
 
-case class Data(id: UUID, value: String)
+import justin.vector_clocks.VectorClock
+
+case class Data(id: UUID, value: String, vclock: VectorClock)
