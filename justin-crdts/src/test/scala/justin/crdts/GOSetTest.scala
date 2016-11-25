@@ -29,4 +29,16 @@ class GOSetTest extends FlatSpec with Matchers {
     // then
     updated shouldBe GOSet(Set(1,2,3,4))
   }
+
+  it should "merge properly with other" in {
+    // given
+    val base  = GOSet(Set(1,2,3))
+    val other = GOSet(Set(2,3,4))
+
+    // when
+    val merged = base.merge(other)
+
+    // then
+    merged shouldBe GOSet(Set(1,2,3,4))
+  }
 }
