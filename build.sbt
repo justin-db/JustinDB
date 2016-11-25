@@ -68,3 +68,9 @@ lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.vectorClocks
 )
+
+lazy val crdts = (project in file("justin-crdts")).settings(
+  name := "justin-crdts",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.crdts
+)
