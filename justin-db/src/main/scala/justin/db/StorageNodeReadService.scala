@@ -41,8 +41,8 @@ class StorageNodeReadService(nodeId: NodeId, clusterMembers: ClusterMembers,
     lazy val getRemoteReads = remoteReading.apply(remoteTargets, id)
     lazy val getLocalRead   = localReading.apply(id)
 
-    localTargetOpt.fold(getRemoteReads)(_ => getLocalRead zip getRemoteReads map ::)
+    localTargetOpt.fold(getRemoteReads)(_ => getLocalRead zip getRemoteReads map converge)
   }
 
-  private def ::(result: (StorageNodeReadingResult, List[StorageNodeReadingResult])) = result._1 :: result._2
+  private def converge(result: (StorageNodeReadingResult, List[StorageNodeReadingResult])) = result._1 :: result._2
 }
