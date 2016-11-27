@@ -15,6 +15,6 @@ class UUID2RingPartitionIdTest extends FlatSpec with Matchers {
 
     val expectedPartitionId = scala.math.abs(uidHashCode) % ring.size
 
-    new UUID2RingPartitionId(ring).apply(uid) shouldBe expectedPartitionId
+    UUID2RingPartitionId.apply(uid, ring) shouldBe expectedPartitionId
   }
 }

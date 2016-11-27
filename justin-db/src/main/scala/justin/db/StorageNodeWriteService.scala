@@ -1,5 +1,7 @@
 package justin.db
 
+import java.util.UUID
+
 import justin.db.StorageNodeActorProtocol._
 import justin.db.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.replication.{N, PreferenceList}
@@ -18,7 +20,7 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
     case StorageNodeWriteData.Local(data)        => localSaving.apply(data)
     case StorageNodeWriteData.Replicate(w, data) =>
       for {
-        preferenceList <- Future.successful(buildPreferenceList(data))
+        preferenceList <- Future.successful(buildPreferenceList(data.id))
         localTarget     = buildLocalTargetOpt(preferenceList)
         remoteTargets   = buildRemoteTargets(preferenceList)
         allWrites      <- writeToTargets(data, localTarget, remoteTargets)
@@ -31,8 +33,8 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
       }
   }
 
-  private def buildPreferenceList(data: Data) = {
-    val basePartitionId = new UUID2RingPartitionId(ring).apply(data.id)
+  private def buildPreferenceList(id: UUID) = {
+    val basePartitionId = UUID2RingPartitionId.apply(id, ring)
     PreferenceList(basePartitionId, n, ring)
   }
 

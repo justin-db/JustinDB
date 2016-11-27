@@ -37,7 +37,7 @@ class StorageNodeReadService(nodeId: NodeId, clusterMembers: ClusterMembers,
   }
 
   private def buildPreferenceList(id: UUID) = {
-    val basePartitionId = new UUID2RingPartitionId(ring).apply(id)
+    val basePartitionId = UUID2RingPartitionId.apply(id, ring)
     PreferenceList(basePartitionId, n, ring)
   }
 
