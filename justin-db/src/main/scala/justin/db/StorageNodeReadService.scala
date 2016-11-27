@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.db.StorageNodeActorProtocol._
 import justin.db.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
-import justin.db.replication.{N, PreferenceList}
+import justin.db.replication.{N, PreferenceList, R}
 import justin.db.storage.PluggableStorage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,17 +21,18 @@ class StorageNodeReadService(nodeId: NodeId, clusterMembers: ClusterMembers,
     case StorageNodeReadData.Replicated(r, id) =>
       val ringPartitionId = UUID2RingPartitionId.apply(id, ring)
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
+      readFromTargets(id, preferenceList).map(sumUpReads(r))
+  }
 
-      readFromTargets(id, preferenceList).map { allReads =>
-        val onlyFoundReads  = allReads.collect { case r: StorageNodeReadingResult.Found => r }
-        val onlyFailedReads = allReads.forall(_ == StorageNodeReadingResult.FailedRead)
+  private def sumUpReads(r: R)(reads: List[StorageNodeReadingResult]) = {
+    val onlyFoundReads  = reads.collect { case r: StorageNodeReadingResult.Found => r }
+    val onlyFailedReads = reads.forall(_ == StorageNodeReadingResult.FailedRead)
 
-        (onlyFoundReads.size >= r.r, onlyFoundReads.headOption, onlyFailedReads) match {
-          case (true, Some(exemplary), _) => exemplary
-          case (_, _, true)               => StorageNodeReadingResult.FailedRead
-          case _                          => StorageNodeReadingResult.NotFound
-        }
-      }
+    (onlyFoundReads.size >= r.r, onlyFoundReads.headOption, onlyFailedReads) match {
+      case (true, Some(exemplary), _) => exemplary
+      case (_, _, true)               => StorageNodeReadingResult.FailedRead
+      case _                          => StorageNodeReadingResult.NotFound
+    }
   }
 
   private def readFromTargets(id: UUID, preferenceList: List[NodeId]) = {
