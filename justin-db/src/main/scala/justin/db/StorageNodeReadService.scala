@@ -19,12 +19,10 @@ class StorageNodeReadService(nodeId: NodeId, clusterMembers: ClusterMembers,
   override def apply(cmd: StorageNodeReadData): Future[StorageNodeReadingResult] = cmd match {
     case StorageNodeReadData.Local(id)         => localReading.apply(id)
     case StorageNodeReadData.Replicated(r, id) =>
-      for {
-        preferenceList <- Future.successful(buildPreferenceList(id))
-        localTarget     = buildLocalTargetOpt(preferenceList)
-        remoteTargets   = buildRemoteTargets(preferenceList)
-        allReads       <- readFromTargets(id, localTarget, remoteTargets)
-      } yield {
+      val ringPartitionId = UUID2RingPartitionId.apply(id, ring)
+      val preferenceList  = PreferenceList(ringPartitionId, n, ring)
+
+      readFromTargets(id, preferenceList).map { allReads =>
         val onlyFoundReads  = allReads.collect { case r: StorageNodeReadingResult.Found => r }
         val onlyFailedReads = allReads.forall(_ == StorageNodeReadingResult.FailedRead)
 
@@ -36,25 +34,15 @@ class StorageNodeReadService(nodeId: NodeId, clusterMembers: ClusterMembers,
       }
   }
 
-  private def buildPreferenceList(id: UUID) = {
-    val basePartitionId = UUID2RingPartitionId.apply(id, ring)
-    PreferenceList(basePartitionId, n, ring)
+  private def readFromTargets(id: UUID, preferenceList: List[NodeId]) = {
+    val localTargetOpt = preferenceList.find(_ == nodeId)
+    val remoteTargets  = preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
+
+    lazy val getRemoteReads = remoteReading.apply(remoteTargets, id)
+    lazy val getLocalRead   = localReading.apply(id)
+
+    localTargetOpt.fold(getRemoteReads)(_ => getLocalRead zip getRemoteReads map ::)
   }
 
-  private def buildLocalTargetOpt(preferenceList: List[NodeId]) = {
-    preferenceList.find(_ == nodeId)
-  }
-
-  private def buildRemoteTargets(preferenceList: List[NodeId]) = {
-    preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
-  }
-
-  private def readFromTargets(id: UUID, localTargetOpt: Option[NodeId], remoteTargets: List[StorageNodeActorRef]) = {
-    lazy val remoteReads = remoteReading.apply(remoteTargets, id)
-    lazy val localRead   = localReading.apply(id)
-
-    localTargetOpt.fold(remoteReads) { _ =>
-      localRead.zip(remoteReads).map { case (lReadResult, rReadResults) => lReadResult :: rReadResults }
-    }
-  }
+  private def ::(result: (StorageNodeReadingResult, List[StorageNodeReadingResult])) = result._1 :: result._2
 }
