@@ -10,8 +10,6 @@ import justin.db.storage.PluggableStorage
 
 import scala.concurrent.ExecutionContext
 
-case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
-
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext) extends Actor {
 
   val cluster = Cluster(context.system)
