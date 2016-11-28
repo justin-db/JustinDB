@@ -1,3 +1,3 @@
-package justin.db.consistent_hashing
+package justin.consistent_hashing
 
 case class NodeId(id: Int) extends AnyVal

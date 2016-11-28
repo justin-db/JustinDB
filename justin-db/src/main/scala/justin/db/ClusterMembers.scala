@@ -1,6 +1,6 @@
 package justin.db
 
-import justin.db.consistent_hashing.NodeId
+import justin.consistent_hashing.NodeId
 
 case class ClusterMembers(private val members: Map[NodeId, StorageNodeActorRef]) {
 

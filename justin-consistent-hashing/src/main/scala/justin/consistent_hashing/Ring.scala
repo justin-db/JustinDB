@@ -1,6 +1,6 @@
-package justin.db.consistent_hashing
+package justin.consistent_hashing
 
-import Ring.RingPartitionId
+import justin.consistent_hashing.Ring.RingPartitionId
 
 class Ring(private val ring: Map[RingPartitionId, NodeId]) {
 

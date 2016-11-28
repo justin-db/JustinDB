@@ -2,7 +2,7 @@ package justin.db
 
 import java.util.UUID
 
-import justin.db.consistent_hashing.NodeId
+import justin.consistent_hashing.NodeId
 import justin.db.replication.{R, W}
 
 object StorageNodeActorProtocol {

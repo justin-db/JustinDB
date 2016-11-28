@@ -58,4 +58,6 @@ object Dependencies {
   val vectorClocks = genericTest
 
   val crdts = genericTest
+
+  val consistenHashing = genericTest
 }

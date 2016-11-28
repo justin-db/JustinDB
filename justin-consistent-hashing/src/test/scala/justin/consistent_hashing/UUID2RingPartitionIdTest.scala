@@ -1,4 +1,4 @@
-package justin.db.consistent_hashing
+package justin.consistent_hashing
 
 import java.util.UUID
 

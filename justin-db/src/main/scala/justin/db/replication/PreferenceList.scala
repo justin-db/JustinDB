@@ -1,7 +1,7 @@
 package justin.db.replication
 
-import justin.db.consistent_hashing.Ring.RingPartitionId
-import justin.db.consistent_hashing.{NodeId, Ring}
+import justin.consistent_hashing.Ring.RingPartitionId
+import justin.consistent_hashing.{NodeId, Ring}
 
 object PreferenceList {
   def apply(baseId: RingPartitionId, n: N, ring: Ring): List[NodeId] = {
