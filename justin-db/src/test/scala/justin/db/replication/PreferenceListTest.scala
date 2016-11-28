@@ -1,6 +1,6 @@
 package justin.db.replication
 
-import justin.db.consistent_hashing.Ring
+import justin.db.consistent_hashing.{NodeId, Ring}
 import org.scalatest.{FlatSpec, Matchers}
 
 class PreferenceListTest extends FlatSpec with Matchers {
@@ -45,5 +45,18 @@ class PreferenceListTest extends FlatSpec with Matchers {
     // then
     preferenceList.size shouldBe 1
     preferenceList.head shouldBe ring.getNodeId(initialPartitionId).get
+  }
+
+  it should "check that selected nodes ids are continuous" in {
+    // given
+    val n = N(3) // nr of replicas
+    val ring = Ring(nodesSize = 5, partitionsSize = 64)
+    val initialPartitionId = 1
+
+    // when
+    val preferenceList = PreferenceList.apply(initialPartitionId, n, ring)
+
+    // then
+    preferenceList shouldBe List(NodeId(1), NodeId(2), NodeId(3))
   }
 }
