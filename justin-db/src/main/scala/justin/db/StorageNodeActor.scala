@@ -43,7 +43,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
   private def readData(sender: ActorRef, clusterMembers: ClusterMembers, readCmd: StorageNodeReadData) = {
     def sendBack(msg: StorageNodeReadingResult) = sender ! msg
 
-    new StorageNodeReadService(nodeId, clusterMembers, ring, n, storage)
+    new StorageNodeReadService(nodeId, clusterMembers, ring, n, new LocalDataReadingService(storage), new RemoteDataReadingService)
       .apply(readCmd)
       .foreach(sendBack)
   }
