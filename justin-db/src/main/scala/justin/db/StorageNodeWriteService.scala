@@ -5,19 +5,16 @@ import java.util.UUID
 import justin.db.StorageNodeActorProtocol._
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.replication.{N, PreferenceList}
-import justin.db.storage.PluggableStorage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
-                              ring: Ring, n: N, storage: PluggableStorage)(implicit ec: ExecutionContext)
+class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
+                              localDataSaver: LocalDataSavingService,
+                              remoteDataSaver: RemoteDataSavingService)(implicit ec: ExecutionContext)
   extends (StorageNodeWriteData => Future[StorageNodeWritingResult]) {
 
-  private val localSaving  = new LocalDataSavingService(storage)
-  private val remoteSaving = new RemoteDataSavingService()
-
   override def apply(cmd: StorageNodeWriteData): Future[StorageNodeWritingResult] = cmd match {
-    case StorageNodeWriteData.Local(data)        => localSaving.apply(data)
+    case StorageNodeWriteData.Local(data)        => localDataSaver.apply(data)
     case StorageNodeWriteData.Replicate(w, data) =>
       for {
         preferenceList <- Future.successful(buildPreferenceList(data.id))
@@ -47,8 +44,8 @@ class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers,
   }
 
   private def writeToTargets(data: Data, localTargetOpt: Option[NodeId], remoteTargets: List[StorageNodeActorRef]) = {
-    lazy val remoteSaves = remoteSaving.apply(remoteTargets, data)
-    lazy val localSave   = localSaving.apply(data)
+    lazy val remoteSaves = remoteDataSaver.apply(remoteTargets, data)
+    lazy val localSave   = localDataSaver.apply(data)
 
     localTargetOpt.fold(remoteSaves) { _ =>
       localSave.zip(remoteSaves).map { case (lSaveResult, rSaveResults) => lSaveResult :: rSaveResults }
