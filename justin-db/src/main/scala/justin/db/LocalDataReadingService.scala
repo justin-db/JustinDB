@@ -9,8 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class LocalDataReadingService(storage: PluggableStorage)(implicit ec: ExecutionContext) {
   def apply(id: UUID): Future[StorageNodeReadingResult] = {
-    storage.get(id.toString).map {
-      case Some(value) => StorageNodeReadingResult.Found(Data(id, value))
+    storage.get(id).map {
+      case Some(data) => StorageNodeReadingResult.Found(data)
       case None        => StorageNodeReadingResult.NotFound
     }.recover {
       case _           => StorageNodeReadingResult.FailedRead

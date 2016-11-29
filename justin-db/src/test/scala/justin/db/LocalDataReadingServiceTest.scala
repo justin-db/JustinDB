@@ -16,11 +16,11 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
 
   it should "found data for existing key" in {
     // given
-    val service = new LocalDataReadingService(new PluggableStorage {
-      override def get(key: String): Future[Option[String]] = Future.successful(Option("value"))
-      override def put(key: String, value: String): Future[Unit] = ???
-    })
     val id = UUID.randomUUID()
+    val service = new LocalDataReadingService(new PluggableStorage {
+      override def get(id: UUID): Future[Option[Data]] = Future.successful(Option(Data(id, "value")))
+      override def put(data: Data): Future[Unit] = ???
+    })
 
     // when
     val result = service.apply(id)
@@ -31,11 +31,11 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
 
   it should "not found data for non-existing key" in {
     // given
-    val service = new LocalDataReadingService(new PluggableStorage {
-      override def get(key: String): Future[Option[String]] = Future.successful(None)
-      override def put(key: String, value: String): Future[Unit] = ???
-    })
     val id = UUID.randomUUID()
+    val service = new LocalDataReadingService(new PluggableStorage {
+      override def get(id: UUID): Future[Option[Data]] = Future.successful(None)
+      override def put(data: Data): Future[Unit] = ???
+    })
 
     // when
     val result = service.apply(id)
@@ -46,11 +46,11 @@ class LocalDataReadingServiceTest extends FlatSpec with Matchers with ScalaFutur
 
   it should "recover failure reading" in {
     // given
-    val service = new LocalDataReadingService(new PluggableStorage {
-      override def get(key: String): Future[Option[String]] = Future.failed(new Exception)
-      override def put(key: String, value: String): Future[Unit] = ???
-    })
     val id = UUID.randomUUID()
+    val service = new LocalDataReadingService(new PluggableStorage {
+      override def get(id: UUID): Future[Option[Data]] = Future.failed(new Exception)
+      override def put(data: Data): Future[Unit] = ???
+    })
 
     // when
     val result = service.apply(id)
