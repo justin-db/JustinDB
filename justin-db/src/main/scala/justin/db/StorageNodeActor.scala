@@ -51,7 +51,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n:
   private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
     def sendBack(msg: StorageNodeWritingResult) = sender ! msg
 
-    new StorageNodeWriteService(nodeId, clusterMembers, ring, n, new LocalDataSavingService(storage), new RemoteDataSavingService)
+    new StorageNodeWriteService(nodeId, clusterMembers, ring, n, new LocalDataSavingService(storage), new RemoteDataWritingService)
       .apply(writeCmd)
       .foreach(sendBack)
   }

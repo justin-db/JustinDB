@@ -11,9 +11,9 @@ class LocalDataReadingService(storage: PluggableStorage)(implicit ec: ExecutionC
   def apply(id: UUID): Future[StorageNodeReadingResult] = {
     storage.get(id).map {
       case Some(data) => StorageNodeReadingResult.Found(data)
-      case None        => StorageNodeReadingResult.NotFound
+      case None       => StorageNodeReadingResult.NotFound
     }.recover {
-      case _           => StorageNodeReadingResult.FailedRead
+      case _          => StorageNodeReadingResult.FailedRead
     }
   }
 }
