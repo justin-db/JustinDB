@@ -7,7 +7,7 @@ import justin.db.replication.{N, PreferenceList, W}
 import scala.concurrent.{ExecutionContext, Future}
 
 class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
-                              localDataWriter: LocalDataSavingService,
+                              localDataWriter: LocalDataWritingService,
                               remoteDataWriter: RemoteDataWritingService)(implicit ec: ExecutionContext)
   extends (StorageNodeWriteData => Future[StorageNodeWritingResult]) {
 

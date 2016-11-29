@@ -5,7 +5,7 @@ import justin.db.storage.PluggableStorage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class LocalDataSavingService(storage: PluggableStorage)(implicit ec: ExecutionContext) {
+class LocalDataWritingService(storage: PluggableStorage)(implicit ec: ExecutionContext) {
   def apply(data: Data): Future[StorageNodeWritingResult] = {
     storage.put(data)
       .map(_ => StorageNodeWritingResult.SuccessfulWrite)
