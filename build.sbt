@@ -35,7 +35,7 @@ lazy val core = (project in file("justin-db"))
     }
   )
   .configs (MultiJvm)
-  .dependsOn(merkleTrees, vectorClocks, consistentHashing)
+  .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts)
 
 lazy val httpClient = (project in file("justin-db/client/http")).settings(
   name := "justin-db-client-http",
