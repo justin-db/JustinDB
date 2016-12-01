@@ -42,4 +42,10 @@ class VectorClockTest extends FlatSpec with Matchers {
     merged.get(id1).get shouldBe Counter(110)
     merged.get(id2).get shouldBe Counter(99)
   }
+
+  it should "init an empty Vector Clock" in {
+    val vc = VectorClock.apply()
+
+    vc shouldBe VectorClock(Map.empty[VectorId, Counter])
+  }
 }
