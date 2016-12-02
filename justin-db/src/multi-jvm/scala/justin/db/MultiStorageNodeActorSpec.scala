@@ -8,9 +8,6 @@ object MultiStorageNodeActorConfig extends MultiNodeConfig {
   val node2 = role("node2")
 }
 
-class MultiStorageNodeActorMultiJvmNode1 extends MultiStorageNodeActorSpec
-class MultiStorageNodeActorMultiJvmNode2 extends MultiStorageNodeActorSpec
-
 class MultiStorageNodeActorSpec extends MultiNodeSpec(MultiStorageNodeActorConfig)
   with STMultiNodeSpec
   with ImplicitSender {

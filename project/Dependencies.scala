@@ -1,11 +1,11 @@
 import sbt._
 
 object Version {
-  val scala       = "2.11.8"
+  val scala       = "2.12.0"
   val scalaBinary = scala.substring(0,4)
 
-  val akka        = "2.4.12"
-  val akkaHttp    = "3.0.0-RC1"
+  val akka        = "2.4.14"
+  val akkaHttp    = "10.0.0"
   val scalatest   = "3.0.1"
   val scalacheck  = "1.13.4"
   val sigarLoader = "1.6.6"
