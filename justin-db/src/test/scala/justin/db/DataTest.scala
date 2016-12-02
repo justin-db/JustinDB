@@ -26,4 +26,20 @@ class DataTest extends FlatSpec with Matchers {
     )
     updatedData shouldBe Data(data.id, data.value, expectedVclock)
   }
+
+  it should "increase vector clock's counter of repeated nodeId" in {
+    // given
+    val preferenceList = List(NodeId(1), NodeId(1), NodeId(1))
+
+    val data = Data(id = UUID.randomUUID(), value = "some value")
+
+    // when
+    val updatedData = Data.updateVclock(data, preferenceList)
+
+    // then
+    val expectedVclock = VectorClock[NodeId](Map(
+      NodeId(1) -> Counter(3)
+    ))
+    updatedData shouldBe Data(data.id, data.value, expectedVclock)
+  }
 }
