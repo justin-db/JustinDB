@@ -10,13 +10,13 @@ import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LocalDataWritingServiceTest extends FlatSpec with Matchers with ScalaFutures {
+class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Local Data Saving Service"
 
   it should "successfully write data" in {
     // given
-    val service = new LocalDataWritingService(new PluggableStorage {
+    val service = new LocalDataWriter(new PluggableStorage {
       override def get(id: UUID): Future[Option[Data]] = ???
       override def put(data: Data): Future[Unit] = Future.successful(())
     })
@@ -31,7 +31,7 @@ class LocalDataWritingServiceTest extends FlatSpec with Matchers with ScalaFutur
 
   it should "recover for failed write" in {
     // given
-    val service = new LocalDataWritingService(new PluggableStorage {
+    val service = new LocalDataWriter(new PluggableStorage {
       override def get(id: UUID): Future[Option[Data]] = ???
       override def put(data: Data): Future[Unit] = Future.failed(new Exception)
     })
