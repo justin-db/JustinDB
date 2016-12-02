@@ -2,7 +2,17 @@ package justin.db
 
 import java.util.UUID
 
+import justin.consistent_hashing.NodeId
 import justin.db.versioning.DataVersioning.NodeIdVectorClock
 import justin.vector_clocks.VectorClock
 
 case class Data(id: UUID, value: String, vclock: NodeIdVectorClock = VectorClock())
+
+object Data {
+
+  def updateVclock(data: Data, preferenceList: List[NodeId]): Data = {
+    val updatedVclock = preferenceList.foldLeft(data.vclock) { (vclock, nodeId) => vclock.increase(nodeId) }
+    data.copy(vclock = updatedVclock)
+  }
+
+}
