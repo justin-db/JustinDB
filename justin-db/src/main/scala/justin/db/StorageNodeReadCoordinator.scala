@@ -8,9 +8,9 @@ import justin.db.replication.{N, PreferenceList, R}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class StorageNodeReadService(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
-                             localDataReader: LocalDataReader,
-                             remoteDataReader: RemoteDataReader)(implicit ec: ExecutionContext)
+class StorageNodeReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
+                                 localDataReader: LocalDataReader,
+                                 remoteDataReader: RemoteDataReader)(implicit ec: ExecutionContext)
   extends (StorageNodeReadData => Future[StorageNodeReadingResult]) {
 
   override def apply(cmd: StorageNodeReadData): Future[StorageNodeReadingResult] = cmd match {
