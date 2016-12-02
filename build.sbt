@@ -1,6 +1,8 @@
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
+addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
+
 fork in run := true
 
 // Force building with Java 8
