@@ -6,7 +6,7 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoteDataWritingService(implicit ec: ExecutionContext) {
+class RemoteDataWriter(implicit ec: ExecutionContext) {
 
   private implicit val timeout = Timeout(3.seconds) // TODO: tune this value
 

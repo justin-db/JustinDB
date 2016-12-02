@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class StorageNodeWriteService(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
                               localDataWriter: LocalDataWritingService,
-                              remoteDataWriter: RemoteDataWritingService)(implicit ec: ExecutionContext)
+                              remoteDataWriter: RemoteDataWriter)(implicit ec: ExecutionContext)
   extends (StorageNodeWriteData => Future[StorageNodeWritingResult]) {
 
   override def apply(cmd: StorageNodeWriteData): Future[StorageNodeWritingResult] = cmd match {
