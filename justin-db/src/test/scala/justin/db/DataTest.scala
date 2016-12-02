@@ -12,8 +12,8 @@ class DataTest extends FlatSpec with Matchers {
 
   it should "update its empty inner Vector Clock based on preference list" in {
     // given
+    val data           = Data(id = UUID.randomUUID(), value = "some value")
     val preferenceList = List(NodeId(1), NodeId(5), NodeId(8))
-    val data = Data(id = UUID.randomUUID(), value = "some value")
 
     // when
     val updatedData = Data.updateVclock(data, preferenceList)
@@ -27,11 +27,10 @@ class DataTest extends FlatSpec with Matchers {
     updatedData shouldBe Data(data.id, data.value, expectedVclock)
   }
 
-  it should "increase vector clock's counter of repeated nodeId" in {
+  it should "increase vector clock's counter of repeated nodeId when updating data" in {
     // given
+    val data           = Data(id = UUID.randomUUID(), value = "some value")
     val preferenceList = List(NodeId(1), NodeId(1), NodeId(1))
-
-    val data = Data(id = UUID.randomUUID(), value = "some value")
 
     // when
     val updatedData = Data.updateVclock(data, preferenceList)
@@ -40,6 +39,24 @@ class DataTest extends FlatSpec with Matchers {
     val expectedVclock = VectorClock[NodeId](Map(
       NodeId(1) -> Counter(3)
     ))
+    updatedData shouldBe Data(data.id, data.value, expectedVclock)
+  }
+
+  it should "increase already existed vector clock's counter when updating data" in {
+    // given
+    val initVClock     = VectorClock[NodeId](Map(NodeId(1) -> Counter(3)))
+    val data = Data(id = UUID.randomUUID(), value = "some value", initVClock)
+    val preferenceList = List(NodeId(1), NodeId(5), NodeId(8))
+
+    // when
+    val updatedData = Data.updateVclock(data, preferenceList)
+
+    // then
+    val expectedVclock = VectorClock[NodeId](Map(
+      NodeId(1) -> Counter(4),
+      NodeId(5) -> Counter(1),
+      NodeId(8) -> Counter(1))
+    )
     updatedData shouldBe Data(data.id, data.value, expectedVclock)
   }
 }
