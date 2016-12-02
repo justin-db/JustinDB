@@ -16,7 +16,9 @@ class StorageNodeWriteCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers
     case StorageNodeWriteData.Replicate(w, data) =>
       val ringPartitionId = UUID2RingPartitionId.apply(data.id, ring)
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
-      writeToTargets(data, preferenceList).map(sumUpWrites(w))
+      val updatedData     = Data.updateVclock(data, preferenceList)
+
+      writeToTargets(updatedData, preferenceList).map(sumUpWrites(w))
   }
 
   private def sumUpWrites(w: W)(writes: List[StorageNodeWritingResult]) = {
