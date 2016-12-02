@@ -3,13 +3,13 @@ language: scala
 sudo: false
 
 scala:
-  - 2.11.8
+  - 2.12.0
 jdk:
   - oraclejdk8
 
 env:
   global:
-    - MAIN_SCALA_VERSION=2.11.8
+    - MAIN_SCALA_VERSION=2.12.0
 
 script:
   - project/travis-build.sh
