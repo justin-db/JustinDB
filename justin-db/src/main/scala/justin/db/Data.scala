@@ -11,8 +11,7 @@ case class Data(id: UUID, value: String, vclock: NodeIdVectorClock = VectorClock
 object Data {
 
   def updateVclock(data: Data, preferenceList: List[NodeId]): Data = {
-    val updatedVclock = preferenceList.foldLeft(data.vclock) { (vclock, nodeId) => vclock.increase(nodeId) }
+    val updatedVclock = preferenceList.foldLeft(data.vclock)(_ increase _)
     data.copy(vclock = updatedVclock)
   }
-
 }
