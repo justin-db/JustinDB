@@ -7,6 +7,8 @@
 
 **Distributed Key-Value Storage built on top of Scala/Akka**
 
+JustinDB KV is an eventually consistent key-value database that favours write availability.
+
 ### Why akka
 Its a toolkit and runtime for building highly concurrent applications which comes
 with ideas that have been around from some time - actor model.
