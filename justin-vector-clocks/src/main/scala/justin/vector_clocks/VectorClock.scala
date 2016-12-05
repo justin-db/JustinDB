@@ -9,6 +9,8 @@ case class VectorClock[Id](private val clock: Map[Id, Counter]) {
 
     VectorClock(clock + (id -> updatedCounter))
   }
+
+  def toList: List[(Id, Counter)] = clock.toList
 }
 
 object VectorClock {
