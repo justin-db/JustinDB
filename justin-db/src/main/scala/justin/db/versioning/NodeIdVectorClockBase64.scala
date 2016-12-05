@@ -22,4 +22,13 @@ class NodeIdVectorClockBase64 {
 
     Base64.getEncoder.encodeToString(vcClockBytes)
   }
+
+  def encode(base64: String): Try[NodeIdVectorClock] = Try {
+    val decodedMap = new String(Base64.getDecoder.decode(base64), StandardCharsets.UTF_8)
+      .parseJson.convertTo[List[(String, Int)]]
+      .map { case (k, v) => (NodeId(k.toInt), Counter(v))}
+      .toMap
+
+    VectorClock.apply(decodedMap)
+  }
 }
