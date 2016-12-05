@@ -1,5 +1,7 @@
 package justin.db.versioning
 
+import java.nio.charset.StandardCharsets
+
 import justin.consistent_hashing.NodeId
 import justin.db.versioning.DataVersioning.NodeIdVectorClock
 import justin.vector_clocks.{Counter, VectorClock}
@@ -21,5 +23,9 @@ class NodeIdVectorClockBase64Test extends FlatSpec with Matchers {
 
     // then
     decoded shouldBe initVClock
+  }
+
+  it should "use UTF_8 charset when encoding/decoding" in {
+    NodeIdVectorClockBase64.charset shouldBe StandardCharsets.UTF_8
   }
 }
