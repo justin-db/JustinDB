@@ -13,7 +13,7 @@ import scala.util.Try
 
 class NodeIdVectorClockBase64 {
 
-  def decode(vclock: NodeIdVectorClock): Try[String] = Try {
+  def encode(vclock: NodeIdVectorClock): Try[String] = Try {
     val vcClockBytes = vclock.toList
       .map { case (nodeId, counter) => (nodeId.id.toString, counter.value) }
       .toJson
@@ -23,7 +23,7 @@ class NodeIdVectorClockBase64 {
     Base64.getEncoder.encodeToString(vcClockBytes)
   }
 
-  def encode(base64: String): Try[NodeIdVectorClock] = Try {
+  def decode(base64: String): Try[NodeIdVectorClock] = Try {
     val decodedMap = new String(Base64.getDecoder.decode(base64), StandardCharsets.UTF_8)
       .parseJson.convertTo[List[(String, Int)]]
       .map { case (k, v) => (NodeId(k.toInt), Counter(v))}
