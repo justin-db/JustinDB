@@ -8,9 +8,9 @@ import scala.concurrent.Future
 
 sealed trait StorageGetData
 object StorageGetData {
-  case class Single(data: Data)     extends StorageGetData
-  case class Conflicted(data: Data) extends StorageGetData
-  case object None                  extends StorageGetData
+  case class Single(data: Data)                   extends StorageGetData
+  case class Conflicted(data1: Data, data2: Data) extends StorageGetData
+  case object None                                extends StorageGetData
 }
 
 trait PluggableStorage {
