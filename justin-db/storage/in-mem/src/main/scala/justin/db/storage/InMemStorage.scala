@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * NOT THREAD-SAFE!
   */
-class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorage {
+class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
   import scala.collection.mutable
 
   private case class MapVal(data1: Data, data2: Option[Data])

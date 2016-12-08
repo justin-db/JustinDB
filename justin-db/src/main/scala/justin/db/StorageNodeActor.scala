@@ -6,11 +6,11 @@ import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import justin.db.StorageNodeActorProtocol._
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.replication.N
-import justin.db.storage.PluggableStorage
+import justin.db.storage.PluggableStorageProtocol
 
 import scala.concurrent.ExecutionContext
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext) extends Actor {
+class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N)(implicit ec: ExecutionContext) extends Actor {
 
   val cluster = Cluster(context.system)
 
@@ -73,7 +73,7 @@ object StorageNodeActor {
 
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
 
-  def props(nodeId: NodeId, storage: PluggableStorage, ring: Ring, n: N)(implicit ec: ExecutionContext): Props = {
+  def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N)(implicit ec: ExecutionContext): Props = {
     Props(new StorageNodeActor(nodeId, storage, ring, n))
   }
 }

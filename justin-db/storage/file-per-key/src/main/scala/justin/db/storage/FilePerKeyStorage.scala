@@ -7,7 +7,7 @@ import justin.db.Data
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FilePerKeyStorage(implicit ec: ExecutionContext) extends PluggableStorage {
+class FilePerKeyStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
   override def get(id: UUID): Future[StorageGetData] = ???
   override def put(data: Data): Future[Unit] = ???
 }

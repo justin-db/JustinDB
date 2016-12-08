@@ -3,7 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.db.StorageNodeActorProtocol.StorageNodeWritingResult
-import justin.db.storage.PluggableStorage
+import justin.db.storage.PluggableStorageProtocol
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -16,7 +16,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   it should "successfully write data" in {
     // given
-    val service = new LocalDataWriter(new PluggableStorage {
+    val service = new LocalDataWriter(new PluggableStorageProtocol {
       override def get(id: UUID): Future[Option[Data]] = ???
       override def put(data: Data): Future[Unit] = Future.successful(())
     })
@@ -31,7 +31,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   it should "recover for failed write" in {
     // given
-    val service = new LocalDataWriter(new PluggableStorage {
+    val service = new LocalDataWriter(new PluggableStorageProtocol {
       override def get(id: UUID): Future[Option[Data]] = ???
       override def put(data: Data): Future[Unit] = Future.failed(new Exception)
     })

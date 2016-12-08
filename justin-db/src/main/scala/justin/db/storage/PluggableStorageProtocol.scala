@@ -13,7 +13,7 @@ object StorageGetData {
   case object None                                extends StorageGetData
 }
 
-trait PluggableStorage {
+trait PluggableStorageProtocol {
   def get(id: UUID): Future[StorageGetData]
   def put(data: Data): Future[Unit]
 }

@@ -1,11 +1,11 @@
 package justin.db
 
 import justin.db.StorageNodeActorProtocol._
-import justin.db.storage.{PluggableStorage, StorageGetData}
+import justin.db.storage.{PluggableStorageProtocol, StorageGetData}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class LocalDataWriter(storage: PluggableStorage)(implicit ec: ExecutionContext) {
+class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
   def apply(data: Data): Future[StorageNodeWritingResult] = {
     storage.get(data.id).flatMap {
       case StorageGetData.None             => storage.put(data).map(_ => StorageNodeWritingResult.SuccessfulWrite)
