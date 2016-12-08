@@ -11,6 +11,8 @@ case class VectorClock[Id](private val clock: Map[Id, Counter]) {
   }
 
   def toList: List[(Id, Counter)] = clock.toList
+
+  def keys: Set[Id] = clock.keys.toSet
 }
 
 object VectorClock {
