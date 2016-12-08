@@ -5,6 +5,17 @@ addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 
 fork in run := true
 
+scalacOptions := Seq(
+  "-feature",
+  "-deprecation",
+  "-unchecked",
+  "-Xlint:_",
+  "-Xfatal-warnings",
+  "-encoding",
+  "utf8",
+  "-language:implicitConversions"
+)
+
 // Force building with Java 8
 initialize := {
   val required = "1.8"
