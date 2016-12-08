@@ -57,4 +57,12 @@ class VectorClockTest extends FlatSpec with Matchers {
 
     list shouldBe List((1, Counter(109)))
   }
+
+  it should "get keys" in {
+    val vc = VectorClock(Map(1 -> Counter(109), 2 -> Counter(1)))
+
+    val keys = vc.keys
+
+    keys shouldBe Set(1,2)
+  }
 }
