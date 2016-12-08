@@ -13,6 +13,7 @@ trait PluggableStorageProtocol {
 }
 
 object PluggableStorageProtocol {
+
   sealed trait StorageGetData
   object StorageGetData {
     case class Single(data: Data)                   extends StorageGetData

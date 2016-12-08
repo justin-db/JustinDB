@@ -6,6 +6,7 @@ import justin.db.storage.PluggableStorageProtocol
 
 import scala.concurrent.{ExecutionContext, Future}
 
+// TODO:
 class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
   def apply(data: Data): Future[StorageNodeWritingResult] = {
     storage.get(data.id).flatMap {
