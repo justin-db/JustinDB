@@ -12,9 +12,19 @@ import scala.concurrent.{ExecutionContext, Future}
 class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorage {
   import scala.collection.mutable
 
-  private var values = mutable.Map.empty[UUID, Data]
+  private case class MapVal(data1: Data, data2: Option[Data])
 
-  override def get(id: UUID): Future[Option[Data]] = Future.successful(values.get(id))
+  private var values = mutable.Map.empty[UUID, MapVal]
 
-  override def put(data: Data): Future[Unit] = { values = values + (data.id -> data); Future.successful(()) }
+  override def get(id: UUID): Future[StorageGetData] = Future.successful {
+    values.get(id) match {
+      case None                             => StorageGetData.None
+      case Some(MapVal(data1, Some(data2))) => StorageGetData.Conflicted(data1, data2)
+      case Some(MapVal(data1, None))        => StorageGetData.Single(data1)
+    }
+  }
+
+  override def put(data: Data): Future[Unit] = Future.successful {
+    ???
+  }
 }
