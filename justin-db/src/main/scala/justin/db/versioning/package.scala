@@ -15,4 +15,8 @@ package object versioning {
       }.toMap
     }
   }
+
+  object VectorClockOps {
+    implicit def string2VectorClock(s: String): VectorClock[String] = s.toVectorClock[String]
+  }
 }
