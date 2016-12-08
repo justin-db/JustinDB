@@ -1,7 +1,8 @@
 package justin.db
 
 import justin.db.StorageNodeActorProtocol._
-import justin.db.storage.{PluggableStorageProtocol, StorageGetData}
+import justin.db.storage.PluggableStorageProtocol.StorageGetData
+import justin.db.storage.PluggableStorageProtocol
 
 import scala.concurrent.{ExecutionContext, Future}
 

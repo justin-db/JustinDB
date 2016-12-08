@@ -2,8 +2,8 @@ package justin.db.storage
 
 import java.util.UUID
 
-import FilePerKeyStorage._
 import justin.db.Data
+import justin.db.storage.PluggableStorageProtocol.StorageGetData
 
 import scala.concurrent.{ExecutionContext, Future}
 
