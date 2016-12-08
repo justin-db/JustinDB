@@ -5,9 +5,9 @@ import justin.vector_clocks.VectorClock
 
 case class VCs2Compare[Id](baseVC: VectorClock[Id], potentiallyConsequentVC: VectorClock[Id])
 
+// TODO: refactor (too much complexity)
 class VectorClockComparator[Id] extends (VCs2Compare[Id] => VectorClockRelation) {
   override def apply(vcs: VCs2Compare[Id]): VectorClockRelation = {
-    println("---")
     val vcKeys  = vcs.baseVC.keys
     val vc2Keys = vcs.potentiallyConsequentVC.keys
 
@@ -30,12 +30,13 @@ class VectorClockComparator[Id] extends (VCs2Compare[Id] => VectorClockRelation)
     lazy val isConflicted = (vc1_hasNotDefined && vc2_hasNotDefined) || (vc1_hasNotDefined && c1 > 0) || (c1 > 0 && c2 > 0)
     lazy val isPredecessor = c1 >= 0 && c2 == 0
 
-    if(isConflicted)
-      VectorClockRelation.Conflict
-
-    else if(vc1_hasNotDefined && c1 >= 0 && c2 >= 0) VectorClockRelation.Consequent
-    else if(isPredecessor)                      VectorClockRelation.Predecessor
-    else                                            {println("lat one "); VectorClockRelation.Consequent }
+    if(isConflicted) VectorClockRelation.Conflict
+    else if(vc1_hasNotDefined && c1 >= 0 && c2 >= 0)
+      VectorClockRelation.Consequent
+    else if(isPredecessor)
+      VectorClockRelation.Predecessor
+    else
+      VectorClockRelation.Consequent
   }
 }
 
