@@ -11,7 +11,7 @@ import justin.db.replication.{R, W}
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-class HttpStorageNodeClient(storageNodeActor: StorageNodeActorRef)(implicit ex: ExecutionContext) extends StorageNodeClient {
+class HttpStorageNodeClient(private val storageNodeActor: StorageNodeActorRef)(implicit ex: ExecutionContext) extends StorageNodeClient {
 
   implicit val timeout = Timeout(5.seconds) // TODO: tune this value
 
