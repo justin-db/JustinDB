@@ -52,4 +52,16 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // then
     result shouldBe StorageGetData.Single(data.data)
   }
+
+  it should "get none data for not existing id in memory" in {
+    // given
+    val noExistingId = UUID.randomUUID()
+    val inMemStorage = new InMemStorage
+
+    // when
+    val result = Await.result(inMemStorage.get(noExistingId), atMost = 5 seconds)
+
+    // then
+    result shouldBe StorageGetData.None
+  }
 }
