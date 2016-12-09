@@ -15,19 +15,39 @@ class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionC
 
   def apply(data: Data): Future[StorageNodeWritingResult] = {
     storage.get(data.id).flatMap {
-      case StorageGetData.None                           =>
-        storage.put(StoragePutData.Single(data)).map(_ => StorageNodeWritingResult.SuccessfulWrite)
-      case StorageGetData.Conflicted(existed1, existed2) =>
-        ??? // TODO: finish
-      case StorageGetData.Single(existed)                =>
-        vectorClockComparator.apply(VCs2Compare(existed.vclock, data.vclock)) match {
-          case VectorClockRelation.Predecessor           =>
-            Future.successful(StorageNodeWritingResult.FailedWrite)
-          case VectorClockRelation.Conflict              =>
-            storage.put(StoragePutData.Conflict(existed.id, existed, data)).map(_ => StorageNodeWritingResult.ConflictedWrite)
-          case VectorClockRelation.Consequent            =>
-            storage.put(StoragePutData.Single(data)).map(_ => StorageNodeWritingResult.SuccessfulWrite)
-        }
-    } recover { case _ => StorageNodeWritingResult.FailedWrite }
+      case StorageGetData.None                   => putSingleSuccessfulWrite(data)
+      case conflicted: StorageGetData.Conflicted => handleExistedConflictData(data, conflicted)
+      case single: StorageGetData.Single         => handleExistedSingleData(data, single)
+    } recover {
+      case _ => StorageNodeWritingResult.FailedWrite
+    }
+  }
+
+  private def handleExistedConflictData(data: Data, conflicted: StorageGetData.Conflicted) = {
+    import VectorClockRelation._
+
+    val vcCmpRes  = vectorClockComparator.apply(VCs2Compare(conflicted.data1.vclock, data.vclock))
+    val vcCmpRes2 = vectorClockComparator.apply(VCs2Compare(conflicted.data2.vclock, data.vclock))
+
+    (vcCmpRes, vcCmpRes2) match {
+      case (Consequent, Consequent) => putSingleSuccessfulWrite(data)
+      case _                        => Future.successful(StorageNodeWritingResult.FailedWrite)
+    }
+  }
+
+  private def handleExistedSingleData(data: Data, single: StorageGetData.Single) = {
+    vectorClockComparator.apply(VCs2Compare(single.data.vclock, data.vclock)) match {
+      case VectorClockRelation.Predecessor => Future.successful(StorageNodeWritingResult.FailedWrite)
+      case VectorClockRelation.Conflict    => putConflictSuccessfulWrite(StoragePutData.Conflict(single.data.id, single.data, data))
+      case VectorClockRelation.Consequent  => putSingleSuccessfulWrite(data)
+    }
+  }
+
+  private def putSingleSuccessfulWrite(data: Data) = {
+    storage.put(StoragePutData.Single(data)).map(_ => StorageNodeWritingResult.SuccessfulWrite)
+  }
+
+  private def putConflictSuccessfulWrite(conflict: StoragePutData.Conflict) = {
+    storage.put(conflict).map(_ => StorageNodeWritingResult.ConflictedWrite)
   }
 }
