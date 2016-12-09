@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.storage.PluggableStorageProtocol
-import justin.db.storage.PluggableStorageProtocol.StorageGetData
+import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -20,7 +20,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id = UUID.randomUUID()
     val service = new LocalDataReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Single(Data(id, "value")))
-      override def put(data: Data): Future[Unit] = ???
+      override def put(cmd: StoragePutData): Future[Unit] = ???
     })
 
     // when
@@ -35,7 +35,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id = UUID.randomUUID()
     val service = new LocalDataReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.None)
-      override def put(data: Data): Future[Unit] = ???
+      override def put(cmd: StoragePutData): Future[Unit] = ???
     })
 
     // when
@@ -50,7 +50,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id = UUID.randomUUID()
     val service = new LocalDataReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.failed(new Exception)
-      override def put(data: Data): Future[Unit] = ???
+      override def put(cmd: StoragePutData): Future[Unit] = ???
     })
 
     // when
