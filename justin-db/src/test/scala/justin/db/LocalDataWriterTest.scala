@@ -17,6 +17,11 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Local Data Writer"
 
+  /**
+    * -------------------
+    * NONE scenarios     |
+    * -------------------
+    */
   it should "save successfully new data for not taken identificator" in {
     // given
     val notTakenId = UUID.randomUUID()
@@ -33,6 +38,11 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite }
   }
 
+  /**
+    * -------------------
+    * FAILURE scenarios  |
+    * -------------------
+    */
   it should "recover failure situation" in {
     // given
     val notTakenId = UUID.randomUUID()
@@ -49,6 +59,11 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     whenReady(result) { _ shouldBe StorageNodeWritingResult.FailedWrite }
   }
 
+  /**
+    * -------------------
+    * SINGLE scenarios   |
+    * -------------------
+    */
   it should "fail to write predecessor to already stored data" in {
     // given
     val id      = UUID.randomUUID()
@@ -99,4 +114,11 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     // then
     whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite }
   }
+
+  /**
+    * ---------------------
+    * CONFLICTED scenarios |
+    * ---------------------
+    */
+
 }
