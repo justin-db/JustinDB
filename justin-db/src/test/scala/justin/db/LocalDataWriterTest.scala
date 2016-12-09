@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.db.StorageNodeActorProtocol.StorageNodeWritingResult
 import justin.db.storage.PluggableStorageProtocol
-import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, StorageGetData, StoragePutData}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -20,7 +20,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val service = new LocalDataWriter(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = ???
-      override def put(cmd: StoragePutData): Future[Unit] = Future.successful(())
+      override def put(cmd: StoragePutData): Future[Ack] = Ack.future
     })
     val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
 
@@ -36,7 +36,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val service = new LocalDataWriter(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = ???
-      override def put(cmd: StoragePutData): Future[Unit] = Future.failed(new Exception)
+      override def put(cmd: StoragePutData): Future[Ack] = Future.failed(new Exception)
     })
     val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
 
