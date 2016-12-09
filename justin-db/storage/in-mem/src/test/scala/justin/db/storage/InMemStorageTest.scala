@@ -64,4 +64,18 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // then
     result shouldBe StorageGetData.None
   }
+
+  it should "get conflicted data for appropriate identificator" in {
+    // given
+    val id = UUID.randomUUID()
+    val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
+    val inMemStorage = new InMemStorage
+    Await.result(inMemStorage.put(data), atMost = 5 seconds)
+
+    // when
+    val result = Await.result(inMemStorage.get(id), atMost = 5 seconds)
+
+    // then
+    result shouldBe StorageGetData.Conflicted(data.data1, data.data2)
+  }
 }
