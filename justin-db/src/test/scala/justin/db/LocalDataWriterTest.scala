@@ -20,7 +20,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
   it should "save successfully new data for not taken identificator" in {
     // given
     val notTakenId = UUID.randomUUID()
-    val data = Data(notTakenId, "some-value")
+    val data       = Data(notTakenId, "some-value")
     val writer = new LocalDataWriter(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.None)
       override def put(cmd: StoragePutData): Future[Ack] = Ack.future
@@ -36,7 +36,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
   it should "recover failure situation" in {
     // given
     val notTakenId = UUID.randomUUID()
-    val data = Data(notTakenId, "some-value")
+    val data       = Data(notTakenId, "some-value")
     val writer = new LocalDataWriter(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.None)
       override def put(cmd: StoragePutData): Future[Ack] = Future.failed(new Exception)
@@ -51,7 +51,7 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   it should "fail to write predecessor to already stored data" in {
     // given
-    val id = UUID.randomUUID()
+    val id      = UUID.randomUUID()
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(2))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(1))))
     val writer = new LocalDataWriter(new PluggableStorageProtocol {
@@ -64,5 +64,22 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
     // then
     whenReady(result) { _ shouldBe StorageNodeWritingResult.FailedWrite }
+  }
+
+  it should "get conflicted write when trying to save new data with conflicted vector clock comparing to already existed one" in {
+    // given
+    val id      = UUID.randomUUID()
+    val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
+    val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(2) -> Counter(1))))
+    val writer = new LocalDataWriter(new PluggableStorageProtocol {
+      override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
+      override def put(cmd: StoragePutData): Future[Ack] = Ack.future
+    })
+
+    // when
+    val result = writer.apply(newData)
+
+    // then
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.ConflictedWrite }
   }
 }
