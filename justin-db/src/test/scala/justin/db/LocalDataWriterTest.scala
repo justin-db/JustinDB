@@ -137,4 +137,22 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
       // then
       whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite }
     }
+
+    it should "get failed write if new data has not consequent vector clock comparing to every conflicted data" in {
+      // given
+      val id             = UUID.randomUUID()
+      val existedData1   = Data(id, "some-value", VectorClock(Map(NodeId(2) -> Counter(1))))
+      val existedData2   = Data(id, "some-value", VectorClock(Map(NodeId(3) -> Counter(1))))
+      val consequentData = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1), NodeId(2) -> Counter(1))))
+      val writer = new LocalDataWriter(new PluggableStorageProtocol {
+        override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Conflicted(existedData1, existedData2))
+        override def put(cmd: StoragePutData): Future[Ack] = ???
+      })
+
+      // when
+      val result = writer.apply(consequentData)
+
+      // then
+      whenReady(result) { _ shouldBe StorageNodeWritingResult.FailedWrite }
+    }
 }
