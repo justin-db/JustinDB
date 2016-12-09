@@ -15,7 +15,7 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     * CONFLICT scenarios |
     * -------------------
     */
-  it should "c1" in {
+  it should "pass conflict scenario nr 1" in {
     val vcs = VCs2Compare(
       baseVC                  = "A:1, B:1",
       potentiallyConsequentVC = "A:1, C:1"
@@ -23,7 +23,7 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     comparator.apply(vcs) shouldBe VectorClockRelation.Conflict
   }
 
-  it should "c2" in {
+  it should "pass conflict scenario nr 2" in {
     val vcs4 = VCs2Compare(
       baseVC                  = "A:2",
       potentiallyConsequentVC = "A:1, B:1"
@@ -31,7 +31,7 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     comparator.apply(vcs4) shouldBe VectorClockRelation.Conflict
   }
 
-  it should "c3" in {
+  it should "pass conflict scenario nr 3" in {
     val vcs = VCs2Compare(
       baseVC                  = "A:1",
       potentiallyConsequentVC = "B:1"
@@ -39,7 +39,7 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     comparator.apply(vcs) shouldBe VectorClockRelation.Conflict
   }
 
-  it should "c4" in {
+  it should "pass conflict scenario nr 4" in {
     val vcs = VCs2Compare(
         baseVC                  = "A:1, B:1, C:2",
         potentiallyConsequentVC = "A:1, B:2, C:1"
@@ -47,7 +47,7 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     comparator.apply(vcs) shouldBe VectorClockRelation.Conflict
   }
 
-  it should "c5" in {
+  it should "pass conflict scenario nr 5" in {
     val vcs = VCs2Compare(
       baseVC                  = "A:1, B:2",
       potentiallyConsequentVC = "A:1, B:1, C:1"
@@ -61,7 +61,7 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     * PREDECESSOR scenarios |
     * ----------------------
     */
-  it should "p1" in {
+  it should "pass predecessor scenario nr 1" in {
     val vcs = VCs2Compare(
       baseVC                  = "A:2, B:1",
       potentiallyConsequentVC = "A:1, B:1"
@@ -69,20 +69,20 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     comparator.apply(vcs) shouldBe VectorClockRelation.Predecessor
   }
 
-  it should "p2" in {
-    val vcs6 = VCs2Compare(
+  it should "pass predecessor scenario nr 2" in {
+    val vcs = VCs2Compare(
       baseVC                  = "A:2",
       potentiallyConsequentVC = "A:1"
     )
-    comparator.apply(vcs6) shouldBe VectorClockRelation.Predecessor
+    comparator.apply(vcs) shouldBe VectorClockRelation.Predecessor
   }
 
-  it should "p3" in {
-    val vcs7 = VCs2Compare(
+  it should "pass predecessor scenario nr 3" in {
+    val vcs = VCs2Compare(
       baseVC                  = "A:1, B:1",
       potentiallyConsequentVC = "A:1, B:1"
     )
-    comparator.apply(vcs7) shouldBe VectorClockRelation.Predecessor
+    comparator.apply(vcs) shouldBe VectorClockRelation.Predecessor
   }
 
   /**
@@ -90,27 +90,27 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     * CONSEQUENT scenarios  |
     * ----------------------
     */
-  it should "cs1" in {
-    val vcs2 = VCs2Compare(
+  it should "pass consequent scenario nr 1" in {
+    val vcs = VCs2Compare(
       baseVC                  = "A:1",
       potentiallyConsequentVC = "A:2"
     )
-    comparator.apply(vcs2) shouldBe VectorClockRelation.Consequent
+    comparator.apply(vcs) shouldBe VectorClockRelation.Consequent
   }
 
-  it should "cs2" in {
-    val vcs2 = VCs2Compare(
+  it should "pass consequent scenario nr 2" in {
+    val vcs = VCs2Compare(
       baseVC                  = "A:1, B:1",
       potentiallyConsequentVC = "A:1, B:1, C:1"
     )
-    comparator.apply(vcs2) shouldBe VectorClockRelation.Consequent
+    comparator.apply(vcs) shouldBe VectorClockRelation.Consequent
   }
 
-  it should "cs3" in {
-    val vcs5 = VCs2Compare(
+  it should "pass consequent scenario nr 3" in {
+    val vcs = VCs2Compare(
       baseVC                  = "A:1, B:1, C:2",
       potentiallyConsequentVC = "A:1, B:1, C:3"
     )
-    comparator.apply(vcs5) shouldBe VectorClockRelation.Consequent
+    comparator.apply(vcs) shouldBe VectorClockRelation.Consequent
   }
 }
