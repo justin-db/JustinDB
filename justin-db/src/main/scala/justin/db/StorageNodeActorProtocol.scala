@@ -32,6 +32,7 @@ object StorageNodeActorProtocol {
   object StorageNodeWritingResult {
     case object SuccessfulWrite extends StorageNodeWritingResult
     case object FailedWrite     extends StorageNodeWritingResult
+    case object ConflictedWrite extends StorageNodeWritingResult
   }
 
   // cluster part

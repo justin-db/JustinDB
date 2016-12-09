@@ -30,6 +30,7 @@ class HttpStorageNodeClient(storageNodeActor: StorageNodeActorRef)(implicit ex: 
 
     (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {
       case StorageNodeWritingResult.SuccessfulWrite => WriteValueResponse.Success
+      case StorageNodeWritingResult.ConflictedWrite => WriteValueResponse.Conflict
       case StorageNodeWritingResult.FailedWrite     => WriteValueResponse.Failure(errorMsg)
     }.recover { case _                              => WriteValueResponse.Failure(errorMsg) }
   }
