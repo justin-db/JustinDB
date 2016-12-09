@@ -21,7 +21,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   /**
     * GET part
     */
-  it should "handle actor's Found message for asked data" in {
+  it should "handle actor's \"Found\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Found(Data(id, "value")))
@@ -34,7 +34,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe GetValueResponse.Found("value") }
   }
 
-  it should "handle actor's NotFound message for asked data" in {
+  it should "handle actor's \"NotFound\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.NotFound)
@@ -47,7 +47,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe GetValueResponse.NotFound }
   }
 
-  it should "handle actor's FailedRead message for asked data" in {
+  it should "handle actor's \"FailedRead\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.FailedRead)
@@ -76,7 +76,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   /**
     * WRITE part
     */
-  it should "handle actor's SuccessfulWrite message for data saving" in {
+  it should "handle actor's \"SuccessfulWrite\" message for data saving" in {
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
@@ -90,7 +90,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe WriteValueResponse.Success }
   }
 
-  it should "handle actor's FailedWrite message for data saving" in {
+  it should "handle actor's \"FailedWrite\" message for data saving" in {
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
@@ -116,6 +116,20 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
 
     // then
     whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't write data: $data") }
+  }
+
+  it should "handle actor's \"ConflictedWrite\" message for data saving" in {
+    // given
+    val id       = UUID.randomUUID()
+    val data     = Data(id, "value")
+    val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.ConflictedWrite)
+    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+
+    // when
+    val result = client.write(W(1), data)
+
+    // then
+    whenReady(result) { _ shouldBe WriteValueResponse.Conflict }
   }
 
   override def afterAll {
