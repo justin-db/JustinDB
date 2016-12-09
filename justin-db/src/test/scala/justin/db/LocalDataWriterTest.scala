@@ -82,4 +82,21 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     // then
     whenReady(result) { _ shouldBe StorageNodeWritingResult.ConflictedWrite }
   }
+
+  it should "get successful write when trying to save new data with consequent vector clock comparing to already existed one" in {
+    // given
+    val id      = UUID.randomUUID()
+    val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
+    val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(2))))
+    val writer = new LocalDataWriter(new PluggableStorageProtocol {
+      override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
+      override def put(cmd: StoragePutData): Future[Ack] = Ack.future
+    })
+
+    // when
+    val result = writer.apply(newData)
+
+    // then
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite }
+  }
 }
