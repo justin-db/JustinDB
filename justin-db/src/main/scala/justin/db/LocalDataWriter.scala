@@ -4,6 +4,7 @@ import justin.consistent_hashing.NodeId
 import justin.db.StorageNodeActorProtocol._
 import justin.db.storage.PluggableStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
+import justin.db.versioning.DataVersioning.NodeIdVectorClock
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 import justin.db.versioning.{VCs2Compare, VectorClockComparator}
 
@@ -26,8 +27,8 @@ class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionC
   private def handleExistedConflictData(data: Data, conflicted: StorageGetData.Conflicted) = {
     import VectorClockRelation._
 
-    val vcCmpRes  = vectorClockComparator.apply(VCs2Compare(conflicted.data1.vclock, data.vclock))
-    val vcCmpRes2 = vectorClockComparator.apply(VCs2Compare(conflicted.data2.vclock, data.vclock))
+    val vcCmpRes  = compareVectorClocks(conflicted.data1.vclock, data.vclock)
+    val vcCmpRes2 = compareVectorClocks(conflicted.data2.vclock, data.vclock)
 
     (vcCmpRes, vcCmpRes2) match {
       case (Consequent, Consequent) => putSingleSuccessfulWrite(data)
@@ -36,7 +37,7 @@ class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionC
   }
 
   private def handleExistedSingleData(data: Data, single: StorageGetData.Single) = {
-    vectorClockComparator.apply(VCs2Compare(single.data.vclock, data.vclock)) match {
+    compareVectorClocks(single.data.vclock, data.vclock) match {
       case VectorClockRelation.Predecessor => Future.successful(StorageNodeWritingResult.FailedWrite)
       case VectorClockRelation.Conflict    => putConflictSuccessfulWrite(StoragePutData.Conflict(single.data.id, single.data, data))
       case VectorClockRelation.Consequent  => putSingleSuccessfulWrite(data)
@@ -49,5 +50,9 @@ class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionC
 
   private def putConflictSuccessfulWrite(conflict: StoragePutData.Conflict) = {
     storage.put(conflict).map(_ => StorageNodeWritingResult.ConflictedWrite)
+  }
+
+  private def compareVectorClocks(vclock: NodeIdVectorClock, vclock2: NodeIdVectorClock) = {
+    vectorClockComparator.apply(VCs2Compare(vclock, vclock2))
   }
 }
