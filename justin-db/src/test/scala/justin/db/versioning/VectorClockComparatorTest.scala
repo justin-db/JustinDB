@@ -10,7 +10,8 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
 
   private val comparator = new VectorClockComparator[String]
 
-  /** -------------------
+  /**
+    * -------------------
     * CONFLICT scenarios |
     * -------------------
     */
@@ -55,7 +56,8 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
   }
 
 
-  /** ----------------------
+  /**
+    * ----------------------
     * PREDECESSOR scenarios |
     * ----------------------
     */
@@ -83,7 +85,8 @@ class VectorClockComparatorTest extends FlatSpec with Matchers {
     comparator.apply(vcs7) shouldBe VectorClockRelation.Predecessor
   }
 
-  /** ----------------------
+  /**
+    * ----------------------
     * CONSEQUENT scenarios  |
     * ----------------------
     */
