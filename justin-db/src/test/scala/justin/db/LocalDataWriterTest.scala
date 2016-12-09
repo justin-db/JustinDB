@@ -28,6 +28,22 @@ class LocalDataWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(data)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite}
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite }
+  }
+
+  it should "recover failure situation" in {
+    // given
+    val notTakenId = UUID.randomUUID()
+    val data = Data(notTakenId, "some-value")
+    val writer = new LocalDataWriter(new PluggableStorageProtocol {
+      override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.None)
+      override def put(cmd: StoragePutData): Future[Ack] = Future.failed(new Exception)
+    })
+
+    // when
+    val result = writer.apply(data)
+
+    // then
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.FailedWrite }
   }
 }
