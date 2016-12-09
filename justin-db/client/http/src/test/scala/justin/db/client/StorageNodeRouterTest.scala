@@ -22,7 +22,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
   /**
     * GET part
     */
-  it should "get OK result for specific id and r" in {
+  it should "get \"OK\" http code for successful read result" in {
     val value  = "value"
     val id     = UUID.randomUUID().toString
     val r      = 1
@@ -34,7 +34,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
-  it should "get NotFound result for specific id and r" in {
+  it should "get \"NotFound\" http code for missed searched data" in {
     val value  = "value"
     val id     = UUID.randomUUID().toString
     val r      = 1
@@ -46,7 +46,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
-  it should "get BadRequest result for specific id and r" in {
+  it should "get \"BadRequest\" http code for unsuccessful read result" in {
     val value  = "value"
     val id     = UUID.randomUUID().toString
     val r      = 1
@@ -74,7 +74,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
   /**
     * PUT part
     */
-  it should "get NoContent result for successfully written data" in {
+  it should "get \"NoContent\" http code for successful write result" in {
     val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
     val router   = new StorageNodeRouter(successfulWrite(putValue))
 
@@ -83,7 +83,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
-  it should "get BadRequest result for unsuccessfully written data" in {
+  it should "get \"BadRequest\" http code for unsuccessful write result" in {
     val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
     val error    = "unsuccessfully written data"
     val router   = new StorageNodeRouter(unsuccessfulWrite(error))
@@ -94,11 +94,25 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
+  it should "get \"MultipleChoices\" http code for conflicted write result" in {
+    val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
+    val router   = new StorageNodeRouter(conclictedWrite)
+
+    Post("/put", putValue) ~> Route.seal(router.routes) ~> check {
+      status                       shouldBe StatusCodes.MultipleChoices
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString("Multiple Choices"))
+    }
+  }
+
   private def successfulWrite(putValue: PutValue) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
     override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success)
   }
 
   private def unsuccessfulWrite(error: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
     override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Failure(error))
+  }
+
+  private def conclictedWrite = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+    override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Conflict)
   }
 }
