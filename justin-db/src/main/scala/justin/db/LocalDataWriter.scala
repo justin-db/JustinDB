@@ -19,7 +19,7 @@ class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionC
       case conflicted: StorageGetData.Conflicted => handleExistedConflictData(data, conflicted)
       case single: StorageGetData.Single         => handleExistedSingleData(data, single)
     } recover {
-      case _ => StorageNodeWritingResult.FailedWrite
+      case _                                     => StorageNodeWritingResult.FailedWrite
     }
   }
 
