@@ -13,8 +13,8 @@ class LocalDataReader(storage: PluggableStorageProtocol)(implicit ec: ExecutionC
     storage.get(id).map {
       case StorageGetData.Single(data)             => StorageNodeReadingResult.Found(data)
       case StorageGetData.None                     => StorageNodeReadingResult.NotFound
-      case StorageGetData.Conflicted(data1, data2) => ??? // TODO
-    }.recover {
+      case StorageGetData.Conflicted(data1, data2) => StorageNodeReadingResult.Conflicted(data1, data2)
+    } recover {
       case _          => StorageNodeReadingResult.FailedRead
     }
   }

@@ -16,9 +16,10 @@ object StorageNodeActorProtocol {
 
   sealed trait StorageNodeReadingResult
   object StorageNodeReadingResult {
-    case class Found(d: Data) extends StorageNodeReadingResult
-    case object NotFound      extends StorageNodeReadingResult
-    case object FailedRead    extends StorageNodeReadingResult
+    case class Found(d: Data)                       extends StorageNodeReadingResult
+    case object NotFound                            extends StorageNodeReadingResult
+    case object FailedRead                          extends StorageNodeReadingResult
+    case class Conflicted(data1: Data, data2: Data) extends StorageNodeReadingResult
   }
 
   // write part
