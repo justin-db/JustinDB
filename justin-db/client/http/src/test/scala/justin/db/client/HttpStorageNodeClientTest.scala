@@ -60,6 +60,21 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
   }
 
+  it should "handle actor's \"Conflicted\" message for asked data" in {
+    // given
+    val id       = UUID.randomUUID()
+    val data1    = Data(id, "value-1")
+    val data2    = Data(id, "value-2")
+    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Conflicted(data1, data2))
+    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+
+    // when
+    val result = client.get(id, R(1))
+
+    // then
+    whenReady(result) { _ shouldBe GetValueResponse.Conflicted(data1, data2) }
+  }
+
   it should "recover actor's reading behavior" in {
     // given
     val id       = UUID.randomUUID()
