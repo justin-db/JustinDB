@@ -45,6 +45,23 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     whenReady(result) { _ shouldBe StorageNodeReadingResult.NotFound }
   }
 
+  it should "found conflicted data for existing key" in {
+    // given
+    val id = UUID.randomUUID()
+    val data1 = Data(id, "some-data-1")
+    val data2 = Data(id, "some-data-2")
+    val service = new LocalDataReader(new PluggableStorageProtocol {
+      override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Conflicted(data1, data2))
+      override def put(cmd: StoragePutData): Future[Ack] = ???
+    })
+
+    // when
+    val result = service.apply(id)
+
+    // then
+    whenReady(result) { _ shouldBe StorageNodeReadingResult.Conflicted(data1, data2) }
+  }
+
   it should "recover failure reading" in {
     // given
     val id = UUID.randomUUID()
