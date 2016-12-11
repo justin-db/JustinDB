@@ -11,32 +11,36 @@ class VectorClockComparator[Id] extends (VCs2Compare[Id] => VectorClockRelation)
     val vcKeys  = vcs.baseVC.keys
     val vc2Keys = vcs.potentiallyConsequentVC.keys
 
-    val vc1_hasNotDefined: Boolean = !vc2Keys.forall(vcKeys.contains)
-    val vc2_hasNotDefined: Boolean = !vcKeys.forall(vc2Keys.contains)
+    val vc2ContainsAllKeysOfVc = !vcs.potentiallyConsequentVC.keys.forall(vcKeys.contains)
+    val vcContainsAllKeysOfVc2 = !vcKeys.forall(vc2Keys.contains)
 
-    val (c1, c2) = vc2Keys.foldLeft((0,0)) { (c, vc2Key) =>
+    val (counter1, counter2) = vc2Keys.foldLeft((0,0)) { (counter, vc2Key) =>
       val vc1Val = vcs.baseVC.get(vc2Key)
       val vc2Val = vcs.potentiallyConsequentVC.get(vc2Key)
 
-      if(vc1Val.isEmpty) {
-        c
-      } else {
-        if(vc1Val.get.value == vc2Val.get.value) c
-        else if(vc1Val.get.value > vc2Val.get.value) (c._1 + 1, c._2)
-        else (c._1, c._2 + 1)
+      vc1Val.isEmpty || vc1Val.get.value == vc2Val.get.value match {
+        case true  => counter
+        case false =>
+          vc1Val.get.value > vc2Val.get.value match {
+            case true  => (counter._1 + 1, counter._2)
+            case false => (counter._1, counter._2 + 1)
+          }
       }
     }
 
-    lazy val isConflicted = (vc1_hasNotDefined && vc2_hasNotDefined) || (vc1_hasNotDefined && c1 > 0) || (c1 > 0 && c2 > 0)
-    lazy val isPredecessor = c1 >= 0 && c2 == 0
-
-    if(isConflicted) VectorClockRelation.Conflict
-    else if(vc1_hasNotDefined && c1 >= 0 && c2 >= 0)
+    if(isConflict(vc2ContainsAllKeysOfVc, vcContainsAllKeysOfVc2, counter1, counter2))
+      VectorClockRelation.Conflict
+    else if(isConsequent(vc2ContainsAllKeysOfVc, counter1, counter2))
       VectorClockRelation.Consequent
-    else if(isPredecessor)
-      VectorClockRelation.Predecessor
     else
-      VectorClockRelation.Consequent
+      VectorClockRelation.Predecessor
+  }
+
+  private def isConflict(vc2ContainsAllKeysOfVc: Boolean, vcContainsAllKeysOfVc2: Boolean, counter1: Int, counter2: Int) = {
+    (vc2ContainsAllKeysOfVc && vcContainsAllKeysOfVc2) || (vc2ContainsAllKeysOfVc && counter1 > 0) || (counter1 > 0 && counter2 > 0)
+  }
+  private def isConsequent(vc2ContainsAllKeysOfVc: Boolean, counter1: Int, counter2: Int) = {
+    vc2ContainsAllKeysOfVc && counter1 >= 0 && counter2 >= 0 || !(counter1 >= 0 && counter2 == 0)
   }
 }
 
