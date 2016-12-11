@@ -33,7 +33,7 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
       complete {
         client.get(uuid, R(r)).map[ToResponseMarshallable] {
           case GetValueResponse.Found(value)             => OK              -> Result(value)
-          case GetValueResponse.Conflicted(data1, data2) => MultipleChoices -> Result(???) // TODO: finish
+          case GetValueResponse.Conflicted(data1, data2) => MultipleChoices -> Result("Multiple Choices") // TODO: finish
           case GetValueResponse.NotFound                 => NotFound        -> Result(s"Not found value with id ${uuid.toString}")
           case GetValueResponse.Failure(err)             => BadRequest      -> Result(err)
         }

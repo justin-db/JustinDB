@@ -10,7 +10,7 @@ import justin.db.client.StorageNodeRouter.PutValue
 import justin.db.client.StorageNodeRouter._
 import justin.db.replication.{R, W}
 import org.scalatest.{FlatSpec, Matchers}
-import spray.json._
+import spray.json.{JsString, _}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 
 import scala.concurrent.Future
@@ -31,6 +31,19 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.OK
       responseAs[String].parseJson shouldBe JsObject("value" -> JsString(value))
+    }
+  }
+
+  it should "get \"MultipleChoices\" http code for read conflicted data" in {
+    val r      = 1
+    val id     = UUID.randomUUID()
+    val data1  = Data(id, "value-1")
+    val data2  = Data(id, "value-2")
+    val router = new StorageNodeRouter(getConflicted(data1, data2))
+
+    Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
+      status                       shouldBe StatusCodes.MultipleChoices
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString("Multiple Choices"))
     }
   }
 
@@ -61,6 +74,10 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
 
   private def getFound(value: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(value))
+  }
+
+  private def getConflicted(data1: Data, data2: Data) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Conflicted(data1, data2))
   }
 
   private def notFound(value: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
