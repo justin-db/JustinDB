@@ -18,10 +18,11 @@ class StorageNodeReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers,
     case StorageNodeReadData.Replicated(r, id) =>
       val ringPartitionId = UUID2RingPartitionId.apply(id, ring)
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
+
       readFromTargets(id, preferenceList).map(sumUpReads(r))
   }
 
-  // TODO: what if one of the replica has conflict?
+  // TODO: what if one of the replica is conflicted?
   private def sumUpReads(r: R)(reads: List[StorageNodeReadingResult]) = {
     val onlyFoundReads  = reads.collect { case r: StorageNodeReadingResult.Found => r }
     val onlyFailedReads = reads.forall(_ == StorageNodeReadingResult.FailedRead)
@@ -42,6 +43,4 @@ class StorageNodeReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers,
 
     localTargetOpt.fold(getRemoteReads)(_ => getLocalRead zip getRemoteReads map converge)
   }
-
-  private def converge(result: (StorageNodeReadingResult, List[StorageNodeReadingResult])) = result._1 :: result._2
 }

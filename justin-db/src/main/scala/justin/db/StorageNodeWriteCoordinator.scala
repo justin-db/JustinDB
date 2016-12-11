@@ -39,6 +39,4 @@ class StorageNodeWriteCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers
 
     localTargetOpt.fold(getRemoteWrites)(_ => getLocalWrite zip getRemoteWrites map converge )
   }
-
-  private def converge(result: (StorageNodeWritingResult, List[StorageNodeWritingResult])) = result._1 :: result._2
 }
