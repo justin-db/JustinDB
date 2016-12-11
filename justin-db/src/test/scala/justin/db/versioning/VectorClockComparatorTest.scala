@@ -2,7 +2,7 @@ package justin.db.versioning
 
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 import org.scalatest.{FlatSpec, Matchers}
-import justin.db.versioning.VectorClockOps._
+import justin.db.versioning.VectorClockOps.stringAsId
 
 class VectorClockComparatorTest extends FlatSpec with Matchers {
 
