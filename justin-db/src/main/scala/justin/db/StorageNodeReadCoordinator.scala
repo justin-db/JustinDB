@@ -21,11 +21,11 @@ class StorageNodeReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers,
       readFromTargets(id, preferenceList).map(sumUpReads(r))
   }
 
+  // TODO: what if one of the replica has conflict?
   private def sumUpReads(r: R)(reads: List[StorageNodeReadingResult]) = {
     val onlyFoundReads  = reads.collect { case r: StorageNodeReadingResult.Found => r }
     val onlyFailedReads = reads.forall(_ == StorageNodeReadingResult.FailedRead)
 
-    // TODO: merge Vector Clocks of Found Reads
     (onlyFoundReads.size >= r.r, onlyFoundReads.headOption, onlyFailedReads) match {
       case (true, Some(exemplary), _) => exemplary
       case (_, _, true)               => StorageNodeReadingResult.FailedRead
