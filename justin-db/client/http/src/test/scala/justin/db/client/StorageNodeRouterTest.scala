@@ -121,14 +121,14 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
   }
 
   private def successfulWrite(putValue: PutValue) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
-    override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success)
+    override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success)
   }
 
   private def unsuccessfulWrite(error: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
-    override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Failure(error))
+    override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Failure(error))
   }
 
   private def conclictedWrite = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
-    override def write(w: W, data: Data): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Conflict)
+    override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Conflict)
   }
 }

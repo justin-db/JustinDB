@@ -99,7 +99,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
-    val result = client.write(W(1), data)
+    val result = client.write(data, W(1))
 
     // then
     whenReady(result) { _ shouldBe WriteValueResponse.Success }
@@ -113,7 +113,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
-    val result = client.write(W(1), data)
+    val result = client.write(data, W(1))
 
     // then
     whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't write data: $data") }
@@ -127,7 +127,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
-    val result = client.write(W(1), data)
+    val result = client.write(data, W(1))
 
     // then
     whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't write data: $data") }
@@ -141,7 +141,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
-    val result = client.write(W(1), data)
+    val result = client.write(data, W(1))
 
     // then
     whenReady(result) { _ shouldBe WriteValueResponse.Conflict }

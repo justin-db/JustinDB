@@ -26,7 +26,7 @@ class HttpStorageNodeClient(private val storageNodeActor: StorageNodeActorRef)(i
     }.recover { case _                                       => GetValueResponse.Failure(errorMsg) }
   }
 
-  override def write(w: W, data: Data): Future[WriteValueResponse] = {
+  override def write(data: Data, w: W): Future[WriteValueResponse] = {
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't write data: $data"
 
     (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {

@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 trait StorageNodeClient {
   def get(id: UUID, r: R): Future[GetValueResponse]
-  def write(w: W, data: Data): Future[WriteValueResponse]
+  def write(data: Data, w: W): Future[WriteValueResponse]
 }
 
 sealed trait GetValueResponse

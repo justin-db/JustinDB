@@ -41,7 +41,7 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
     } ~
       (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
         complete {
-          client.write(W(putValue.w), Data(putValue.id, putValue.value)).map[ToResponseMarshallable] {
+          client.write(Data(putValue.id, putValue.value), W(putValue.w)).map[ToResponseMarshallable] {
             case WriteValueResponse.Success      => NoContent
             case WriteValueResponse.Conflict     => MultipleChoices -> Result("Multiple Choices")
             case WriteValueResponse.Failure(err) => BadRequest      -> Result(err)
