@@ -7,8 +7,8 @@ trait MerkleDigest[T] {
 object MerkleDigest {
 
   implicit object CRC32 extends MerkleDigest[Block] {
-    import java.util.zip.CRC32
     import java.nio.ByteBuffer
+    import java.util.zip.CRC32
 
     override def digest(t: Block): Digest = {
       val digest = new CRC32()

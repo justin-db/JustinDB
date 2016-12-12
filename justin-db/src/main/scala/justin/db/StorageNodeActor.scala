@@ -1,10 +1,10 @@
 package justin.db
 
 import akka.actor.{Actor, ActorRef, Props, RootActorPath}
-import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import justin.db.StorageNodeActorProtocol._
+import akka.cluster.{Cluster, Member, MemberStatus}
 import justin.consistent_hashing.{NodeId, Ring}
+import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.N
 import justin.db.storage.PluggableStorageProtocol
 

@@ -1,8 +1,8 @@
 package justin.db.replication
 
 import justin.consistent_hashing.Ring
-import org.scalacheck.{Gen, Properties}
 import org.scalacheck.Prop._
+import org.scalacheck.{Gen, Properties}
 
 class PreferenceListSpecification extends Properties("PreferenceList") {
 

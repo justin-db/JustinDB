@@ -2,8 +2,8 @@ package justin.db
 
 import java.util.UUID
 
-import justin.db.StorageNodeActorProtocol._
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
+import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.{N, PreferenceList, R}
 
 import scala.concurrent.{ExecutionContext, Future}

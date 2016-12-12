@@ -5,8 +5,8 @@ import java.util.UUID
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.StorageNodeActorProtocol.{StorageNodeWriteData, StorageNodeWritingResult}
-import org.scalatest.{FlatSpecLike, Matchers}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{FlatSpecLike, Matchers}
 
 class RemoteDataWriterTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike

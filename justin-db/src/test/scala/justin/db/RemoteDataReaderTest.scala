@@ -4,9 +4,9 @@ import java.util.UUID
 
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
-import org.scalatest.{FlatSpecLike, Matchers}
 import justin.db.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{FlatSpecLike, Matchers}
 
 class RemoteDataReaderTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike

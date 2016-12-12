@@ -1,8 +1,9 @@
 package justin.db
 
-import justin.db.StorageNodeActorProtocol._
 import akka.pattern.ask
 import akka.util.Timeout
+import justin.db.StorageNodeActorProtocol._
+
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 

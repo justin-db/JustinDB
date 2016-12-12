@@ -1,8 +1,8 @@
 package justin.db.versioning
 
 import justin.consistent_hashing.NodeId
-import org.scalatest.{FlatSpec, Matchers}
 import justin.vector_clocks.{Counter, VectorClock}
+import org.scalatest.{FlatSpec, Matchers}
 
 class VectorClockOpsTest extends FlatSpec with Matchers {
 
