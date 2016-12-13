@@ -18,4 +18,15 @@ class VectorClockHeaderTest extends FlatSpec with Matchers {
     // then
     vClockHeader.vectorClock shouldBe VectorClock(Map(NodeId(1) -> Counter(1), NodeId(2) -> Counter(2), NodeId(3) -> Counter(9)))
   }
+
+  it should "stringify Vector Clock instance" in {
+    // given
+    val vClock = VectorClock(Map(NodeId(1) -> Counter(1), NodeId(2) -> Counter(2), NodeId(3) -> Counter(9)))
+
+    // when
+    val encoded = VectorClockHeader(vClock).value()
+
+    // then
+    encoded shouldBe "W1siMSIsMV0sWyIyIiwyXSxbIjMiLDldXQ=="
+  }
 }
