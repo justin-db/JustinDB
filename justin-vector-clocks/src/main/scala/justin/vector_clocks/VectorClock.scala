@@ -26,9 +26,9 @@ object VectorClock {
 
     val mergedCounter = (vc1.clock.get(receiverId), vc2.clock.get(receiverId)) match {
       case (Some(counter1), Some(counter2)) => Counter.max(counter1, counter2)
-      case (None, Some(counter2)) => counter2
-      case (Some(counter1), None) => counter1
-      case (None, None) => Counter.zero
+      case (None, Some(counter2))           => counter2
+      case (Some(counter1), None)           => counter1
+      case (None, None)                     => Counter.zero
     }
 
     val counter = mergedCounter.addOne
