@@ -40,15 +40,14 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
         }
       }
     } ~
-      (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
-        complete {
-          val data = Data(id = putValue.id, value = putValue.value, vclock = vClockHeader.vectorClock)
-          client.write(data, W(putValue.w)).map[ToResponseMarshallable] {
-            case WriteValueResponse.Success      => NoContent
-            case WriteValueResponse.Conflict     => MultipleChoices -> Result("Multiple Choices")
-            case WriteValueResponse.Failure(err) => BadRequest      -> Result(err)
-          }
+    (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
+      complete {
+        client.write(Data(putValue.id, putValue.value, vClockHeader.vectorClock), W(putValue.w)).map[ToResponseMarshallable] {
+          case WriteValueResponse.Success      => NoContent
+          case WriteValueResponse.Conflict     => MultipleChoices -> Result("Multiple Choices")
+          case WriteValueResponse.Failure(err) => BadRequest      -> Result(err)
         }
       }
+    }
   }
 }

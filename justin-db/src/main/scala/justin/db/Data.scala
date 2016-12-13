@@ -6,7 +6,7 @@ import justin.consistent_hashing.NodeId
 import justin.db.versioning.DataVersioning.NodeIdVectorClock
 import justin.vector_clocks.VectorClock
 
-case class Data(id: UUID, value: String, timestamp: Long = System.currentTimeMillis(), vclock: NodeIdVectorClock = VectorClock())
+case class Data(id: UUID, value: String, vclock: NodeIdVectorClock = VectorClock(), timestamp: Long = System.currentTimeMillis())
 
 object Data {
 
