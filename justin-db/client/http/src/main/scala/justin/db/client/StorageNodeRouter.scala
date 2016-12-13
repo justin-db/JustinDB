@@ -9,6 +9,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import justin.db.Data
+import justin.db.client.JustinDirectives._
 import justin.db.client.Unmarshallers.UUIDUnmarshaller
 import justin.db.replication.{R, W}
 import spray.json.DefaultJsonProtocol._
@@ -28,7 +29,7 @@ object StorageNodeRouter {
 class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
   import StorageNodeRouter._
 
-  def routes: Route = {
+  def routes: Route = withVectorClockHeader { vClockHeader =>
     (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
       complete {
         client.get(uuid, R(r)).map[ToResponseMarshallable] {
@@ -41,7 +42,7 @@ class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionCon
     } ~
       (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
         complete {
-          client.write(Data(putValue.id, putValue.value), W(putValue.w)).map[ToResponseMarshallable] {
+          client.write(Data(putValue.id, putValue.value, vClockHeader.vectorClock), W(putValue.w)).map[ToResponseMarshallable] {
             case WriteValueResponse.Success      => NoContent
             case WriteValueResponse.Conflict     => MultipleChoices -> Result("Multiple Choices")
             case WriteValueResponse.Failure(err) => BadRequest      -> Result(err)
