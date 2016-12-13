@@ -17,9 +17,10 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
   it should "found data for existing key" in {
     // given
-    val id = UUID.randomUUID()
+    val id   = UUID.randomUUID()
+    val data = Data(id, "value")
     val service = new LocalDataReader(new PluggableStorageProtocol {
-      override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Single(Data(id, "value")))
+      override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
       override def put(cmd: StoragePutData): Future[Ack] = ???
     })
 
@@ -27,7 +28,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val result = service.apply(id)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.Found(Data(id, "value")) }
+    whenReady(result) { _ shouldBe StorageNodeReadingResult.Found(data) }
   }
 
   it should "not found data for non-existing key" in {

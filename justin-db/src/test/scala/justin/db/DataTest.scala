@@ -24,7 +24,7 @@ class DataTest extends FlatSpec with Matchers {
       NodeId(5) -> Counter(1),
       NodeId(8) -> Counter(1))
     )
-    updatedData shouldBe Data(data.id, data.value, expectedVclock)
+    updatedData shouldBe Data(data.id, data.value, expectedVclock, updatedData.timestamp)
   }
 
   it should "increase vector clock's counter of repeated nodeId when updating data" in {
