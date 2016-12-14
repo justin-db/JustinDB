@@ -11,6 +11,16 @@ JustinDB KV is an eventually consistent key-value database that favours write av
 It’s a faithful implementation of Amazon’s Dynamo, with advanced features such as vector clocks for conflict resolution.
 JustinDB is also fault-tolerant. Servers can go up or down at any moment with no single point of failure.
 
+## Summary of techniques
+
+| Problem | Technique  | Advantage  |
+|---------|------------|------------|
+|Partitioning                      |Consistent Hashing                                    |Incremental Scalability|
+|Membership and failure detection  |Gossip-based membership protocol and failure detection|Preserves symmetry and avoids having a centralized registry for storing membership and node liveness information|
+|High Availability for writes      |Vector clocks with reconciliation during reads        |Version size is decoupled from update rites|
+|Recovering from permanent failures|Anti-entropy using Merkle trees                       |Synchronizes divergent replicas in the background|
+|Conflicts resolution              |CRDTs                                                 |Automatic conflict resolution during reads
+
 ### Why akka
 Its a toolkit and runtime for building highly concurrent applications which comes
 with ideas that have been around from some time - actor model.
@@ -21,8 +31,8 @@ Besides that it has many welcome features around clustering:
 3. self maintenance
 4. fault tolerance
 
-### System Requirements
+## System Requirements
 JustinDB works with Java 8 and newer.
 
-# Book
+## Book
 This project has dedicated book - http://speedcom.gitbooks.io/justindb/
