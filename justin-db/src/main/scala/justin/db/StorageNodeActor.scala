@@ -32,9 +32,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
 
     // cluster
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
-      val storageActorRef = StorageNodeActorRef(sender())
-      context.become(receive(clusterMembers.add(senderNodeId, storageActorRef)))
-      storageActorRef.storageNodeActor ! RegisterNode(nodeId)
+      context.become(receive(clusterMembers.add(senderNodeId, StorageNodeActorRef(sender()))))
+      sender() ! RegisterNode(nodeId)
     case MemberUp(m)                => register(m)
     case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(register)
 
