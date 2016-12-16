@@ -10,7 +10,7 @@ import justin.db.versioning.{VCs2Compare, VectorClockComparator}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class LocalDataWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
+class ReplicaLocalWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
 
   private val vectorClockComparator = new VectorClockComparator[NodeId]
 

@@ -9,7 +9,7 @@ import justin.db.replication.{N, PreferenceList, R}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
-                             localDataReader: LocalDataReader,
+                             localDataReader: ReplicaLocalReader,
                              remoteDataReader: RemoteDataReader)(implicit ec: ExecutionContext)
   extends (StorageNodeReadData => Future[StorageNodeReadingResult]) {
 
