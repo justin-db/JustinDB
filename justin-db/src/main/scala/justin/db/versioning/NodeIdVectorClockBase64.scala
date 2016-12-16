@@ -4,7 +4,6 @@ import java.nio.charset.{Charset, StandardCharsets}
 import java.util.Base64
 
 import justin.consistent_hashing.NodeId
-import justin.db.versioning.DataVersioning.NodeIdVectorClock
 import justin.vector_clocks.{Counter, VectorClock}
 import spray.json.DefaultJsonProtocol._
 import spray.json._

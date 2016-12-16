@@ -2,8 +2,7 @@ package justin.db.client
 
 import akka.http.scaladsl.model.headers.{ModeledCustomHeader, ModeledCustomHeaderCompanion}
 import justin.consistent_hashing.NodeId
-import justin.db.versioning.DataVersioning._
-import justin.db.versioning.NodeIdVectorClockBase64
+import justin.db.versioning.{NodeIdVectorClock, NodeIdVectorClockBase64}
 import justin.vector_clocks.VectorClock
 
 import scala.util.Try

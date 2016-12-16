@@ -3,7 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
-import justin.db.versioning.DataVersioning.NodeIdVectorClock
+import justin.db.versioning.NodeIdVectorClock
 import justin.vector_clocks.VectorClock
 
 case class Data(id: UUID, value: String, vclock: NodeIdVectorClock = VectorClock(), timestamp: Long = System.currentTimeMillis())

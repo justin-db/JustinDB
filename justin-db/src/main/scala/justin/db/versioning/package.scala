@@ -7,6 +7,8 @@ import scala.language.implicitConversions
 
 package object versioning {
 
+  type NodeIdVectorClock = VectorClock[NodeId]
+
   /**
     * Create Vector Clock from plain string eg. "A:1, B:1, C:1"
     */
