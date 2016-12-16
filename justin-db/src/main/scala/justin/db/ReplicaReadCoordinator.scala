@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
                              localDataReader: ReplicaLocalReader,
-                             remoteDataReader: RemoteDataReader)(implicit ec: ExecutionContext)
+                             remoteDataReader: ReplicaRemoteReader)(implicit ec: ExecutionContext)
   extends (StorageNodeReadData => Future[StorageNodeReadingResult]) {
 
   override def apply(cmd: StorageNodeReadData): Future[StorageNodeReadingResult] = cmd match {

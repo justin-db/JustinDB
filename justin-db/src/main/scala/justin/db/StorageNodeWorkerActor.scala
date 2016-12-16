@@ -21,7 +21,7 @@ class StorageNodeWorkerActor(nodeId: NodeId, storage: PluggableStorageProtocol, 
   private def readData(sender: ActorRef, clusterMembers: ClusterMembers, readCmd: StorageNodeReadData) = {
     def sendBack(msg: StorageNodeReadingResult) = sender ! msg
 
-    new ReplicaReadCoordinator(nodeId, clusterMembers, ring, n, new ReplicaLocalReader(storage), new RemoteDataReader)
+    new ReplicaReadCoordinator(nodeId, clusterMembers, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
       .apply(readCmd)
       .foreach(sendBack)
   }

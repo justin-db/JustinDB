@@ -8,7 +8,7 @@ import justin.db.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadi
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
-class RemoteDataReaderTest extends TestKit(ActorSystem("test-system"))
+class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike
   with Matchers
   with ScalaFutures {
@@ -17,7 +17,7 @@ class RemoteDataReaderTest extends TestKit(ActorSystem("test-system"))
 
   it should "get info back that one of the value could be found and second one is obsolete" in {
     // given
-    val service = new RemoteDataReader()(system.dispatcher)
+    val service = new ReplicaRemoteReader()(system.dispatcher)
     val id = UUID.randomUUID()
     val foundData = Data(id, "value")
     val storageNotFoundActorRef = testActorRef(msgBack = StorageNodeReadingResult.NotFound)
@@ -33,7 +33,7 @@ class RemoteDataReaderTest extends TestKit(ActorSystem("test-system"))
 
   it should "recover failed behavior of actor" in {
     // given
-    val service = new RemoteDataReader()(system.dispatcher)
+    val service = new ReplicaRemoteReader()(system.dispatcher)
     val id = UUID.randomUUID()
     val storageActorRef = testActorRef(new Exception)
     val storageNodeRefs = List(StorageNodeActorRef(storageActorRef))

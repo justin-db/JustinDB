@@ -9,7 +9,7 @@ import justin.db.StorageNodeActorProtocol._
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoteDataReader(implicit ec: ExecutionContext) {
+class ReplicaRemoteReader(implicit ec: ExecutionContext) {
 
   private implicit val timeout = Timeout(3.seconds) // TODO: tune this value
 
