@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaWriteCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
                               localDataWriter: ReplicaLocalWriter,
-                              remoteDataWriter: RemoteDataWriter)(implicit ec: ExecutionContext)
+                              remoteDataWriter: ReplicaRemoteWriter)(implicit ec: ExecutionContext)
   extends (StorageNodeWriteData => Future[StorageNodeWritingResult]) {
 
   override def apply(cmd: StorageNodeWriteData): Future[StorageNodeWritingResult] = cmd match {

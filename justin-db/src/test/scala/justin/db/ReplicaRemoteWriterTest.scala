@@ -8,7 +8,7 @@ import justin.db.StorageNodeActorProtocol.{StorageNodeWriteData, StorageNodeWrit
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
-class RemoteDataWriterTest extends TestKit(ActorSystem("test-system"))
+class ReplicaRemoteWriterTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike
   with Matchers
   with ScalaFutures {
@@ -17,7 +17,7 @@ class RemoteDataWriterTest extends TestKit(ActorSystem("test-system"))
 
   it should "get info back that one of the saving is successful and second one has failed" in {
     // given
-    val service = new RemoteDataWriter()(system.dispatcher)
+    val service = new ReplicaRemoteWriter()(system.dispatcher)
     val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
     val storageSuccessfulActorRef = testActorRef(msgBack = StorageNodeWritingResult.SuccessfulWrite)
     val storageFailedActorRef     = testActorRef(msgBack = StorageNodeWritingResult.FailedWrite)
@@ -32,7 +32,7 @@ class RemoteDataWriterTest extends TestKit(ActorSystem("test-system"))
 
   it should "recover failed behavior of actor" in {
     // given
-    val service = new RemoteDataWriter()(system.dispatcher)
+    val service = new ReplicaRemoteWriter()(system.dispatcher)
     val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
     val storageActorRef = testActorRef(new Exception)
     val storageNodeRefs = List(StorageNodeActorRef(storageActorRef))
