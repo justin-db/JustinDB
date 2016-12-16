@@ -1,6 +1,6 @@
 package justin.db
 
-import akka.actor.{Actor, Props, RootActorPath}
+import akka.actor.{Actor, ActorRef, Props, RootActorPath}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.routing.{DefaultResizer, RoundRobinPool}
@@ -62,3 +62,5 @@ object StorageNodeActor {
     Props(new StorageNodeActor(nodeId, storage, ring, n))
   }
 }
+
+case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
