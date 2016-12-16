@@ -3,7 +3,7 @@ package justin.db
 import akka.actor.{Actor, Props, RootActorPath}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, Member, MemberStatus}
-import akka.routing.RoundRobinPool
+import akka.routing.{DefaultResizer, RoundRobinPool}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.N
@@ -17,7 +17,10 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   private val workerRouter = context.actorOf(
-    props = RoundRobinPool(5).props(StorageNodeWorkerActor.props(nodeId, storage, ring, n)),
+    props = RoundRobinPool(
+      nrOfInstances = 5,
+      resizer       = Some(DefaultResizer(lowerBound = 2, upperBound = 15))
+    ).props(StorageNodeWorkerActor.props(nodeId, storage, ring, n)),
     name = "workerRouter"
   )
 
