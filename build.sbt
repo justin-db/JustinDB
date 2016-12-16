@@ -1,7 +1,7 @@
-import com.typesafe.sbt.SbtMultiJvm
-import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
+//import com.typesafe.sbt.SbtMultiJvm
+//import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
-addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
+addCommandAlias("compileAll", ";compile;test:compile") //;multi-jvm:compile")
 
 fork in run := true
 
@@ -24,38 +24,21 @@ initialize := {
 }
 
 lazy val core = (project in file("justin-db"))
-  .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
     name := "justin-db",
     scalaVersion := Version.scala,
     scalacOptions in Compile ++= Seq("-encoding", "UTF-8", "-target:jvm-1.8", "-deprecation", "-feature", "-unchecked", "-Xlog-reflective-calls", "-Xlint"),
     javacOptions in Compile ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked", "-Xlint:deprecation"),
-    libraryDependencies ++= Dependencies.core,
-    javaOptions in run ++= Seq("-Xms128m", "-Xmx1024m", "-Djava.library.path=./target/native"),
-    Keys.fork in run := true,
-    compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
-    parallelExecution in Test := false,
-    executeTests in Test <<= (executeTests in Test, executeTests in MultiJvm) map {
-      case (testResults, multiNodeResults)  =>
-        val overall =
-          if (testResults.overall.id < multiNodeResults.overall.id)
-            multiNodeResults.overall
-          else
-            testResults.overall
-        Tests.Output(overall,
-          testResults.events ++ multiNodeResults.events,
-          testResults.summaries ++ multiNodeResults.summaries)
-    }
-  )
-  .configs (MultiJvm)
-  .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts)
+    libraryDependencies ++= Dependencies.core
+  ).dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts)
 
 lazy val httpClient = (project in file("justin-db/client/http")).settings(
   name := "justin-db-client-http",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.httpClient,
   fork in Test := true,
-  javaOptions in Test += "-Dconfig.resource=test.conf"
+  javaOptions in Test += "-Dconfig.resource=test.conf",
+  mainClass in assembly := Some("justin.db.client.Main")
 ).dependsOn(core, dbStorageInMem)
 
 lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
