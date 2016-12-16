@@ -39,7 +39,7 @@ class DataTest extends FlatSpec with Matchers {
     val expectedVclock = VectorClock[NodeId](Map(
       NodeId(1) -> Counter(3)
     ))
-    updatedData shouldBe Data(data.id, data.value, expectedVclock)
+    updatedData shouldBe Data(data.id, data.value, expectedVclock, data.timestamp)
   }
 
   it should "increase already existed vector clock's counter when updating data" in {
@@ -57,6 +57,6 @@ class DataTest extends FlatSpec with Matchers {
       NodeId(5) -> Counter(1),
       NodeId(8) -> Counter(1))
     )
-    updatedData shouldBe Data(data.id, data.value, expectedVclock)
+    updatedData shouldBe Data(data.id, data.value, expectedVclock, data.timestamp)
   }
 }
