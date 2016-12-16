@@ -15,4 +15,3 @@ object PreferenceList {
 
   private def getNextNodeId(ring: Ring) = ring.nextPartitionId _ andThen ring.getNodeId _
 }
-
