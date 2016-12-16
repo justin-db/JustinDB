@@ -11,7 +11,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
+class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Local Data Reader"
 
@@ -19,7 +19,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val id   = UUID.randomUUID()
     val data = Data(id, "value")
-    val service = new LocalDataReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
       override def put(cmd: StoragePutData): Future[Ack] = ???
     })
@@ -34,7 +34,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
   it should "not found data for non-existing key" in {
     // given
     val id = UUID.randomUUID()
-    val service = new LocalDataReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.None)
       override def put(cmd: StoragePutData): Future[Ack] = ???
     })
@@ -51,7 +51,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id = UUID.randomUUID()
     val data1 = Data(id, "some-data-1")
     val data2 = Data(id, "some-data-2")
-    val service = new LocalDataReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.successful(StorageGetData.Conflicted(data1, data2))
       override def put(cmd: StoragePutData): Future[Ack] = ???
     })
@@ -66,7 +66,7 @@ class LocalDataReaderTest extends FlatSpec with Matchers with ScalaFutures {
   it should "recover failure reading" in {
     // given
     val id = UUID.randomUUID()
-    val service = new LocalDataReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
       override def get(id: UUID): Future[StorageGetData] = Future.failed(new Exception)
       override def put(cmd: StoragePutData): Future[Ack] = ???
     })

@@ -8,7 +8,7 @@ import justin.db.storage.PluggableStorageProtocol.StorageGetData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class LocalDataReader(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
+class ReplicaLocalReader(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
   def apply(id: UUID): Future[StorageNodeReadingResult] = {
     storage.get(id).map {
       case StorageGetData.Single(data)             => StorageNodeReadingResult.Found(data)
