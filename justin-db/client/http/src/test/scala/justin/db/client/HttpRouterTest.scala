@@ -22,14 +22,15 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     * GET part
     */
   it should "get \"OK\" http code for successful read result" in {
-    val value  = "value"
     val id     = UUID.randomUUID()
+    val data   = Data(id, "value")
     val r      = 1
-    val router = new HttpRouter(getFound(Data(id, value)))
+    val router = new HttpRouter(getFound(data))
 
     Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.OK
-      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(value))
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(data.value))
+      header[VectorClockHeader]    shouldBe Some(VectorClockHeader(data.vclock))
     }
   }
 
@@ -43,6 +44,7 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.MultipleChoices
       responseAs[String].parseJson shouldBe JsObject("value" -> JsString("Multiple Choices"))
+      header[VectorClockHeader]    shouldBe Some(VectorClockHeader(data1.vclock)) // TODO: this is not yet true
     }
   }
 
@@ -55,6 +57,7 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.NotFound
       responseAs[String].parseJson shouldBe JsObject("value" -> JsString(s"Not found value with id $id"))
+      header[VectorClockHeader]    shouldBe None
     }
   }
 
@@ -68,6 +71,7 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.BadRequest
       responseAs[String].parseJson shouldBe JsObject("value" -> JsString(error))
+      header[VectorClockHeader]    shouldBe None
     }
   }
 
