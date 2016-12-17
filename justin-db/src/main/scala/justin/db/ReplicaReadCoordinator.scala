@@ -8,18 +8,21 @@ import justin.db.replication.{N, PreferenceList, R}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReplicaReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
-                             localDataReader: ReplicaLocalReader,
-                             remoteDataReader: ReplicaRemoteReader)(implicit ec: ExecutionContext)
-  extends (StorageNodeReadData => Future[StorageNodeReadingResult]) {
+class ReplicaReadCoordinator(
+  nodeId: NodeId,
+  ring: Ring,
+  n: N,
+  localDataReader: ReplicaLocalReader,
+  remoteDataReader: ReplicaRemoteReader
+)(implicit ec: ExecutionContext) extends ((StorageNodeReadData, ClusterMembers) => Future[StorageNodeReadingResult]) {
 
-  override def apply(cmd: StorageNodeReadData): Future[StorageNodeReadingResult] = cmd match {
+  override def apply(cmd: StorageNodeReadData, clusterMembers: ClusterMembers): Future[StorageNodeReadingResult] = cmd match {
     case StorageNodeReadData.Local(id)         => localDataReader.apply(id)
     case StorageNodeReadData.Replicated(r, id) =>
       val ringPartitionId = UUID2RingPartitionId.apply(id, ring)
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
 
-      readFromTargets(id, preferenceList).map(sumUpReads(r))
+      readFromTargets(id, preferenceList, clusterMembers).map(sumUpReads(r))
   }
 
   // TODO: what if one of the replica is conflicted?
@@ -34,7 +37,7 @@ class ReplicaReadCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, rin
     }
   }
 
-  private def readFromTargets(id: UUID, preferenceList: List[NodeId]) = {
+  private def readFromTargets(id: UUID, preferenceList: List[NodeId], clusterMembers: ClusterMembers) = {
     val localTargetOpt = preferenceList.find(_ == nodeId)
     val remoteTargets  = preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
 

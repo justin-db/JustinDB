@@ -21,16 +21,16 @@ class StorageNodeWorkerActor(nodeId: NodeId, storage: PluggableStorageProtocol, 
   private def readData(sender: ActorRef, clusterMembers: ClusterMembers, readCmd: StorageNodeReadData) = {
     def sendBack(msg: StorageNodeReadingResult) = sender ! msg
 
-    new ReplicaReadCoordinator(nodeId, clusterMembers, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
-      .apply(readCmd)
+    new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
+      .apply(readCmd, clusterMembers)
       .foreach(sendBack)
   }
 
   private def writeData(sender: ActorRef, clusterMembers: ClusterMembers, writeCmd: StorageNodeWriteData) = {
     def sendBack(msg: StorageNodeWritingResult) = sender ! msg
 
-    new ReplicaWriteCoordinator(nodeId, clusterMembers, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
-      .apply(writeCmd)
+    new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
+      .apply(writeCmd, clusterMembers)
       .foreach(sendBack)
   }
 }

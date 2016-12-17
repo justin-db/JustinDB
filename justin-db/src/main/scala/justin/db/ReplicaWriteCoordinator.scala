@@ -6,19 +6,22 @@ import justin.db.replication.{N, PreferenceList, W}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReplicaWriteCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ring: Ring, n: N,
-                              localDataWriter: ReplicaLocalWriter,
-                              remoteDataWriter: ReplicaRemoteWriter)(implicit ec: ExecutionContext)
-  extends (StorageNodeWriteData => Future[StorageNodeWritingResult]) {
+class ReplicaWriteCoordinator(
+  nodeId: NodeId,
+  ring: Ring,
+  n: N,
+  localDataWriter: ReplicaLocalWriter,
+  remoteDataWriter: ReplicaRemoteWriter
+)(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWritingResult]) {
 
-  override def apply(cmd: StorageNodeWriteData): Future[StorageNodeWritingResult] = cmd match {
+  override def apply(cmd: StorageNodeWriteData, clusterMembers: ClusterMembers): Future[StorageNodeWritingResult] = cmd match {
     case StorageNodeWriteData.Local(data)        => localDataWriter.apply(data)
     case StorageNodeWriteData.Replicate(w, data) =>
       val ringPartitionId = UUID2RingPartitionId.apply(data.id, ring)
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
       val updatedData     = Data.updateVclock(data, preferenceList)
 
-      writeToTargets(updatedData, preferenceList).map(sumUpWrites(w))
+      writeToTargets(updatedData, preferenceList, clusterMembers).map(sumUpWrites(w))
   }
 
   private def sumUpWrites(w: W)(writes: List[StorageNodeWritingResult]) = {
@@ -30,7 +33,7 @@ class ReplicaWriteCoordinator(nodeId: NodeId, clusterMembers: ClusterMembers, ri
     }
   }
 
-  private def writeToTargets(data: Data, preferenceList: List[NodeId]) = {
+  private def writeToTargets(data: Data, preferenceList: List[NodeId], clusterMembers: ClusterMembers) = {
     val localTargetOpt = preferenceList.find(_ == nodeId)
     val remoteTargets  = preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
 
