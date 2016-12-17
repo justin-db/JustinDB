@@ -32,7 +32,7 @@ object Main extends App {
     )
   }
 
-  val router = new StorageNodeRouter(new HttpStorageNodeClient(storageNodeActorRef))
+  val router = new HttpRouter(new HttpStorageNodeClient(storageNodeActorRef))
 
   Http()
     .bindAndHandle(router.routes, config.getString("http.interface"), config.getInt("http.port"))

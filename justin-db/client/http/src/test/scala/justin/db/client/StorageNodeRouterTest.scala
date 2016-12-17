@@ -6,7 +6,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import justin.db.client.StorageNodeRouter.{PutValue, _}
+import justin.db.client.HttpRouter.{PutValue, _}
 import justin.db.replication.{R, W}
 import justin.db.{Data, StorageNodeActorRef}
 import org.scalatest.{FlatSpec, Matchers}
@@ -16,7 +16,7 @@ import scala.concurrent.Future
 
 class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
 
-  behavior of "Storage Node Router"
+  behavior of "Http Router"
 
   /**
     * GET part
@@ -25,7 +25,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     val value  = "value"
     val id     = UUID.randomUUID().toString
     val r      = 1
-    val router = new StorageNodeRouter(getFound(value))
+    val router = new HttpRouter(getFound(value))
 
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.OK
@@ -38,7 +38,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     val id     = UUID.randomUUID()
     val data1  = Data(id, "value-1")
     val data2  = Data(id, "value-2")
-    val router = new StorageNodeRouter(getConflicted(data1, data2))
+    val router = new HttpRouter(getConflicted(data1, data2))
 
     Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.MultipleChoices
@@ -50,7 +50,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     val value  = "value"
     val id     = UUID.randomUUID().toString
     val r      = 1
-    val router = new StorageNodeRouter(notFound(value))
+    val router = new HttpRouter(notFound(value))
 
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.NotFound
@@ -63,7 +63,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     val id     = UUID.randomUUID().toString
     val r      = 1
     val error  = "Bad Request"
-    val router = new StorageNodeRouter(badRequest(error))
+    val router = new HttpRouter(badRequest(error))
 
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.BadRequest
@@ -92,7 +92,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     */
   it should "get \"NoContent\" http code for successful write result" in {
     val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
-    val router   = new StorageNodeRouter(successfulWrite(putValue))
+    val router   = new HttpRouter(successfulWrite(putValue))
 
     Post("/put", putValue) ~> Route.seal(router.routes) ~> check {
       status shouldBe StatusCodes.NoContent
@@ -102,7 +102,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
   it should "get \"BadRequest\" http code for unsuccessful write result" in {
     val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
     val error    = "unsuccessfully written data"
-    val router   = new StorageNodeRouter(unsuccessfulWrite(error))
+    val router   = new HttpRouter(unsuccessfulWrite(error))
 
     Post("/put", putValue) ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.BadRequest
@@ -112,7 +112,7 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
 
   it should "get \"MultipleChoices\" http code for conflicted write result" in {
     val putValue = PutValue(id = UUID.randomUUID(), value = "value", w = 3)
-    val router   = new StorageNodeRouter(conclictedWrite)
+    val router   = new HttpRouter(conclictedWrite)
 
     Post("/put", putValue) ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.MultipleChoices

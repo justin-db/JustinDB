@@ -16,7 +16,7 @@ import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.ExecutionContext
 
-object StorageNodeRouter {
+object HttpRouter {
   import Unmarshallers.UuidFormat
 
   case class Result(value: String)
@@ -26,8 +26,8 @@ object StorageNodeRouter {
   implicit val putValueFormat = jsonFormat3(PutValue)
 }
 
-class StorageNodeRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
-  import StorageNodeRouter._
+class HttpRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
+  import HttpRouter._
 
   def routes: Route = withVectorClockHeader { vClockHeader =>
     (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
