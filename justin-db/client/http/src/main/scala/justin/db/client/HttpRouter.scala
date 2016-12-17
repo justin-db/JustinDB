@@ -15,6 +15,7 @@ import justin.db.replication.{R, W}
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.ExecutionContext
+import scala.util.{Failure, Success}
 
 object HttpRouter {
   import Unmarshallers.UuidFormat
@@ -30,13 +31,14 @@ class HttpRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, m
   import HttpRouter._
 
   def routes: Route = withVectorClockHeader { vClockHeader =>
-    (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
-      complete {
-        client.get(uuid, R(r)).map[ToResponseMarshallable] {
-          case GetValueResponse.Found(data)              => OK              -> Result(data.value)
-          case GetValueResponse.Conflicted(data1, data2) => MultipleChoices -> Result("Multiple Choices") // TODO: finish
-          case GetValueResponse.NotFound                 => NotFound        -> Result(s"Not found value with id ${uuid.toString}")
-          case GetValueResponse.Failure(err)             => BadRequest      -> Result(err)
+    {
+      (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
+        onComplete(client.get(uuid, R(r))) {
+          case Success(GetValueResponse.Found(data))              => respondWithHeader(VectorClockHeader(data.vclock)) { complete(OK -> Result(data.value)) }
+          case Success(GetValueResponse.Conflicted(data1, data2)) => respondWithHeader(VectorClockHeader(data1.vclock)) { complete(MultipleChoices -> Result("Multiple Choices")) } // TODO: how returned vector clock header and result should look like
+          case Success(GetValueResponse.NotFound)                 => complete(NotFound        -> Result(s"Not found value with id ${uuid.toString}"))
+          case Success(GetValueResponse.Failure(err))             => complete(BadRequest      -> Result(err))
+          case Failure(ex)                                        => complete(InternalServerError -> Result(ex.getMessage))
         }
       }
     } ~
