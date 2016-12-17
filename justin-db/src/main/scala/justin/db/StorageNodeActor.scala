@@ -9,20 +9,27 @@ import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.N
 import justin.db.storage.PluggableStorageProtocol
 
+import scala.concurrent.ExecutionContext
+
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor {
 
+  private implicit val ec: ExecutionContext = context.dispatcher
   private val cluster = Cluster(context.system)
 
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  private val workerRouter = context.actorOf(
-    props = RoundRobinPool(
-      nrOfInstances = 5,
-      resizer       = Some(DefaultResizer(lowerBound = 2, upperBound = 15))
-    ).props(StorageNodeWorkerActor.props(nodeId, storage, ring, n)),
-    name = "workerRouter"
-  )
+  private val workerRouter = {
+    val props = StorageNodeWorkerActor.props(
+      nodeId,
+      new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader),
+      new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
+    )
+    context.actorOf(
+      props = RoundRobinPool(nrOfInstances = 5, resizer = Some(DefaultResizer(lowerBound = 2, upperBound = 15))).props(props),
+      name = "workerRouter"
+    )
+  }
 
   override def receive: Receive = receive(ClusterMembers.empty)
 
