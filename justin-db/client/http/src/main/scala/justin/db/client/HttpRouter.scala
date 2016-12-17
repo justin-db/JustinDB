@@ -36,8 +36,8 @@ class HttpRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, m
         onComplete(client.get(uuid, R(r))) {
           case Success(GetValueResponse.Found(data))              => respondWithHeader(VectorClockHeader(data.vclock)) { complete(OK -> Result(data.value)) }
           case Success(GetValueResponse.Conflicted(data1, data2)) => respondWithHeader(VectorClockHeader(data1.vclock)) { complete(MultipleChoices -> Result("Multiple Choices")) } // TODO: how returned vector clock header and result should look like
-          case Success(GetValueResponse.NotFound)                 => complete(NotFound        -> Result(s"Not found value with id ${uuid.toString}"))
-          case Success(GetValueResponse.Failure(err))             => complete(BadRequest      -> Result(err))
+          case Success(GetValueResponse.NotFound)                 => complete(NotFound -> Result(s"Not found value with id ${uuid.toString}"))
+          case Success(GetValueResponse.Failure(err))             => complete(BadRequest -> Result(err))
           case Failure(ex)                                        => complete(InternalServerError -> Result(ex.getMessage))
         }
       }
