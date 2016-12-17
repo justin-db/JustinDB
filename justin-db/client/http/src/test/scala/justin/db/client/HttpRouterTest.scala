@@ -75,19 +75,19 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     }
   }
 
-  private def getFound(data: Data) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def getFound(data: Data) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(data))
   }
 
-  private def getConflicted(data1: Data, data2: Data) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def getConflicted(data1: Data, data2: Data) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Conflicted(data1, data2))
   }
 
-  private def notFound(value: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def notFound(value: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.NotFound)
   }
 
-  private def badRequest(error: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def badRequest(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Failure(error))
   }
 
@@ -124,15 +124,15 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     }
   }
 
-  private def successfulWrite(putValue: PutValue) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def successfulWrite(putValue: PutValue) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success)
   }
 
-  private def unsuccessfulWrite(error: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def unsuccessfulWrite(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Failure(error))
   }
 
-  private def conclictedWrite = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+  private def conclictedWrite = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Conflict)
   }
 }

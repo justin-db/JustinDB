@@ -10,13 +10,13 @@ import justin.db.{Data, StorageNodeActorRef}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 
-class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
+class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike
   with Matchers
   with ScalaFutures
   with BeforeAndAfterAll {
 
-  behavior of "HTTP Storage Node Client"
+  behavior of "ActorRef Storage Node Client"
 
   /**
     * GET part
@@ -26,7 +26,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Found(data))
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.get(id, R(1))
@@ -39,7 +39,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.NotFound)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.get(id, R(1))
@@ -52,7 +52,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.FailedRead)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.get(id, R(1))
@@ -67,7 +67,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val data1    = Data(id, "value-1")
     val data2    = Data(id, "value-2")
     val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Conflicted(data1, data2))
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.get(id, R(1))
@@ -80,7 +80,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val actorRef = getTestActorRef(msgBack = new Exception)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.get(id, R(1))
@@ -97,7 +97,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
     val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.SuccessfulWrite)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.write(data, W(1))
@@ -111,7 +111,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
     val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.FailedWrite)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.write(data, W(1))
@@ -125,7 +125,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
     val actorRef = writeTestActorRef(msgBack = new Exception)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.write(data, W(1))
@@ -139,7 +139,7 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
     val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.ConflictedWrite)
-    val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.write(data, W(1))

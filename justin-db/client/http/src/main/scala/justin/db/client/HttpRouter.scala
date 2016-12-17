@@ -27,7 +27,7 @@ object HttpRouter {
   implicit val putValueFormat = jsonFormat3(PutValue)
 }
 
-class HttpRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
+class HttpRouter(client: ActorRefStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
   import HttpRouter._
 
   def routes: Route = withVectorClockHeader { vClockHeader =>
