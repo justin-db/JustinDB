@@ -14,7 +14,7 @@ import spray.json.{JsString, _}
 
 import scala.concurrent.Future
 
-class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
+class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
 
   behavior of "Http Router"
 
