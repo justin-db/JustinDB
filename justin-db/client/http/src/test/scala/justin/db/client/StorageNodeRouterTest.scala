@@ -23,11 +23,11 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     */
   it should "get \"OK\" http code for successful read result" in {
     val value  = "value"
-    val id     = UUID.randomUUID().toString
+    val id     = UUID.randomUUID()
     val r      = 1
-    val router = new HttpRouter(getFound(value))
+    val router = new HttpRouter(getFound(Data(id, value)))
 
-    Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
+    Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.OK
       responseAs[String].parseJson shouldBe JsObject("value" -> JsString(value))
     }
@@ -71,8 +71,8 @@ class StorageNodeRouterTest extends FlatSpec with Matchers with ScalatestRouteTe
     }
   }
 
-  private def getFound(value: String) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
-    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(value))
+  private def getFound(data: Data) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {
+    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(data))
   }
 
   private def getConflicted(data1: Data, data2: Data) = new HttpStorageNodeClient(StorageNodeActorRef(null)) {

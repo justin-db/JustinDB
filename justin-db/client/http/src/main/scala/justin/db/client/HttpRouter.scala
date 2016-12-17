@@ -33,7 +33,7 @@ class HttpRouter(client: HttpStorageNodeClient)(implicit ec: ExecutionContext, m
     (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
       complete {
         client.get(uuid, R(r)).map[ToResponseMarshallable] {
-          case GetValueResponse.Found(value)             => OK              -> Result(value)
+          case GetValueResponse.Found(data)              => OK              -> Result(data.value)
           case GetValueResponse.Conflicted(data1, data2) => MultipleChoices -> Result("Multiple Choices") // TODO: finish
           case GetValueResponse.NotFound                 => NotFound        -> Result(s"Not found value with id ${uuid.toString}")
           case GetValueResponse.Failure(err)             => BadRequest      -> Result(err)

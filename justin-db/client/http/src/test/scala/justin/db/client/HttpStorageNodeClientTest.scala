@@ -24,14 +24,15 @@ class HttpStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   it should "handle actor's \"Found\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Found(Data(id, "value")))
+    val data     = Data(id, "value")
+    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Found(data))
     val client   = new HttpStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
     val result = client.get(id, R(1))
 
     // then
-    whenReady(result) { _ shouldBe GetValueResponse.Found("value") }
+    whenReady(result) { _ shouldBe GetValueResponse.Found(data) }
   }
 
   it should "handle actor's \"NotFound\" message for asked data" in {
