@@ -4,9 +4,8 @@ import justin.consistent_hashing.NodeId
 import justin.db.StorageNodeActorProtocol._
 import justin.db.storage.PluggableStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
-import justin.db.versioning.NodeIdVectorClock
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
-import justin.db.versioning.{VCs2Compare, VectorClockComparator}
+import justin.db.versioning.{NodeIdVectorClock, VCs2Compare, VectorClockComparator}
 
 import scala.concurrent.{ExecutionContext, Future}
 
