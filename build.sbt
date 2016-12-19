@@ -1,6 +1,11 @@
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
+name           := "JustinDB"
+version        := "0.1"
+maintainer     := "Mateusz Maciaszek"
+packageSummary := "JustinDB Cluster"
+
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 
 fork in run := true
