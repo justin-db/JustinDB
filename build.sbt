@@ -37,14 +37,8 @@ lazy val core = (project in file("justin-db"))
     parallelExecution in Test := false,
     executeTests in Test <<= (executeTests in Test, executeTests in MultiJvm) map {
       case (testResults, multiNodeResults)  =>
-        val overall =
-          if (testResults.overall.id < multiNodeResults.overall.id)
-            multiNodeResults.overall
-          else
-            testResults.overall
-        Tests.Output(overall,
-          testResults.events ++ multiNodeResults.events,
-          testResults.summaries ++ multiNodeResults.summaries)
+        val overall = if (testResults.overall.id < multiNodeResults.overall.id) multiNodeResults.overall else testResults.overall
+        Tests.Output(overall, testResults.events ++ multiNodeResults.events, testResults.summaries ++ multiNodeResults.summaries)
     }
   )
   .configs (MultiJvm)
