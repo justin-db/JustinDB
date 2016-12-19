@@ -28,6 +28,7 @@ initialize := {
   assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
 }
 
+// PROJECT DEFINITIONS
 lazy val core = (project in file("justin-db"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
@@ -49,13 +50,17 @@ lazy val core = (project in file("justin-db"))
   .configs (MultiJvm)
   .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts)
 
-lazy val httpClient = (project in file("justin-db/client/http")).settings(
-  name := "justin-db-client-http",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.httpClient,
-  fork in Test := true,
-  javaOptions in Test += "-Dconfig.resource=test.conf"
-).dependsOn(core, dbStorageInMem)
+lazy val httpClient = (project in file("justin-db/client/http"))
+  .enablePlugins(JavaAppPackaging)
+  .settings(
+    name := "justin-db-client-http",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.httpClient,
+    fork in Test := true,
+    javaOptions in Test += "-Dconfig.resource=test.conf"
+  )
+  .dependsOn(core, dbStorageInMem)
+
 
 lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
