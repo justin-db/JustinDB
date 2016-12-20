@@ -9,6 +9,7 @@ object Version {
   val scalatest   = "3.0.1"
   val scalacheck  = "1.13.4"
   val sigarLoader = "1.6.6"
+  val scopt       = "3.5.0"
 }
 
 object Library {
@@ -29,11 +30,15 @@ object Library {
   val akkaClusterTools     = "com.typesafe.akka" %% "akka-cluster-tools"                % Version.akka
   val akkaMultiNodeTestkit = "com.typesafe.akka" %% "akka-multi-node-testkit"           % Version.akka
 
-  val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
-
+  // test
   val scalactic            = "org.scalactic"     %% "scalactic"                         % Version.scalatest
+
   val scalatest            = "org.scalatest"     %% "scalatest"                         % Version.scalatest
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
+
+  // other
+  val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
+  val scopt                = "com.github.scopt"  %% "scopt"                             % Version.scopt
 }
 
 object Dependencies {
@@ -47,7 +52,7 @@ object Dependencies {
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test") ++ Seq(akkaHttpSprayJson)
 
-  val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest
+  val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt)
 
   val dbStorageInMem = genericTest
 
