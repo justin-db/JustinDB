@@ -32,7 +32,6 @@ object Library {
 
   // test
   val scalactic            = "org.scalactic"     %% "scalactic"                         % Version.scalatest
-
   val scalatest            = "org.scalatest"     %% "scalatest"                         % Version.scalatest
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
 
