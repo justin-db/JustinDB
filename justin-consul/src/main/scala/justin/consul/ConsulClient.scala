@@ -3,20 +3,21 @@ package justin.consul
 import akka.actor.{ActorSystem, Address}
 import com.google.common.net.HostAndPort
 import com.orbitz.consul.Consul
+import com.orbitz.consul.model.health.ServiceHealth
 import com.orbitz.consul.option.{ConsistencyMode, ImmutableQueryOptions}
 
 import scala.collection.JavaConversions._
 
-class ConsulClient(config: ConsulClientConfig) {
+class ConsulClient(config: ConsulClientConfig)(implicit actorSystem: ActorSystem) {
 
-  def getServiceAddresses(implicit actorSystem: ActorSystem): List[Address] = {
-    val serviceNodes = ConsulClient.buildConsul(config.host, config.port)
+  def getServiceAddresses: List[Address] = serviceNodes.getResponse.toList.map(serviceHealth2Address)
+
+  private def serviceHealth2Address(sh: ServiceHealth) = Address("akka.tcp", actorSystem.name, sh.getService.getAddress, sh.getService.getPort)
+
+  private def serviceNodes = {
+    ConsulClient.buildConsul(config.host, config.port)
       .healthClient()
       .getHealthyServiceInstances(config.serviceName.name, ConsulClient.buildQueryOpts)
-
-    serviceNodes.getResponse.toList.map { node =>
-      Address("akka.tcp", actorSystem.name, node.getService.getAddress, node.getService.getPort)
-    }
   }
 }
 
