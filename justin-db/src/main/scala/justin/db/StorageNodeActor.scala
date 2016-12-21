@@ -19,12 +19,10 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  private val workerRouter = {
-    context.actorOf(
-      props = StorageNodeActor.WorkerRouter.props(nodeId, ring, n, storage),
-      name  = StorageNodeActor.WorkerRouter.routerName
-    )
-  }
+  private val workerRouter = context.actorOf(
+    props = StorageNodeActor.WorkerRouter.props(nodeId, ring, n, storage),
+    name  = StorageNodeActor.WorkerRouter.routerName
+  )
 
   override def receive: Receive = receive(ClusterMembers.empty)
 
