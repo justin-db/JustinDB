@@ -72,5 +72,5 @@ object Dependencies {
 
   val consistenHashing = genericTest
 
-  val consul = Seq(consulClient)
+  val consul = Seq(akkaActor, consulClient)
 }
