@@ -1,7 +1,8 @@
 package justin.consul
 
+import java.net.URL
+
 import akka.actor.{ActorSystem, Address}
-import com.google.common.net.HostAndPort
 import com.orbitz.consul.Consul
 import com.orbitz.consul.model.health.ServiceHealth
 import com.orbitz.consul.option.{ConsistencyMode, ImmutableQueryOptions}
@@ -24,8 +25,8 @@ class ConsulClient(config: ConsulClientConfig)(implicit actorSystem: ActorSystem
 object ConsulClient {
 
   private def buildConsul(consulHost: ConsulHost, consulPort: ConsulPort): Consul = {
-    com.orbitz.consul.Consul.builder()
-      .withHostAndPort(new HostAndPort(consulHost.host, consulPort.port))
+    Consul.builder()
+      .withUrl(new URL("http", consulHost.host, consulPort.port, ""))
       .build()
   }
 
