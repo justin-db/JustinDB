@@ -3,6 +3,7 @@ package justin.db.client
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.RouteConcatenation
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
@@ -10,7 +11,7 @@ import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
 
-object Main extends App {
+object Main extends App with RouteConcatenation {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
     .withFallback(ConfigFactory.load())
 
@@ -32,10 +33,10 @@ object Main extends App {
     )
   }
 
-  val router = new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef))
+  val routes = new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~ new HealthCheckRouter().routes
 
   Http()
-    .bindAndHandle(router.routes, config.getString("http.interface"), config.getInt("http.port"))
+    .bindAndHandle(routes, config.getString("http.interface"), config.getInt("http.port"))
     .map { binding => logger.info(s"HTTP server started at ${binding.localAddress}") }
     .recover { case ex => logger.error(ex, "Could not start HTTP server") }
 }
