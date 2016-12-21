@@ -20,14 +20,9 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   private val workerRouter = {
-    val props = StorageNodeWorkerActor.props(
-      nodeId,
-      new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader),
-      new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
-    )
     context.actorOf(
-      props = RoundRobinPool(nrOfInstances = 5, resizer = Some(DefaultResizer(lowerBound = 2, upperBound = 15))).props(props),
-      name = "workerRouter"
+      props = StorageNodeActor.WorkerRouter.props(nodeId, ring, n, storage),
+      name  = StorageNodeActor.WorkerRouter.routerName
     )
   }
 
@@ -67,6 +62,20 @@ object StorageNodeActor {
 
   def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = {
     Props(new StorageNodeActor(nodeId, storage, ring, n))
+  }
+
+  object WorkerRouter {
+    def routerName: String = "WorkerRouter"
+
+    def props(nodeId: NodeId, ring: Ring, n: N, storage: PluggableStorageProtocol)(implicit ec: ExecutionContext): Props = {
+      RoundRobinPool(nrOfInstances = 5, resizer = Some(DefaultResizer(lowerBound = 2, upperBound = 15))).props {
+        StorageNodeWorkerActor.props(
+          nodeId,
+          new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader),
+          new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
+        )
+      }
+    }
   }
 }
 
