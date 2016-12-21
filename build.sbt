@@ -96,6 +96,12 @@ lazy val consistentHashing = (project in file("justin-consistent-hashing")).sett
   libraryDependencies ++= Dependencies.consistenHashing
 )
 
+lazy val consul = (project in file("justin-consul")).settings(
+  name := "justin-consul",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.consul
+)
+
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 

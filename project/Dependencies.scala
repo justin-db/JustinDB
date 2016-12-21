@@ -12,6 +12,7 @@ object Version {
   val scopt       = "3.5.0"
   val crjdt       = "0.0.6"
   val logback     = "1.1.8"
+  val consul      = "0.13.3"
 }
 
 object Library {
@@ -41,6 +42,7 @@ object Library {
   val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
   val scopt                = "com.github.scopt"  %% "scopt"                             % Version.scopt
   val logback              = "ch.qos.logback"     % "logback-classic"                   % Version.logback
+  val consulClient         = "com.orbitz.consul"  % "consul-client"                     % Version.consul
 
   // crjdt
   val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
@@ -69,4 +71,6 @@ object Dependencies {
   val crdts = genericTest ++ Seq(crjdtCirce, crjdtCirce)
 
   val consistenHashing = genericTest
+
+  val consul = Seq(consulClient)
 }
