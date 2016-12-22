@@ -10,6 +10,7 @@ import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
+import akka.http.scaladsl.server.directives.DebuggingDirectives._
 
 object Main extends App with RouteConcatenation {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
@@ -20,6 +21,10 @@ object Main extends App with RouteConcatenation {
   implicit val materializer = ActorMaterializer()
 
   val logger = Logging(system, getClass)
+
+  logger.info("JustinDB " + BuildInfo.version)
+  logger.info("Build Info: ")
+  logger.info(BuildInfo.toString)
 
   val storageNodeActorRef = StorageNodeActorRef {
     val nodeId      = NodeId(config.getInt("node.id"))
@@ -33,7 +38,11 @@ object Main extends App with RouteConcatenation {
     )
   }
 
-  val routes = new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~ new HealthCheckRouter().routes
+  val routes = logRequestResult(system.name) {
+    new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
+      new HealthCheckRouter().routes ~
+      new BuildInfoRouter().routes
+  }
 
   Http()
     .bindAndHandle(routes, config.getString("http.interface"), config.getInt("http.port"))

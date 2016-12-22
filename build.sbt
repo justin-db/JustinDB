@@ -51,6 +51,7 @@ lazy val core = (project in file("justin-db"))
 
 lazy val httpClient = (project in file("justin-db/client/http"))
   .enablePlugins(JavaAppPackaging)
+  .enablePlugins(BuildInfoPlugin)
   .settings(
     name := "justin-db-client-http",
     scalaVersion := Version.scala,
@@ -58,8 +59,13 @@ lazy val httpClient = (project in file("justin-db/client/http"))
     fork in Test := true,
     javaOptions in Test += "-Dconfig.resource=test.conf"
   )
+  .settings(
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit, git.gitCurrentBranch),
+    buildInfoOptions += BuildInfoOption.ToJson
+  )
+  .settings(versionWithGit)
+  .settings(git.useGitDescribe := true)
   .dependsOn(core, dbStorageInMem)
-
 
 lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
