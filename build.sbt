@@ -1,5 +1,7 @@
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 name           := "JustinDB"
 version        := "0.1"
@@ -51,6 +53,7 @@ lazy val core = (project in file("justin-core"))
 lazy val httpClient = (project in file("justin-http-client"))
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(BuildInfoPlugin)
+  .settings(assemblySettings)
   .settings(
     name := "justin-http-client",
     scalaVersion := Version.scala,
