@@ -6,7 +6,6 @@ version        := "0.1"
 maintainer     := "Mateusz Maciaszek"
 packageSummary := "JustinDB Cluster"
 
-addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 
 fork in run := true
 
@@ -97,3 +96,6 @@ lazy val consistentHashing = (project in file("justin-consistent-hashing")).sett
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.consistenHashing
 )
+
+// ALIASES
+addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
