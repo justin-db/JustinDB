@@ -10,6 +10,7 @@ object Version {
   val scalacheck  = "1.13.4"
   val sigarLoader = "1.6.6"
   val scopt       = "3.5.0"
+  val crjdt       = "0.0.6"
 }
 
 object Library {
@@ -38,6 +39,10 @@ object Library {
   // other
   val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
   val scopt                = "com.github.scopt"  %% "scopt"                             % Version.scopt
+
+  // crjdt
+  val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
+  val crjdtCirce           = "eu.timepit"        %% "crjdt-circe"                       % Version.crjdt
 }
 
 object Dependencies {
@@ -61,7 +66,7 @@ object Dependencies {
 
   val vectorClocks = genericTest
 
-  val crdts = genericTest
+  val crdts = genericTest ++ Seq(crjdtCirce, crjdtCirce)
 
   val consistenHashing = genericTest
 }
