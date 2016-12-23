@@ -41,4 +41,4 @@ object ConsulClient {
 case class ConsulHost(host: String) extends AnyVal
 case class ConsulPort(port: Int) extends AnyVal
 case class ConsulServiceName(name: String) extends AnyVal
-case class ConsulClientConfig(host: ConsulHost, port: ConsulPort,serviceName: ConsulServiceName)
+case class ConsulClientConfig(host: ConsulHost, port: ConsulPort, serviceName: ConsulServiceName)
