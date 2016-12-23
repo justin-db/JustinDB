@@ -37,7 +37,7 @@ services:
       - "8603:8600"
       - "9003:9001"
 
-  akka-cluster-demo1:
+  justindb-cluster1:
     image: justin/justindb-cluster
     hostname: justindb-cluster1
     links:
@@ -50,8 +50,9 @@ services:
     environment:
       - CONSUL_HOST=consul1
       - SERVICE_PORT=2551
+      - NODE_ID=1
 
-  akka-cluster-demo2:
+  justindb-cluster2:
     image: justin/justindb-cluster
     hostname: justindb-cluster2
     links:
@@ -64,8 +65,9 @@ services:
       - CONSUL_HOST=consul1
       - SERVICE_AKKA_PORT=2552
       - SERVICE_PORT=2552
+      - NODE_ID=2
 
-  akka-cluster-demo3:
+  justindb-cluster3:
     image: justin/justindb-cluster
     hostname: justindb-cluster3
     links:
@@ -77,3 +79,4 @@ services:
       - CONSUL_HOST=consul1
       - SERVICE_AKKA_PORT=2553
       - SERVICE_PORT=2553
+      - NODE_ID=3
