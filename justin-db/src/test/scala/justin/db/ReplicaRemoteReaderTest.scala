@@ -13,7 +13,7 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
   with Matchers
   with ScalaFutures {
 
-  behavior of "Remote Data Reading Service"
+  behavior of "Replica Remote Reader"
 
   it should "get info back that one of the value could be found and second one is obsolete" in {
     // given

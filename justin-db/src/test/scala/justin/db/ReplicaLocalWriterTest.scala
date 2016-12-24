@@ -15,7 +15,7 @@ import scala.concurrent.Future
 
 class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
-  behavior of "Local Data Writer"
+  behavior of "Replica Local Writer"
 
   /**
     * -------------------

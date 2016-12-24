@@ -13,7 +13,7 @@ class ReplicaRemoteWriterTest extends TestKit(ActorSystem("test-system"))
   with Matchers
   with ScalaFutures {
 
-  behavior of "Remote Data Saving Service"
+  behavior of "Replica Remote Writer"
 
   it should "get info back that one of the saving is successful and second one has failed" in {
     // given

@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
-  behavior of "Local Data Reader"
+  behavior of "Replica Local Reader"
 
   it should "found data for existing key" in {
     // given
