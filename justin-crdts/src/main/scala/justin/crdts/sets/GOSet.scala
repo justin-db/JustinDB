@@ -1,4 +1,4 @@
-package justin.crdts
+package justin.crdts.sets
 
 /**
   * CRDT - the grow-only set
