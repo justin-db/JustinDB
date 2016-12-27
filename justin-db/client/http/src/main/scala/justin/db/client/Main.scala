@@ -4,13 +4,13 @@ import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.RouteConcatenation
+import akka.http.scaladsl.server.directives.DebuggingDirectives._
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
-import akka.http.scaladsl.server.directives.DebuggingDirectives._
 
 object Main extends App with RouteConcatenation {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
