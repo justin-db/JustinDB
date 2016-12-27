@@ -27,10 +27,10 @@ initialize := {
 }
 
 // PROJECT DEFINITIONS
-lazy val core = (project in file("justin-db"))
+lazy val core = (project in file("justin-core"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
-    name := "justin-db",
+    name := "justin-core",
     scalaVersion := Version.scala,
     scalacOptions in Compile ++= Seq("-encoding", "UTF-8", "-target:jvm-1.8", "-deprecation", "-feature", "-unchecked", "-Xlog-reflective-calls", "-Xlint"),
     javacOptions in Compile ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked", "-Xlint:deprecation"),
@@ -66,13 +66,13 @@ lazy val httpClient = (project in file("justin-http-client"))
   .settings(git.useGitDescribe := true)
   .dependsOn(core, dbStorageInMem)
 
-lazy val dbStorageInMem = (project in file("justin-db/storage/in-mem")).settings(
+lazy val dbStorageInMem = (project in file("justin-core/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.dbStorageInMem
 ).dependsOn(core)
 
-lazy val dbStorageFilePerKey = (project in file("justin-db/storage/file-per-key")).settings(
+lazy val dbStorageFilePerKey = (project in file("justin-core/storage/file-per-key")).settings(
   name := "justin-db-storage-file-per-key",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.dbStorageFilePerKey
