@@ -6,7 +6,6 @@ version        := "0.1"
 maintainer     := "Mateusz Maciaszek"
 packageSummary := "JustinDB Cluster"
 
-
 fork in run := true
 
 scalacOptions := Seq(
@@ -49,11 +48,11 @@ lazy val core = (project in file("justin-db"))
   .configs (MultiJvm)
   .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts)
 
-lazy val httpClient = (project in file("justin-db/client/http"))
+lazy val httpClient = (project in file("justin-http-client"))
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(BuildInfoPlugin)
   .settings(
-    name := "justin-db-client-http",
+    name := "justin--http-client",
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.httpClient,
     fork in Test := true,

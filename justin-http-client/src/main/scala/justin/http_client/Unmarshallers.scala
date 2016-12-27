@@ -1,4 +1,4 @@
-package justin.db.client
+package justin.http_client
 
 import java.util.UUID
 

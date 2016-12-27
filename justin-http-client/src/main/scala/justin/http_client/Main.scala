@@ -1,4 +1,4 @@
-package justin.db.client
+package justin.http_client
 
 import akka.actor.ActorSystem
 import akka.event.Logging
@@ -8,6 +8,7 @@ import akka.http.scaladsl.server.directives.DebuggingDirectives._
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
+import justin.db.client.ActorRefStorageNodeClient
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}

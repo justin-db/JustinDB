@@ -1,4 +1,4 @@
-package justin.db.client
+package justin.http_client
 
 import java.util.UUID
 
@@ -9,10 +9,11 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import justin.db.Data
-import justin.db.client.JustinDirectives._
-import justin.db.client.Unmarshallers.UUIDUnmarshaller
+import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
 import justin.db.replication.{R, W}
+import justin.http_client.Unmarshallers.UUIDUnmarshaller
 import spray.json.DefaultJsonProtocol._
+import JustinDirectives._
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
