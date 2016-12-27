@@ -11,6 +11,7 @@ object Version {
   val sigarLoader = "1.6.6"
   val scopt       = "3.5.0"
   val crjdt       = "0.0.6"
+  val logback     = "1.1.8"
 }
 
 object Library {
@@ -39,6 +40,7 @@ object Library {
   // other
   val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
   val scopt                = "com.github.scopt"  %% "scopt"                             % Version.scopt
+  val logback              = "ch.qos.logback"     % "logback-classic"                   % Version.logback
 
   // crjdt
   val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
@@ -54,7 +56,7 @@ object Dependencies {
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit, akkaStream)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
-  val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test") ++ Seq(akkaHttpSprayJson)
+  val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback) ++ Seq(akkaHttpSprayJson)
 
   val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt)
 
