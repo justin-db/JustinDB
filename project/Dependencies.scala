@@ -60,7 +60,7 @@ object Dependencies {
 
   val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt)
 
-  val dbStorageInMem = genericTest
+  val storageInMem = genericTest
 
   val merkleTrees = genericTest
 

@@ -64,12 +64,12 @@ lazy val httpClient = (project in file("justin-http-client"))
   )
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
-  .dependsOn(core, dbStorageInMem)
+  .dependsOn(core, storageInMem)
 
-lazy val dbStorageInMem = (project in file("justin-core/storage/in-mem")).settings(
+lazy val storageInMem = (project in file("justin-core/storage/in-mem")).settings(
   name := "justin-db-storage-in-mem",
   scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.dbStorageInMem
+  libraryDependencies ++= Dependencies.storageInMem
 ).dependsOn(core)
 
 lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
