@@ -52,7 +52,7 @@ lazy val httpClient = (project in file("justin-http-client"))
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(BuildInfoPlugin)
   .settings(
-    name := "justin--http-client",
+    name := "justin-http-client",
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.httpClient,
     fork in Test := true,
@@ -98,3 +98,4 @@ lazy val consistentHashing = (project in file("justin-consistent-hashing")).sett
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
+
