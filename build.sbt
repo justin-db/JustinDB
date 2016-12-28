@@ -99,3 +99,5 @@ lazy val consistentHashing = (project in file("justin-consistent-hashing")).sett
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 
+// RUN
+run in Compile <<= (run in Compile in httpClient)
