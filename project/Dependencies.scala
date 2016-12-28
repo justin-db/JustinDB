@@ -62,8 +62,6 @@ object Dependencies {
 
   val dbStorageInMem = genericTest
 
-  val dbStorageFilePerKey = genericTest
-
   val merkleTrees = genericTest
 
   val vectorClocks = genericTest

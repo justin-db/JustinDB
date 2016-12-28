@@ -72,12 +72,6 @@ lazy val dbStorageInMem = (project in file("justin-core/storage/in-mem")).settin
   libraryDependencies ++= Dependencies.dbStorageInMem
 ).dependsOn(core)
 
-lazy val dbStorageFilePerKey = (project in file("justin-core/storage/file-per-key")).settings(
-  name := "justin-db-storage-file-per-key",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.dbStorageFilePerKey
-).dependsOn(core)
-
 lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
   name := "justin-merkle-trees",
   scalaVersion := Version.scala,
