@@ -28,7 +28,7 @@ object Ring {
     * @param partitionsSize - nr of partitions Ring consists of
     * @return representation of Ring
     */
-  def apply(nodesSize: Int = 5, partitionsSize: Int = 64): Ring = {
+  def apply(nodesSize: Int, partitionsSize: Int): Ring = {
     val partitions2Nodes = for {
       id          <- 0 until nodesSize
       partitionId <- id until partitionsSize by nodesSize
