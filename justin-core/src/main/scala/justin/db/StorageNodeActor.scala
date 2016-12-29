@@ -15,16 +15,16 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
 
   private implicit val ec: ExecutionContext = context.dispatcher
 
-  private val workerRouter = context.actorOf(
-    props = StorageNodeActor.WorkerRouter.props(nodeId, ring, n, storage),
-    name  = StorageNodeActor.WorkerRouter.routerName
+  private val coorinatorRouter = context.actorOf(
+    props = RoundRobinCoordinatorRouter.props(nodeId, ring, n, storage),
+    name  = RoundRobinCoordinatorRouter.routerName
   )
 
   def receive: Receive = receiveDataPF orElse receiveClusterPF(nodeId, ring) orElse notHandledPF
 
   private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadData   => workerRouter ! StorageNodeWorkerActorProtocol.ReadData(sender(), clusterMembers, readData)
-    case writeData: StorageNodeWriteData => workerRouter ! StorageNodeWorkerActorProtocol.WriteData(sender(), clusterMembers, writeData)
+    case readData: StorageNodeReadData   => coorinatorRouter ! StorageNodeWorkerActorProtocol.ReadData(sender(), clusterMembers, readData)
+    case writeData: StorageNodeWriteData => coorinatorRouter ! StorageNodeWorkerActorProtocol.WriteData(sender(), clusterMembers, writeData)
   }
 
   private def notHandledPF: Receive = {
@@ -40,16 +40,5 @@ object StorageNodeActor {
 
   def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = {
     Props(new StorageNodeActor(nodeId, storage, ring, n))
-  }
-
-  object WorkerRouter {
-    def routerName: String = "WorkerRouter"
-
-    def props(nodeId: NodeId, ring: Ring, n: N, storage: PluggableStorageProtocol)(implicit ec: ExecutionContext): Props = {
-      val readCoordinator  = new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
-      val writeCoordinator = new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
-      val actorProps = StorageNodeWorkerActor.props(readCoordinator, writeCoordinator)
-      RoundRobinPool(nrOfInstances = 5, resizer = Some(DefaultResizer(lowerBound = 2, upperBound = 15))).props(actorProps)
-    }
   }
 }
