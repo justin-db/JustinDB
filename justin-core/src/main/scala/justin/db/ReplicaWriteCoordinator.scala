@@ -13,6 +13,7 @@ class ReplicaWriteCoordinator(
   localDataWriter: ReplicaLocalWriter,
   remoteDataWriter: ReplicaRemoteWriter
 )(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWritingResult]) {
+  import ReplicaWriteCoordinator._
 
   override def apply(cmd: StorageNodeWriteData, clusterMembers: ClusterMembers): Future[StorageNodeWritingResult] = cmd match {
     case StorageNodeWriteData.Local(data)        => localDataWriter.apply(data)
@@ -21,16 +22,7 @@ class ReplicaWriteCoordinator(
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
       val updatedData     = Data.updateVclock(data, preferenceList)
 
-      writeToTargets(updatedData, preferenceList, clusterMembers).map(sumUpWrites(w))
-  }
-
-  private def sumUpWrites(w: W)(writes: List[StorageNodeWritingResult]) = {
-    val okWrites = writes.count(_ == StorageNodeWritingResult.SuccessfulWrite)
-
-    okWrites >= w.w match {
-      case true  => StorageNodeWritingResult.SuccessfulWrite
-      case false => StorageNodeWritingResult.FailedWrite
-    }
+      writeToTargets(updatedData, preferenceList, clusterMembers).map(reachConsensus(w))
   }
 
   private def writeToTargets(data: Data, preferenceList: List[NodeId], clusterMembers: ClusterMembers) = {
@@ -41,5 +33,17 @@ class ReplicaWriteCoordinator(
     lazy val getLocalWrite   = localDataWriter.apply(data)
 
     localTargetOpt.fold(getRemoteWrites)(_ => getLocalWrite zip getRemoteWrites map converge )
+  }
+}
+
+object ReplicaWriteCoordinator {
+
+  def reachConsensus(w: W): List[StorageNodeWritingResult] => StorageNodeWritingResult = { writes =>
+    val okWrites = writes.count(_ == StorageNodeWritingResult.SuccessfulWrite)
+
+    okWrites >= w.w match {
+      case true  => StorageNodeWritingResult.SuccessfulWrite
+      case false => StorageNodeWritingResult.FailedWrite
+    }
   }
 }
