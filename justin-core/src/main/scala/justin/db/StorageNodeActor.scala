@@ -11,44 +11,24 @@ import justin.db.storage.PluggableStorageProtocol
 
 import scala.concurrent.ExecutionContext
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor {
+class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {
 
   private implicit val ec: ExecutionContext = context.dispatcher
-  private val cluster = Cluster(context.system)
-
-  override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
-  override def postStop(): Unit = cluster.unsubscribe(self)
 
   private val workerRouter = context.actorOf(
     props = StorageNodeActor.WorkerRouter.props(nodeId, ring, n, storage),
     name  = StorageNodeActor.WorkerRouter.routerName
   )
 
-  override def receive: Receive = receive(ClusterMembers.empty)
+  def receive: Receive = receiveDataPF orElse receiveClusterPF(nodeId, ring) orElse notHandledPF
 
-  private def receive(clusterMembers: ClusterMembers): Receive = {
+  private def receiveDataPF: Receive = {
     case readData: StorageNodeReadData   => workerRouter ! StorageNodeWorkerActorProtocol.ReadData(sender(), clusterMembers, readData)
     case writeData: StorageNodeWriteData => workerRouter ! StorageNodeWorkerActorProtocol.WriteData(sender(), clusterMembers, writeData)
-
-    // cluster
-    case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
-      context.become(receive(clusterMembers.add(senderNodeId, StorageNodeActorRef(sender()))))
-      sender() ! RegisterNode(nodeId)
-    case MemberUp(m)                => register(m)
-    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(register)
-
-    // other
-    case t                          => println("[StorageNodeActor] not handled msg: " + t)
   }
 
-  private def register(member: Member) = {
-    val nodesRefs = for {
-      siblingNodeId <- ring.nodesId.filterNot(_ == nodeId)
-      nodeName       = StorageNodeActor.name(siblingNodeId)
-      nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
-    } yield nodeRef
-
-    nodesRefs.foreach(_ ! RegisterNode(nodeId))
+  private def notHandledPF: Receive = {
+    case t => println("[StorageNodeActor] not handled msg: " + t)
   }
 }
 
