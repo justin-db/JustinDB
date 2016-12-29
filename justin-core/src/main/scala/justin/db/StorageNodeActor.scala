@@ -1,22 +1,15 @@
 package justin.db
 
-import akka.actor.{Actor, ActorRef, Props, RootActorPath}
-import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import akka.cluster.{Cluster, Member, MemberStatus}
-import akka.routing.{DefaultResizer, RoundRobinPool}
+import akka.actor.{Actor, Props}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.N
 import justin.db.storage.PluggableStorageProtocol
 
-import scala.concurrent.ExecutionContext
-
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {
 
-  private implicit val ec: ExecutionContext = context.dispatcher
-
   private val coorinatorRouter = context.actorOf(
-    props = RoundRobinCoordinatorRouter.props(nodeId, ring, n, storage),
+    props = RoundRobinCoordinatorRouter.props(nodeId, ring, n, storage)(context.dispatcher),
     name  = RoundRobinCoordinatorRouter.routerName
   )
 
@@ -33,12 +26,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
 }
 
 object StorageNodeActor {
-
   def role: String = "StorageNode"
-
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
-
-  def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = {
-    Props(new StorageNodeActor(nodeId, storage, ring, n))
-  }
+  def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = Props(new StorageNodeActor(nodeId, storage, ring, n))
 }
