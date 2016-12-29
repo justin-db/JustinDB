@@ -15,6 +15,7 @@ class ReplicaReadCoordinator(
   localDataReader: ReplicaLocalReader,
   remoteDataReader: ReplicaRemoteReader
 )(implicit ec: ExecutionContext) extends ((StorageNodeReadData, ClusterMembers) => Future[StorageNodeReadingResult]) {
+  import ReplicaReadCoordinator._
 
   override def apply(cmd: StorageNodeReadData, clusterMembers: ClusterMembers): Future[StorageNodeReadingResult] = cmd match {
     case StorageNodeReadData.Local(id)         => localDataReader.apply(id)
@@ -22,19 +23,7 @@ class ReplicaReadCoordinator(
       val ringPartitionId = UUID2RingPartitionId.apply(id, ring)
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
 
-      readFromTargets(id, preferenceList, clusterMembers).map(sumUpReads(r))
-  }
-
-  // TODO: what if one of the replica is conflicted?
-  private def sumUpReads(r: R)(reads: List[StorageNodeReadingResult]) = {
-    val onlyFoundReads  = reads.collect { case r: StorageNodeReadingResult.Found => r }
-    val onlyFailedReads = reads.forall(_ == StorageNodeReadingResult.FailedRead)
-
-    (onlyFoundReads.size >= r.r, onlyFoundReads.headOption, onlyFailedReads) match {
-      case (true, Some(exemplary), _) => exemplary
-      case (_, _, true)               => StorageNodeReadingResult.FailedRead
-      case _                          => StorageNodeReadingResult.NotFound
-    }
+      readFromTargets(id, preferenceList, clusterMembers).map(reachConsensus(r))
   }
 
   private def readFromTargets(id: UUID, preferenceList: List[NodeId], clusterMembers: ClusterMembers) = {
@@ -45,5 +34,19 @@ class ReplicaReadCoordinator(
     lazy val getLocalRead   = localDataReader.apply(id)
 
     localTargetOpt.fold(getRemoteReads)(_ => getLocalRead zip getRemoteReads map converge)
+  }
+}
+
+object ReplicaReadCoordinator {
+
+  def reachConsensus(r: R): List[StorageNodeReadingResult] => StorageNodeReadingResult = { reads =>
+    val onlyFoundReads = reads.collect { case r: StorageNodeReadingResult.Found => r }
+    val onlyFailedReads = reads.forall(_ == StorageNodeReadingResult.FailedRead)
+
+    (onlyFoundReads.size >= r.r, onlyFoundReads.headOption, onlyFailedReads) match {
+      case (true, Some(exemplary), _) => exemplary
+      case (_, _, true)               => StorageNodeReadingResult.FailedRead
+      case _                          => StorageNodeReadingResult.NotFound
+    }
   }
 }
