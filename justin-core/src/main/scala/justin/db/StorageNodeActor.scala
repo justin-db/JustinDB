@@ -8,7 +8,7 @@ import justin.db.storage.PluggableStorageProtocol
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {
 
-  private val coorinatorRouter = context.actorOf(
+  private val coordinatorRouter = context.actorOf(
     props = RoundRobinCoordinatorRouter.props(nodeId, ring, n, storage)(context.dispatcher),
     name  = RoundRobinCoordinatorRouter.routerName
   )
@@ -16,8 +16,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   def receive: Receive = receiveDataPF orElse receiveClusterPF(nodeId, ring) orElse notHandledPF
 
   private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadData   => coorinatorRouter ! StorageNodeWorkerActorProtocol.ReadData(sender(), clusterMembers, readData)
-    case writeData: StorageNodeWriteData => coorinatorRouter ! StorageNodeWorkerActorProtocol.WriteData(sender(), clusterMembers, writeData)
+    case readData: StorageNodeReadData   => coordinatorRouter ! StorageNodeWorkerActorProtocol.ReadData(sender(), clusterMembers, readData)
+    case writeData: StorageNodeWriteData => coordinatorRouter ! StorageNodeWorkerActorProtocol.WriteData(sender(), clusterMembers, writeData)
   }
 
   private def notHandledPF: Receive = {
