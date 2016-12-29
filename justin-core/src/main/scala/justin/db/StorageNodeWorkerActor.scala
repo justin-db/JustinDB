@@ -6,7 +6,7 @@ import justin.db.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeWrite
 
 import scala.concurrent.ExecutionContext
 
-class StorageNodeWorkerActor(nodeId: NodeId, readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator) extends Actor {
+class StorageNodeWorkerActor(readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator) extends Actor {
   import StorageNodeWorkerActorProtocol._
 
   private implicit val ec: ExecutionContext = context.dispatcher
@@ -24,7 +24,7 @@ object StorageNodeWorkerActorProtocol {
 
 object StorageNodeWorkerActor {
 
-  def props(nodeId: NodeId, readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator): Props = {
-    Props(new StorageNodeWorkerActor(nodeId, readCoordinator, writeCoordinator))
+  def props(readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator): Props = {
+    Props(new StorageNodeWorkerActor(readCoordinator, writeCoordinator))
   }
 }
