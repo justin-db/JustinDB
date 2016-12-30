@@ -44,7 +44,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
     val resolved = ResolveNodeTargets(nodeId, preferenceList, clusterMembers)
 
     // then
-    resolved shouldBe ResolvedTargets(local = true, remotes = List(StorageNodeActorRef(null), StorageNodeActorRef(null)))
+    resolved shouldBe ResolvedTargets(local = true, remotes = List(StorageNodeActorRef(ActorRef.noSender), StorageNodeActorRef(ActorRef.noSender)))
   }
 
   it should "distinct repeated elements in preference list" in {
