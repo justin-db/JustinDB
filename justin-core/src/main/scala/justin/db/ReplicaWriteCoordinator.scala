@@ -7,9 +7,7 @@ import justin.db.replication.{N, PreferenceList, W}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaWriteCoordinator(
-  nodeId: NodeId,
-  ring: Ring,
-  n: N,
+  nodeId: NodeId, ring: Ring, n: N,
   localDataWriter: ReplicaLocalWriter,
   remoteDataWriter: ReplicaRemoteWriter
 )(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWritingResult]) {
@@ -22,17 +20,13 @@ class ReplicaWriteCoordinator(
       val preferenceList  = PreferenceList(ringPartitionId, n, ring)
       val updatedData     = Data.updateVclock(data, preferenceList)
 
-      writeToTargets(updatedData, preferenceList, clusterMembers).map(reachConsensus(w))
-  }
-
-  private def writeToTargets(data: Data, preferenceList: List[NodeId], clusterMembers: ClusterMembers) = {
-    val localTargetOpt = preferenceList.find(_ == nodeId)
-    val remoteTargets  = preferenceList.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
-
-    lazy val getRemoteWrites = remoteDataWriter.apply(remoteTargets, data)
-    lazy val getLocalWrite   = localDataWriter.apply(data)
-
-    localTargetOpt.fold(getRemoteWrites)(_ => getLocalWrite zip getRemoteWrites map converge )
+      ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
+        case ResolvedTargets(true, remotes)  if remotes.size + 1 >= w.w =>
+          (localDataWriter.apply(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge).map(reachConsensus(w))
+        case ResolvedTargets(false, remotes) if remotes.size     >= w.w =>
+          remoteDataWriter.apply(remotes, updatedData).map(reachConsensus(w))
+        case _ => Future.successful(StorageNodeWritingResult.FailedWrite)
+      }
   }
 }
 
