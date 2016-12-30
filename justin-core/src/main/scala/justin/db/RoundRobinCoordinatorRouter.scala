@@ -20,6 +20,6 @@ object RoundRobinCoordinatorRouter {
     val readCoordinator  = new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
     val writeCoordinator = new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
 
-    pool.props(StorageNodeWorkerActor.props(readCoordinator, writeCoordinator))
+    pool.props(ReplicaCoordinatorActor.props(readCoordinator, writeCoordinator))
   }
 }

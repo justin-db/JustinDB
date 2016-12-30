@@ -16,8 +16,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   def receive: Receive = receiveDataPF orElse receiveClusterPF(nodeId, ring) orElse notHandledPF
 
   private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadData   => coordinatorRouter ! StorageNodeWorkerActorProtocol.ReadData(sender(), clusterMembers, readData)
-    case writeData: StorageNodeWriteData => coordinatorRouter ! StorageNodeWorkerActorProtocol.WriteData(sender(), clusterMembers, writeData)
+    case readData: StorageNodeReadData   => coordinatorRouter ! ReplicaCoordinatorActorProtocol.ReadData(sender(), clusterMembers, readData)
+    case writeData: StorageNodeWriteData => coordinatorRouter ! ReplicaCoordinatorActorProtocol.WriteData(sender(), clusterMembers, writeData)
   }
 
   private def notHandledPF: Receive = {
