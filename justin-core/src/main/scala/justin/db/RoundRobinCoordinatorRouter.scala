@@ -16,10 +16,7 @@ object RoundRobinCoordinatorRouter {
     resizer = Some(DefaultResizer(lowerBound = 2, upperBound = 15))
   )
 
-  def props(nodeId: NodeId, ring: Ring, n: N, storage: PluggableStorageProtocol)(implicit ec: ExecutionContext): Props = {
-    val readCoordinator  = new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
-    val writeCoordinator = new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
-
+  def props(readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator): Props = {
     pool.props(ReplicaCoordinatorActor.props(readCoordinator, writeCoordinator))
   }
 }

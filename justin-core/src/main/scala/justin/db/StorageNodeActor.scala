@@ -8,8 +8,13 @@ import justin.db.storage.PluggableStorageProtocol
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {
 
+  private implicit val ec = context.dispatcher
+
+  private val readCoordinator  = new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
+  private val writeCoordinator = new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
+
   private val coordinatorRouter = context.actorOf(
-    props = RoundRobinCoordinatorRouter.props(nodeId, ring, n, storage)(context.dispatcher),
+    props = RoundRobinCoordinatorRouter.props(readCoordinator, writeCoordinator),
     name  = RoundRobinCoordinatorRouter.routerName
   )
 
