@@ -4,6 +4,7 @@ import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.replication.R
 
 object ReachConsensusReplicatedReads {
+
   def apply(r: R): List[StorageNodeReadingResult] => StorageNodeReadingResult = {
     reads =>
       val onlyFoundReads = reads.collect { case r: StorageNodeReadingResult.Found => r }
