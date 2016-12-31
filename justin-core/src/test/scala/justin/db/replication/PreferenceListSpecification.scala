@@ -12,7 +12,7 @@ class PreferenceListSpecification extends Properties("PreferenceList") {
     val partitionIdGen = Gen.choose(0, ring.size-1)
 
     forAll(partitionIdGen) { basePartitionId: Int =>
-      PreferenceList(basePartitionId, n, ring).head == ring.getNodeId(basePartitionId).get
+      PreferenceList(basePartitionId, n, ring).list.head == ring.getNodeId(basePartitionId).get
     }
   }
 
@@ -22,7 +22,7 @@ class PreferenceListSpecification extends Properties("PreferenceList") {
     val replicaNrGen = Gen.choose(1, 1000)
 
     forAll(replicaNrGen) { n: Int =>
-      PreferenceList(basePartitionId, N(n), ring).size == n
+      PreferenceList(basePartitionId, N(n), ring).list.size == n
     }
   }
 }

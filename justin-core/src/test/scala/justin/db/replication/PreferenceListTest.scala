@@ -17,7 +17,7 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val preferenceList = PreferenceList(basePartitionId, n, ring)
 
     // then
-    preferenceList.size shouldBe 3
+    preferenceList.list.size shouldBe 3
   }
 
   it should "has defined first node in the list to be the one taken from Ring with initial partitionId" in {
@@ -27,7 +27,7 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val initialPartitionId = 1
 
     // when
-    val coordinator = PreferenceList.apply(initialPartitionId, n, ring).head
+    val coordinator = PreferenceList.apply(initialPartitionId, n, ring).list.head
 
     // then
     coordinator shouldBe ring.getNodeId(initialPartitionId).get
@@ -43,8 +43,8 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val preferenceList = PreferenceList.apply(initialPartitionId, n, ring)
 
     // then
-    preferenceList.size shouldBe 1
-    preferenceList.head shouldBe ring.getNodeId(initialPartitionId).get
+    preferenceList.list.size shouldBe 1
+    preferenceList.list.head shouldBe ring.getNodeId(initialPartitionId).get
   }
 
   it should "check that selected nodes ids are continuous" in {

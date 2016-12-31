@@ -3,6 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
+import justin.db.replication.PreferenceList
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -13,7 +14,7 @@ class DataTest extends FlatSpec with Matchers {
   it should "update its empty inner Vector Clock based on preference list" in {
     // given
     val data           = Data(id = UUID.randomUUID(), value = "some value")
-    val preferenceList = List(NodeId(1), NodeId(5), NodeId(8))
+    val preferenceList = PreferenceList(List(NodeId(1), NodeId(5), NodeId(8)))
 
     // when
     val updatedData = Data.updateVclock(data, preferenceList)
@@ -30,7 +31,7 @@ class DataTest extends FlatSpec with Matchers {
   it should "increase vector clock's counter of repeated nodeId when updating data" in {
     // given
     val data           = Data(id = UUID.randomUUID(), value = "some value")
-    val preferenceList = List(NodeId(1), NodeId(1), NodeId(1))
+    val preferenceList = PreferenceList(List(NodeId(1), NodeId(1), NodeId(1)))
 
     // when
     val updatedData = Data.updateVclock(data, preferenceList)
@@ -46,7 +47,7 @@ class DataTest extends FlatSpec with Matchers {
     // given
     val initVClock     = VectorClock[NodeId](Map(NodeId(1) -> Counter(3)))
     val data = Data(id = UUID.randomUUID(), value = "some value", initVClock)
-    val preferenceList = List(NodeId(1), NodeId(5), NodeId(8))
+    val preferenceList = PreferenceList(List(NodeId(1), NodeId(5), NodeId(8)))
 
     // when
     val updatedData = Data.updateVclock(data, preferenceList)

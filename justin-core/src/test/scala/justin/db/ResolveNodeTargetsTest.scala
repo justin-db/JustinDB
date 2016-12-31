@@ -2,6 +2,7 @@ package justin.db
 
 import akka.actor.ActorRef
 import justin.consistent_hashing.NodeId
+import justin.db.replication.PreferenceList
 import org.scalatest.{FlatSpec, Matchers}
 
 class ResolveNodeTargetsTest extends FlatSpec with Matchers {
@@ -11,7 +12,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
   it should "mark \"local\" value as \"true\" when node is placed in the preference list" in {
     // given
     val nodeId         = NodeId(1)
-    val preferenceList = List(nodeId)
+    val preferenceList = PreferenceList(List(nodeId))
     val clusterMembers = ClusterMembers.empty
 
     // when
@@ -24,7 +25,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
   it should "mark \"local\" value as \"false\" when node is placed in the preference list" in {
     // given
     val nodeId         = NodeId(1)
-    val preferenceList = List.empty[NodeId]
+    val preferenceList = PreferenceList(List(nodeId))
     val clusterMembers = ClusterMembers.empty
 
     // when
@@ -37,7 +38,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
   it should "not include node in remotes" in {
     // given
     val nodeId         = NodeId(1)
-    val preferenceList = List(NodeId(1), NodeId(2), NodeId(3))
+    val preferenceList = PreferenceList(List(NodeId(1), NodeId(2), NodeId(3)))
     val clusterMembers = ClusterMembers(Map(NodeId(2) -> StorageNodeActorRef(ActorRef.noSender), NodeId(3) -> StorageNodeActorRef(ActorRef.noSender)))
 
     // when
@@ -50,7 +51,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
   it should "distinct repeated elements in preference list" in {
     // given
     val nodeId         = NodeId(1)
-    val preferenceList = List(NodeId(1), NodeId(2), NodeId(2))
+    val preferenceList = PreferenceList(List(NodeId(1), NodeId(2), NodeId(2)))
     val clusterMembers = ClusterMembers(Map(NodeId(2) -> StorageNodeActorRef(ActorRef.noSender), NodeId(3) -> StorageNodeActorRef(ActorRef.noSender)))
 
     // when
@@ -63,7 +64,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
   it should "flatten not existed nodes from preference list in cluster members" in {
     // given
     val nodeId         = NodeId(1)
-    val preferenceList = List(NodeId(1), NodeId(2), NodeId(3))
+    val preferenceList = PreferenceList(List(NodeId(1), NodeId(2), NodeId(3)))
     val clusterMembers = ClusterMembers(Map(NodeId(2) -> StorageNodeActorRef(ActorRef.noSender)))
 
     // when
