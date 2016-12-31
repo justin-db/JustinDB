@@ -4,9 +4,9 @@ import justin.db.StorageNodeActorProtocol.StorageNodeWritingResult.{ConflictedWr
 import justin.db.replication.W
 import org.scalatest.{FlatSpec, Matchers}
 
-class ReplicaWriteCoordinatorTest extends FlatSpec with Matchers {
+class ReachConsensusReplicatedWritesTest extends FlatSpec with Matchers {
 
-  behavior of "Replica Write Coordinator"
+  behavior of "Reach Consensus of Replicated Writes"
 
   it should "reach consensus when number of successful write operation is not smaller than desired" in {
     // given
@@ -14,7 +14,7 @@ class ReplicaWriteCoordinatorTest extends FlatSpec with Matchers {
     val writes = List(SuccessfulWrite)
 
     // when
-    val result = ReplicaWriteCoordinator.reachConsensus(w)(writes)
+    val result = ReachConsensusReplicatedWrites.apply(w)(writes)
 
     // then
     result shouldBe SuccessfulWrite
@@ -26,7 +26,7 @@ class ReplicaWriteCoordinatorTest extends FlatSpec with Matchers {
     val writes = List(ConflictedWrite)
 
     // when
-    val result = ReplicaWriteCoordinator.reachConsensus(w)(writes)
+    val result = ReachConsensusReplicatedWrites.apply(w)(writes)
 
     // then
     result shouldBe FailedWrite

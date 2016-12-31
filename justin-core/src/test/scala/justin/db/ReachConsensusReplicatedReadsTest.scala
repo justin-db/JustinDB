@@ -8,7 +8,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class ReachConsensusReplicatedReadsTest extends FlatSpec with Matchers {
 
-  behavior of "Reach Consensuf of Replicated Reads"
+  behavior of "Reach Consensus of Replicated Reads"
 
   it should "get found data back when number of successful reads is reached" in {
     // given
