@@ -22,10 +22,10 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
     resolved.local shouldBe true
   }
 
-  it should "mark \"local\" value as \"false\" when node is placed in the preference list" in {
+  it should "mark \"local\" value as \"false\" when node is NOT placed in the preference list" in {
     // given
     val nodeId         = NodeId(1)
-    val preferenceList = PreferenceList(List(nodeId))
+    val preferenceList = PreferenceList(List.empty[NodeId])
     val clusterMembers = ClusterMembers.empty
 
     // when

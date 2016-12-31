@@ -57,6 +57,6 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val preferenceList = PreferenceList.apply(initialPartitionId, n, ring)
 
     // then
-    preferenceList shouldBe List(NodeId(1), NodeId(2), NodeId(3))
+    preferenceList.list shouldBe List(NodeId(1), NodeId(2), NodeId(3))
   }
 }
