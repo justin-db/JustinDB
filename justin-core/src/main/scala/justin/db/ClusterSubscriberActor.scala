@@ -1,8 +1,8 @@
 package justin.db
 
-import akka.actor.{Actor, RootActorPath}
+import akka.actor.{Actor, Address, RootActorPath}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import akka.cluster.{Cluster, Member, MemberStatus}
+import akka.cluster.{Cluster, MemberStatus}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.StorageNodeActorProtocol.RegisterNode
 
@@ -19,15 +19,15 @@ trait ClusterSubscriberActor { self: Actor =>
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       clusterMembers = clusterMembers.add(senderNodeId, StorageNodeActorRef(sender()))
       sender() ! RegisterNode(nodeId)
-    case MemberUp(m)                => register(nodeId, ring, m)
-    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(m => register(nodeId, ring, m))
+    case MemberUp(m)                => register(nodeId, ring, m.address)
+    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(m => register(nodeId, ring, m.address))
   }
 
-  private def register(nodeId: NodeId, ring: Ring, member: Member) = {
+  private def register(nodeId: NodeId, ring: Ring, address: Address) = {
     val nodesRefs = for {
       siblingNodeId <- ring.nodesId.filterNot(_ == nodeId)
       nodeName       = StorageNodeActor.name(siblingNodeId)
-      nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
+      nodeRef        = context.actorSelection(RootActorPath(address) / "user" / nodeName)
     } yield nodeRef
 
     nodesRefs.foreach(_ ! RegisterNode(nodeId))
