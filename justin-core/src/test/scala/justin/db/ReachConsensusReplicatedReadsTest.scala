@@ -6,9 +6,9 @@ import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult.{FailedRead, 
 import justin.db.replication.R
 import org.scalatest.{FlatSpec, Matchers}
 
-class ReplicaReadCoordinatorTest extends FlatSpec with Matchers {
+class ReachConsensusReplicatedReadsTest extends FlatSpec with Matchers {
 
-  behavior of "Replica Read Coordinator"
+  behavior of "Reach Consensuf of Replicated Reads"
 
   it should "get found data back when number of successful reads is reached" in {
     // given
@@ -16,7 +16,7 @@ class ReplicaReadCoordinatorTest extends FlatSpec with Matchers {
     val reads = List(Found(Data(id = UUID.randomUUID(), "value1")), FailedRead, NotFound)
 
     // when
-    val result = ReplicaReadCoordinator.reachConsensus(r)(reads)
+    val result = ReachConsensusReplicatedReads.apply(r)(reads)
 
     // then
     result shouldBe reads.head
@@ -28,7 +28,7 @@ class ReplicaReadCoordinatorTest extends FlatSpec with Matchers {
     val reads = List(FailedRead, FailedRead, FailedRead)
 
     // when
-    val result = ReplicaReadCoordinator.reachConsensus(r)(reads)
+    val result = ReachConsensusReplicatedReads.apply(r)(reads)
 
     result shouldBe FailedRead
   }
@@ -39,7 +39,7 @@ class ReplicaReadCoordinatorTest extends FlatSpec with Matchers {
     val reads = List(Found(Data(id = UUID.randomUUID(), "value1")), FailedRead, NotFound)
 
     // when
-    val result = ReplicaReadCoordinator.reachConsensus(r)(reads)
+    val result = ReachConsensusReplicatedReads.apply(r)(reads)
 
     // then
     result shouldBe NotFound
