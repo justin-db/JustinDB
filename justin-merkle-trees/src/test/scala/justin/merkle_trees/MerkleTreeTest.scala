@@ -20,10 +20,10 @@ class MerkleTreeTest extends FlatSpec with Matchers {
       Array[Byte](10,11,12)
     )
 
-    val hash1 = MerkleTree.unapply(data)(MerkleDigest.CRC32).get.hash
-    val hash2 = MerkleTree.unapply(data2)(MerkleDigest.CRC32).get.hash
+    val digest1 = MerkleTree.unapply(data)(MerkleDigest.CRC32).get.digest
+    val digest2 = MerkleTree.unapply(data2)(MerkleDigest.CRC32).get.digest
 
-    hash1.hash.deep shouldBe hash2.hash.deep
+    digest1.hash.deep shouldBe digest2.hash.deep
   }
 
   it should "have a different top hash" in {
@@ -40,9 +40,9 @@ class MerkleTreeTest extends FlatSpec with Matchers {
       Array[Byte](12,11,10)
     )
 
-    val hash1 = MerkleTree.unapply(data)(MerkleDigest.CRC32).get.hash
-    val hash2 = MerkleTree.unapply(data2)(MerkleDigest.CRC32).get.hash
+    val digest1 = MerkleTree.unapply(data)(MerkleDigest.CRC32).get.digest
+    val digest2 = MerkleTree.unapply(data2)(MerkleDigest.CRC32).get.digest
 
-    hash1.hash.deep should not be hash2.hash.deep
+    digest1.hash.deep should not be digest2.hash.deep
   }
 }
