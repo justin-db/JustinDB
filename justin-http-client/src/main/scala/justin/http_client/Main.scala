@@ -31,7 +31,7 @@ object Main extends App {
     logger.info("Cluster is ready!")
 
     // STORAGE ACTOR
-    val storageNodeActorRef = StorageNodeActorRef {
+    val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
       val nodeId      = NodeId(config.getInt("node.id"))
       val ring        = Ring(config.getInt("ring.cluster-nodes-size"), config.getInt("ring.creation-size"))
       val storage     = new InMemStorage()
@@ -41,11 +41,11 @@ object Main extends App {
         props = StorageNodeActor.props(nodeId, storage, ring, replication),
         name  = StorageNodeActor.name(nodeId)
       )
-    }
+    })
 
     // HTTP API
     val routes = logRequestResult(system.name) {
-      new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
+        new HttpRouter(storageNodeActorRef).routes ~
         new HealthCheckRouter().routes ~
         new BuildInfoRouter().routes ~
         new ActiveAntiEntropyRouter().routes
