@@ -47,7 +47,8 @@ object Main extends App {
     val routes = logRequestResult(system.name) {
       new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
         new HealthCheckRouter().routes ~
-        new BuildInfoRouter().routes
+        new BuildInfoRouter().routes ~
+        new ActiveAntiEntropyRouter().routes
     }
 
     Http()
