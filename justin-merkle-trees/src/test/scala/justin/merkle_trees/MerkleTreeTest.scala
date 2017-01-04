@@ -135,4 +135,25 @@ class MerkleTreeTest extends FlatSpec with Matchers {
     tree.asInstanceOf[MerkleHashNode].right.asInstanceOf[MerkleHashNode].left.nodeId.id  shouldBe 5
     tree.asInstanceOf[MerkleHashNode].right.asInstanceOf[MerkleHashNode].right.nodeId.id shouldBe 6
   }
+
+  it should "find node with its id" in {
+    val blocks = Array(
+      Array[Byte](1,2,3),
+      Array[Byte](4,5,6),
+      Array[Byte](7,8,9),
+      Array[Byte](10,11,12)
+    )
+    val tree = MerkleTree.unapply(blocks)(MerkleDigest.CRC32).get
+
+    MerkleTree.findNode(NodeId(0), tree).get.nodeId shouldBe NodeId(0)
+    MerkleTree.findNode(NodeId(1), tree).get.nodeId shouldBe NodeId(1)
+    MerkleTree.findNode(NodeId(2), tree).get.nodeId shouldBe NodeId(2)
+    MerkleTree.findNode(NodeId(3), tree).get.nodeId shouldBe NodeId(3)
+    MerkleTree.findNode(NodeId(4), tree).get.nodeId shouldBe NodeId(4)
+    MerkleTree.findNode(NodeId(5), tree).get.nodeId shouldBe NodeId(5)
+    MerkleTree.findNode(NodeId(6), tree).get.nodeId shouldBe NodeId(6)
+
+    MerkleTree.findNode(NodeId(-1), tree) should not be defined
+    MerkleTree.findNode(NodeId(7), tree)  should not be defined
+  }
 }
