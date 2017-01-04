@@ -1,5 +1,6 @@
 package justin.merkle_trees
 
+import scala.annotation.tailrec
 import scala.util.Try
 
 case class NodeId(id: Int) extends AnyVal
@@ -68,6 +69,7 @@ object MerkleTree {
     Array.fill(zero(blocks.length))(Array[Byte](0))
   }
 
+  @tailrec
   def findNode(nodeId: NodeId, merkleTree: MerkleTree): Option[MerkleTree] = {
     merkleTree match {
       case _ if merkleTree.nodeId == nodeId                                 => Option(merkleTree)
