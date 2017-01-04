@@ -2,6 +2,8 @@ package justin.merkle_trees
 
 import scala.util.Try
 
+case class NodeId(id: Int) extends AnyVal
+
 sealed trait MerkleTree {
   def nodeId: NodeId
   def digest: Digest
