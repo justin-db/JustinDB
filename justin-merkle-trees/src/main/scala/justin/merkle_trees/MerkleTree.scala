@@ -16,7 +16,9 @@ object MerkleTree {
 
     def blockToLeaf(b: Block)(implicit ev: MerkleDigest[Block]) = MerkleLeaf(ev.digest(b))
 
-    def buildTree(leafs: Seq[MerkleLeaf])(implicit ev: MerkleDigest[Block]) = Try {
+    def buildTree(blocks: Array[Block])(implicit ev: MerkleDigest[Block]) = Try {
+      val leafs = blocks.map(blockToLeaf)
+
       var trees: Seq[MerkleTree] = leafs
 
       while (trees.length > 1) {
@@ -33,18 +35,14 @@ object MerkleTree {
       MerkleHashNode(hash, n1, n2)
     }
 
-    val allBlocks = blocks ++ zeroed(blocks)
-    val leafs = allBlocks.map(blockToLeaf)
-    buildTree(leafs).toOption
+    buildTree(blocks ++ zeroed(blocks)).toOption
   }
 
   def zeroed(blocks: Seq[Block]): Array[Array[Byte]] = {
     def zero(i: Int): Int = {
       val factor = 2
       var x = factor
-
       while(x < i) x *= factor
-
       x - i
     }
     Array.fill(zero(blocks.length))(Array[Byte](0))
