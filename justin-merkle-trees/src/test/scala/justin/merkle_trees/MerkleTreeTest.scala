@@ -45,4 +45,24 @@ class MerkleTreeTest extends FlatSpec with Matchers {
 
     digest1.hash.deep should not be digest2.hash.deep
   }
+
+  it should "use an all-zeros value to complete the pair" in {
+    val oddDataSet: Seq[Block] = Seq(
+      Array[Byte](1,2,3),
+      Array[Byte](4,5,6),
+      Array[Byte](7,8,9)
+    )
+
+    val sameWithZeroed: Seq[Block] = Seq(
+      Array[Byte](1,2,3),
+      Array[Byte](4,5,6),
+      Array[Byte](7,8,9),
+      Array[Byte](0)
+    )
+
+    val digest1 = MerkleTree.unapply(oddDataSet)(MerkleDigest.CRC32).get.digest
+    val digest2 = MerkleTree.unapply(sameWithZeroed)(MerkleDigest.CRC32).get.digest
+
+    digest1.hash.deep shouldBe digest2.hash.deep
+  }
 }

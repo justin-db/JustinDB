@@ -2,15 +2,31 @@ package justin.merkle_trees
 
 import scala.util.Try
 
-sealed trait MerkleTree { def digest: Digest }
+sealed trait MerkleTree {
+  def digest: Digest
+}
 case class MerkleHashNode(digest: Digest, left: MerkleTree, right: MerkleTree) extends MerkleTree
 case class MerkleLeaf(digest: Digest) extends MerkleTree
 
 object MerkleTree {
 
-  def unapply(blocks: Seq[Block])(implicit ev: MerkleDigest[Block]): Option[MerkleTree] = {
-    val leafs = blocks.map(blockToLeaf)
+  def unapply(blocks: Seq[Block])(implicit ev: MerkleDigest[Block]): Option[MerkleTree] = unapply(blocks.toArray)
+
+  def unapply(blocks: Array[Block])(implicit ev: MerkleDigest[Block]): Option[MerkleTree] = {
+    val zeroedBlocks = Array.fill(zero(blocks.length))(Array[Byte](0))
+    val withZeroedBlocks = blocks ++ zeroedBlocks
+
+    val leafs = withZeroedBlocks.map(blockToLeaf)
     buildTree(leafs).toOption
+  }
+
+  def zero(i: Int): Int = {
+    val factor = 2
+    var x = factor
+
+    while(x < i) x *= factor
+
+    x - i
   }
 
   private def blockToLeaf(b: Block)(implicit ev: MerkleDigest[Block]) = MerkleLeaf(ev.digest(b))
