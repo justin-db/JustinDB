@@ -111,4 +111,28 @@ class MerkleTreeTest extends FlatSpec with Matchers {
 
     firstNodeId shouldBe 0
   }
+
+  it should "index Merkle Tree nodes in binary fashion" in {
+    val blocks = Array(
+      Array[Byte](1,2,3),
+      Array[Byte](4,5,6),
+      Array[Byte](7,8,9),
+      Array[Byte](10,11,12)
+    )
+
+    val tree = MerkleTree.unapply(blocks)(MerkleDigest.CRC32).get
+
+    /** we should expect such tree indexing
+      *         0
+      *     1      4
+      *   2   3  5   6
+      */
+    tree.nodeId.id                                                                       shouldBe 0
+    tree.asInstanceOf[MerkleHashNode].left.nodeId.id                                     shouldBe 1
+    tree.asInstanceOf[MerkleHashNode].left.asInstanceOf[MerkleHashNode].left.nodeId.id   shouldBe 2
+    tree.asInstanceOf[MerkleHashNode].left.asInstanceOf[MerkleHashNode].right.nodeId.id  shouldBe 3
+    tree.asInstanceOf[MerkleHashNode].right.nodeId.id                                    shouldBe 4
+    tree.asInstanceOf[MerkleHashNode].right.asInstanceOf[MerkleHashNode].left.nodeId.id  shouldBe 5
+    tree.asInstanceOf[MerkleHashNode].right.asInstanceOf[MerkleHashNode].right.nodeId.id shouldBe 6
+  }
 }

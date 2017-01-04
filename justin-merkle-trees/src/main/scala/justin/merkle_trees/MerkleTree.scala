@@ -18,9 +18,9 @@ object MerkleTree {
     case class TempMerkleHashNode(digest: Digest, left: TempMerkleTree, right: TempMerkleTree) extends TempMerkleTree
     case class TempMerkleLeaf(digest: Digest) extends TempMerkleTree
 
-    def blockToLeaf(b: Block)(implicit ev: MerkleDigest[Block]) = TempMerkleLeaf(ev.digest(b))
+    def blockToLeaf(b: Block) = TempMerkleLeaf(ev.digest(b))
 
-    def buildTree(blocks: Array[Block])(implicit ev: MerkleDigest[Block]) = Try {
+    def buildTree(blocks: Array[Block]) = Try {
       val leafs = blocks.map(blockToLeaf)
       var trees: Seq[TempMerkleTree] = leafs
 
@@ -32,7 +32,7 @@ object MerkleTree {
       trees.head
     }
 
-    def mergeTrees(n1: TempMerkleTree, n2: TempMerkleTree)(implicit ev: MerkleDigest[Block]) = {
+    def mergeTrees(n1: TempMerkleTree, n2: TempMerkleTree) = {
       val mergedDigest = n1.digest + n2.digest
       val hash = ev.digest(mergedDigest.hash)
       TempMerkleHashNode(hash, n1, n2)
