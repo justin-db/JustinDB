@@ -66,7 +66,7 @@ class MerkleTreeTest extends FlatSpec with Matchers {
     digest1.hash.deep shouldBe digest2.hash.deep
   }
 
-  it should "create missed zeroed byte blocks if initial blocks size is not multiplication of 2" in {
+  it should "create missed zeroed byte blocks if initial blocks has NOT size of multiplication of 2" in {
     val init = Array(
       Array[Byte](1,2,3),
       Array[Byte](4,5,6),
@@ -84,5 +84,18 @@ class MerkleTreeTest extends FlatSpec with Matchers {
     val zeroed = MerkleTree.zeroed(init)
 
     zeroed.deep shouldBe expected.deep
+  }
+
+  it should "NOT create missed zeroed bytes blocks if initial blocks has size of multiplication of 2" in {
+    val init = Array(
+      Array[Byte](1,2,3),
+      Array[Byte](4,5,6),
+      Array[Byte](7,8,9),
+      Array[Byte](10,11,12)
+    )
+
+    val zeroed = MerkleTree.zeroed(init)
+
+    zeroed.deep shouldBe empty
   }
 }
