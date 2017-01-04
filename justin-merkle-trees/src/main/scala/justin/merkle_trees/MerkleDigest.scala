@@ -32,4 +32,5 @@ object MerkleDigest {
 
 case class Digest(hash: Array[Byte]) extends AnyVal {
   def +(that: Digest): Digest = Digest(this.hash ++ that.hash)
+  def ==(that: Digest): Boolean = this.hash.deep == that.hash.deep
 }
