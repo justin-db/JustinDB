@@ -13,20 +13,9 @@ object MerkleTree {
   def unapply(blocks: Seq[Block])(implicit ev: MerkleDigest[Block]): Option[MerkleTree] = unapply(blocks.toArray)
 
   def unapply(blocks: Array[Block])(implicit ev: MerkleDigest[Block]): Option[MerkleTree] = {
-    val zeroedBlocks = Array.fill(zero(blocks.length))(Array[Byte](0))
-    val withZeroedBlocks = blocks ++ zeroedBlocks
-
-    val leafs = withZeroedBlocks.map(blockToLeaf)
+    val allBlocks = blocks ++ zeroed(blocks)
+    val leafs = allBlocks.map(blockToLeaf)
     buildTree(leafs).toOption
-  }
-
-  def zero(i: Int): Int = {
-    val factor = 2
-    var x = factor
-
-    while(x < i) x *= factor
-
-    x - i
   }
 
   private def blockToLeaf(b: Block)(implicit ev: MerkleDigest[Block]) = MerkleLeaf(ev.digest(b))
@@ -46,5 +35,17 @@ object MerkleTree {
     val mergedDigest = n1.digest + n2.digest
     val hash = ev.digest(mergedDigest.hash)
     MerkleHashNode(hash, n1, n2)
+  }
+
+  def zeroed(blocks: Seq[Block]): Array[Array[Byte]] = {
+    def zero(i: Int): Int = {
+      val factor = 2
+      var x = factor
+
+      while(x < i) x *= factor
+
+      x - i
+    }
+    Array.fill(zero(blocks.length))(Array[Byte](0))
   }
 }
