@@ -69,17 +69,11 @@ object MerkleTree {
   }
 
   def findNode(nodeId: NodeId, merkleTree: MerkleTree): Option[MerkleTree] = {
-    if(merkleTree.nodeId == nodeId) {
-      Option(merkleTree)
-    }
-    else {
-      merkleTree match {
-        case MerkleHashNode(nId, _, _, right) if nodeId.id >= right.nodeId.id =>
-          findNode(nodeId, right)
-        case MerkleHashNode(nId, _, left, _) =>
-          findNode(nodeId, left)
-        case _ => None
-      }
+    merkleTree match {
+      case _ if merkleTree.nodeId == nodeId                                 => Option(merkleTree)
+      case MerkleHashNode(nId, _, _, right) if nodeId.id >= right.nodeId.id => findNode(nodeId, right)
+      case MerkleHashNode(nId, _, left, _)                                  => findNode(nodeId, left)
+      case _                                                                => None
     }
   }
 }
