@@ -145,15 +145,15 @@ class MerkleTreeTest extends FlatSpec with Matchers {
     )
     val tree = MerkleTree.unapply(blocks)(MerkleDigest.CRC32).get
 
-    MerkleTree.findNode(NodeId(0), tree).get.nodeId shouldBe NodeId(0)
-    MerkleTree.findNode(NodeId(1), tree).get.nodeId shouldBe NodeId(1)
-    MerkleTree.findNode(NodeId(2), tree).get.nodeId shouldBe NodeId(2)
-    MerkleTree.findNode(NodeId(3), tree).get.nodeId shouldBe NodeId(3)
-    MerkleTree.findNode(NodeId(4), tree).get.nodeId shouldBe NodeId(4)
-    MerkleTree.findNode(NodeId(5), tree).get.nodeId shouldBe NodeId(5)
-    MerkleTree.findNode(NodeId(6), tree).get.nodeId shouldBe NodeId(6)
+    MerkleTree.findNode(MerkleNodeId(0), tree).get.nodeId shouldBe MerkleNodeId(0)
+    MerkleTree.findNode(MerkleNodeId(1), tree).get.nodeId shouldBe MerkleNodeId(1)
+    MerkleTree.findNode(MerkleNodeId(2), tree).get.nodeId shouldBe MerkleNodeId(2)
+    MerkleTree.findNode(MerkleNodeId(3), tree).get.nodeId shouldBe MerkleNodeId(3)
+    MerkleTree.findNode(MerkleNodeId(4), tree).get.nodeId shouldBe MerkleNodeId(4)
+    MerkleTree.findNode(MerkleNodeId(5), tree).get.nodeId shouldBe MerkleNodeId(5)
+    MerkleTree.findNode(MerkleNodeId(6), tree).get.nodeId shouldBe MerkleNodeId(6)
 
-    MerkleTree.findNode(NodeId(-1), tree) should not be defined
-    MerkleTree.findNode(NodeId(7), tree)  should not be defined
+    MerkleTree.findNode(MerkleNodeId(-1), tree) should not be defined
+    MerkleTree.findNode(MerkleNodeId(7), tree)  should not be defined
   }
 }

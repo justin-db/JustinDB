@@ -3,14 +3,14 @@ package justin.merkle_trees
 import scala.annotation.tailrec
 import scala.util.Try
 
-case class NodeId(id: Int) extends AnyVal
+case class MerkleNodeId(id: Int) extends AnyVal
 
 sealed trait MerkleTree {
-  def nodeId: NodeId
+  def nodeId: MerkleNodeId
   def digest: Digest
 }
-case class MerkleHashNode(nodeId: NodeId, digest: Digest, left: MerkleTree, right: MerkleTree) extends MerkleTree
-case class MerkleLeaf(nodeId: NodeId, digest: Digest) extends MerkleTree
+case class MerkleHashNode(nodeId: MerkleNodeId, digest: Digest, left: MerkleTree, right: MerkleTree) extends MerkleTree
+case class MerkleLeaf(nodeId: MerkleNodeId, digest: Digest) extends MerkleTree
 
 object MerkleTree {
 
@@ -47,8 +47,8 @@ object MerkleTree {
       def toMerkle(mt: TempMerkleTree): MerkleTree = {
         counter += 1
         mt match {
-          case TempMerkleHashNode(digest, left, right) => MerkleHashNode(NodeId(counter), digest, toMerkle(left), toMerkle(right))
-          case TempMerkleLeaf(digest)                  => MerkleLeaf(NodeId(counter), digest)
+          case TempMerkleHashNode(digest, left, right) => MerkleHashNode(MerkleNodeId(counter), digest, toMerkle(left), toMerkle(right))
+          case TempMerkleLeaf(digest)                  => MerkleLeaf(MerkleNodeId(counter), digest)
         }
       }
       toMerkle(tmt)
@@ -70,7 +70,7 @@ object MerkleTree {
   }
 
   @tailrec
-  def findNode(nodeId: NodeId, merkleTree: MerkleTree): Option[MerkleTree] = {
+  def findNode(nodeId: MerkleNodeId, merkleTree: MerkleTree): Option[MerkleTree] = {
     merkleTree match {
       case _ if merkleTree.nodeId == nodeId                                 => Option(merkleTree)
       case MerkleHashNode(nId, _, _, right) if nodeId.id >= right.nodeId.id => findNode(nodeId, right)
