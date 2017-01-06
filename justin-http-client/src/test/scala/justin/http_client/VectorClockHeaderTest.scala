@@ -29,4 +29,12 @@ class VectorClockHeaderTest extends FlatSpec with Matchers {
     // then
     encoded shouldBe "W1siMSIsMV0sWyIyIiwyXSxbIjMiLDldXQ=="
   }
+
+  it should "throw an Exception for not parsable Vector Clock" in {
+    val vClock = null
+
+    intercept[VectorClockHeaderException] {
+      val encoded = VectorClockHeader(vClock).value()
+    }
+  }
 }
