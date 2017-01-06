@@ -42,4 +42,7 @@ class VectorClockHeaderTest extends FlatSpec with Matchers {
     VectorClockHeader(null).renderInResponses() shouldBe true
   }
 
+  it should "render header in request" in {
+    VectorClockHeader(null).renderInRequests() shouldBe true
+  }
 }
