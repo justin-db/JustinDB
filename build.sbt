@@ -66,8 +66,8 @@ lazy val httpClient = (project in file("justin-http-client"))
   .settings(git.useGitDescribe := true)
   .dependsOn(core, storageInMem)
 
-lazy val storageInMem = (project in file("justin-core/storage/in-mem")).settings(
-  name := "justin-db-storage-in-mem",
+lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
+  name := "justin-storage-in-mem",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storageInMem
 ).dependsOn(core)
