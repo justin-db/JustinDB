@@ -37,4 +37,9 @@ class VectorClockHeaderTest extends FlatSpec with Matchers {
       val encoded = VectorClockHeader(vClock).value()
     }
   }
+
+  it should "render header in response" in {
+    VectorClockHeader(null).renderInResponses() shouldBe true
+  }
+
 }
