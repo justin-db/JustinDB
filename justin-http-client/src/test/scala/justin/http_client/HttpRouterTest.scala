@@ -76,6 +76,20 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     }
   }
 
+  it should "get \"InternalServerError\" http code for unsuccessful read result" in {
+    val value  = "value"
+    val id     = UUID.randomUUID().toString
+    val r      = 1
+    val error  = "Internal Server Error"
+    val router = new HttpRouter(internalServerError(error))
+
+    Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
+      status                       shouldBe StatusCodes.InternalServerError
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(error))
+      header[VectorClockHeader]    shouldBe None
+    }
+  }
+
   private def getFound(data: Data) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(data))
   }
@@ -90,6 +104,10 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
 
   private def badRequest(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Failure(error))
+  }
+
+  private def internalServerError(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
+    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.failed(new Exception(error))
   }
 
   /**
