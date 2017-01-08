@@ -10,7 +10,7 @@ trait ClusterSubscriberActor { self: Actor =>
 
   private val cluster = Cluster(context.system)
 
-  var clusterMembers = ClusterMembers.empty
+  var clusterMembers: ClusterMembers = ClusterMembers.empty
 
   override def preStart(): Unit = cluster.subscribe(this.self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(this.self)
