@@ -9,6 +9,7 @@ import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.client.ActorRefStorageNodeClient
+import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
@@ -43,12 +44,15 @@ object Main extends App {
       )
     })
 
+    // ENTROPY ACTOR
+    val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
+
     // HTTP API
     val routes = logRequestResult(system.name) {
         new HttpRouter(storageNodeActorRef).routes ~
         new HealthCheckRouter().routes ~
         new BuildInfoRouter().routes ~
-        new ActiveAntiEntropyRouter().routes
+        new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes
     }
 
     Http()
