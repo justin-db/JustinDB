@@ -6,7 +6,7 @@ class ActiveAntiEntropyActor extends Actor {
   import ActiveAntiEntropyProtocol._
 
   override def receive: Receive = {
-    case Run => ???
+    case Run => ??? // TODO: start building of Merkle Tree on top of data
   }
 }
 
