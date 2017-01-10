@@ -1,4 +1,4 @@
-package justin.db.versioning
+package justin.db
 
 import org.scalatest.{FlatSpec, Matchers}
 
