@@ -9,8 +9,8 @@ object ResolveNodeTargets {
 
   def apply(nodeId: NodeId, preferenceList: PreferenceList, clusterMembers: ClusterMembers): ResolvedTargets = {
     ResolvedTargets(
-      local   = preferenceList.list.contains(nodeId),
-      remotes = preferenceList.list.filterNot(_ == nodeId).distinct.flatMap(clusterMembers.get)
+      local   = preferenceList.primaryNodeId == nodeId,
+      remotes = preferenceList.replicasNodeId.flatMap(clusterMembers.get)
     )
   }
 }
