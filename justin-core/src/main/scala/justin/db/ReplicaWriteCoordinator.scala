@@ -21,15 +21,19 @@ class ReplicaWriteCoordinator(
 
   private def coordinateReplicated(w: W, data: Data, clusterMembers: ClusterMembers) = {
     val ringPartitionId = UUID2RingPartitionId.apply(data.id, ring)
-    val preferenceList  = PreferenceList(ringPartitionId, n, ring)
-    val updatedData     = Data.updateVclock(data, preferenceList)
 
-    ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
-      case ResolvedTargets(true, remotes)  if remotes.size + 1 >= w.w =>
-        (localDataWriter.apply(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge).map(ReachConsensusReplicatedWrites(w))
-      case ResolvedTargets(false, remotes) if remotes.size     >= w.w =>
-        remoteDataWriter.apply(remotes, updatedData).map(ReachConsensusReplicatedWrites(w))
-      case _ => Future.successful(StorageNodeWritingResult.FailedWrite)
+    PreferenceList(ringPartitionId, n, ring) match {
+      case Left(PreferenceList.LackOfCoordinator)                 => Future.successful(StorageNodeWritingResult.FailedWrite)
+      case Left(PreferenceList.NotSufficientSize(preferenceList)) => Future.successful(StorageNodeWritingResult.FailedWrite)
+      case Right(preferenceList) =>
+        val updatedData = Data.updateVclock(data, preferenceList)
+        ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
+          case ResolvedTargets(true, remotes)  if remotes.size + 1 >= w.w =>
+            (localDataWriter.apply(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge).map(ReachConsensusReplicatedWrites(w))
+          case ResolvedTargets(false, remotes) if remotes.size     >= w.w =>
+            remoteDataWriter.apply(remotes, updatedData).map(ReachConsensusReplicatedWrites(w))
+          case _ => Future.successful(StorageNodeWritingResult.FailedWrite)
+        }
     }
   }
 }

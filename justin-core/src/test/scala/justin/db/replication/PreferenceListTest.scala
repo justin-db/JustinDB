@@ -14,10 +14,10 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val basePartitionId = 1
 
     // when
-    val preferenceList = PreferenceList(basePartitionId, n, ring)
+    val preferenceList = PreferenceList(basePartitionId, n, ring).right.get
 
     // then
-    preferenceList.list.size shouldBe 3
+    preferenceList.size shouldBe 3
   }
 
   it should "has defined first node in the list to be the one taken from Ring with initial partitionId" in {
@@ -27,7 +27,7 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val initialPartitionId = 1
 
     // when
-    val coordinator = PreferenceList.apply(initialPartitionId, n, ring).list.head
+    val coordinator = PreferenceList.apply(initialPartitionId, n, ring).right.get.primaryNodeId
 
     // then
     coordinator shouldBe ring.getNodeId(initialPartitionId).get
@@ -40,11 +40,11 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val initialPartitionId = 1
 
     // when
-    val preferenceList = PreferenceList.apply(initialPartitionId, n, ring)
+    val preferenceList = PreferenceList.apply(initialPartitionId, n, ring).right.get
 
     // then
-    preferenceList.list.size shouldBe 1
-    preferenceList.list.head shouldBe ring.getNodeId(initialPartitionId).get
+    preferenceList.size          shouldBe 1
+    preferenceList.primaryNodeId shouldBe ring.getNodeId(initialPartitionId).get
   }
 
   it should "check that selected nodes ids are continuous" in {
@@ -54,9 +54,35 @@ class PreferenceListTest extends FlatSpec with Matchers {
     val initialPartitionId = 1
 
     // when
+    val preferenceList = PreferenceList.apply(initialPartitionId, n, ring).right.get
+
+    // then
+    preferenceList shouldBe PreferenceList(NodeId(1), List(NodeId(2), NodeId(3)))
+  }
+
+  it should "fail to build PreferenceList if coordinator nodeId couldn't be found" in {
+    // given
+    val n = N(3) // nr of replicas
+    val ring = Ring(nodesSize = 5, partitionsSize = 64)
+    val notExistedPartitionId = -1
+
+    // when
+    val preferenceList = PreferenceList.apply(notExistedPartitionId, n, ring)
+
+    // then
+    preferenceList shouldBe Left(PreferenceList.LackOfCoordinator)
+  }
+
+  it should "fail to build PreferenceList if it has NOT expected size" in {
+    // given
+    val n = N(3) // nr of replicas
+    val ring = Ring(nodesSize = 2, partitionsSize = 64)
+    val initialPartitionId = 1
+
+    // when
     val preferenceList = PreferenceList.apply(initialPartitionId, n, ring)
 
     // then
-    preferenceList.list shouldBe List(NodeId(1), NodeId(2), NodeId(3))
+    preferenceList shouldBe Left(PreferenceList.NotSufficientSize(PreferenceList(NodeId(1), List(NodeId(0)))))
   }
 }

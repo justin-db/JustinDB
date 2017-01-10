@@ -12,17 +12,7 @@ class PreferenceListSpecification extends Properties("PreferenceList") {
     val partitionIdGen = Gen.choose(0, ring.size-1)
 
     forAll(partitionIdGen) { basePartitionId: Int =>
-      PreferenceList(basePartitionId, n, ring).list.head == ring.getNodeId(basePartitionId).get
-    }
-  }
-
-  property("size of preference-list is always the same as configured number of replicas") = {
-    val ring = Ring.apply(nodesSize = 5, partitionsSize = 64)
-    val basePartitionId = 0
-    val replicaNrGen = Gen.choose(1, 1000)
-
-    forAll(replicaNrGen) { n: Int =>
-      PreferenceList(basePartitionId, N(n), ring).list.size == n
+      PreferenceList(basePartitionId, n, ring).right.get.primaryNodeId == ring.getNodeId(basePartitionId).get
     }
   }
 }
