@@ -47,7 +47,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
     Await.result(inMemStorage.put(data), atMost = 5 seconds)
 
     // when
-    val result = Await.result(inMemStorage.get(data.data.id), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(data.data.id)(null), atMost = 5 seconds)
 
     // then
     result shouldBe StorageGetData.Single(data.data)
@@ -59,7 +59,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
     val inMemStorage = new InMemStorage
 
     // when
-    val result = Await.result(inMemStorage.get(noExistingId), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(noExistingId)(null), atMost = 5 seconds)
 
     // then
     result shouldBe StorageGetData.None
@@ -73,7 +73,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
     Await.result(inMemStorage.put(data), atMost = 5 seconds)
 
     // when
-    val result = Await.result(inMemStorage.get(id), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(id)(null), atMost = 5 seconds)
 
     // then
     result shouldBe StorageGetData.Conflicted(data.data1, data.data2)
