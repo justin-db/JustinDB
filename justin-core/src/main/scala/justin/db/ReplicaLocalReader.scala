@@ -10,13 +10,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReader(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
 
-  def apply(id: UUID): Future[StorageNodeReadingResult] = {
-    storage.get(id).map {
+  def apply(id: UUID, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeReadingResult] = {
+    storage.get(id)(resolveDataOriginality).map {
       case StorageGetData.Single(data)             => StorageNodeReadingResult.Found(data)
       case StorageGetData.None                     => StorageNodeReadingResult.NotFound
       case StorageGetData.Conflicted(data1, data2) => StorageNodeReadingResult.Conflicted(data1, data2)
-    } recover {
-      case _                                       => StorageNodeReadingResult.FailedRead
-    }
+    } recover { case _                             => StorageNodeReadingResult.FailedRead }
   }
 }

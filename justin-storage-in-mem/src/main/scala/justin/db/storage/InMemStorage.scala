@@ -3,7 +3,7 @@ package justin.db.storage
 import java.util.UUID
 
 import justin.db.Data
-import justin.db.storage.PluggableStorageProtocol.{Ack, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -17,7 +17,8 @@ class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtoc
 
   private var values = mutable.Map.empty[UUID, MapVal]
 
-  override def get(id: UUID): Future[StorageGetData] = Future.successful {
+  // TODO: handle resolving of originality of Data
+  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful  {
     values.get(id) match {
       case None                             => StorageGetData.None
       case Some(MapVal(data1, Some(data2))) => StorageGetData.Conflicted(data1, data2)

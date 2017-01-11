@@ -13,8 +13,8 @@ class ReplicaLocalWriter(storage: PluggableStorageProtocol)(implicit ec: Executi
 
   private val vectorClockComparator = new VectorClockComparator[NodeId]
 
-  def apply(data: Data): Future[StorageNodeWritingResult] = {
-    storage.get(data.id).flatMap {
+  def apply(data: Data, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeWritingResult] = {
+    storage.get(data.id)(resolveDataOriginality).flatMap {
       case StorageGetData.None                   => putSingleSuccessfulWrite(data)
       case conflicted: StorageGetData.Conflicted => handleExistedConflictData(data, conflicted)
       case single: StorageGetData.Single         => handleExistedSingleData(data, single)
