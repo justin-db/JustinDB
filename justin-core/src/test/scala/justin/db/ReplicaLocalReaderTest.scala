@@ -23,7 +23,8 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
         Future.successful(StorageGetData.Single(data))
       }
-      override def put(cmd: StoragePutData): Future[Ack] = ???
+
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -40,7 +41,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
         Future.successful(StorageGetData.None)
       }
-      override def put(cmd: StoragePutData): Future[Ack] = ???
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -59,7 +60,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
         Future.successful(StorageGetData.Conflicted(data1, data2))
       }
-      override def put(cmd: StoragePutData): Future[Ack] = ???
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -74,7 +75,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id = UUID.randomUUID()
     val service = new ReplicaLocalReader(new PluggableStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.failed(new Exception)
-      override def put(cmd: StoragePutData): Future[Ack] = ???
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when

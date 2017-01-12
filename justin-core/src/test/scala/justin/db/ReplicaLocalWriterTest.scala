@@ -28,7 +28,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val data       = Data(notTakenId, "some-value")
     val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.None)
-      override def put(cmd: StoragePutData): Future[Ack] = Ack.future
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
     })
 
     // when
@@ -49,7 +49,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val data       = Data(notTakenId, "some-value")
     val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.None)
-      override def put(cmd: StoragePutData): Future[Ack] = Future.failed(new Exception)
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Future.failed(new Exception)
     })
 
     // when
@@ -71,7 +71,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(1))))
     val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
-      override def put(cmd: StoragePutData): Future[Ack] = ???
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -88,7 +88,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(2) -> Counter(1))))
     val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
-      override def put(cmd: StoragePutData): Future[Ack] = Ack.future
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
     })
 
     // when
@@ -105,7 +105,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(2))))
     val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
-      override def put(cmd: StoragePutData): Future[Ack] = Ack.future
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
     })
 
     // when
@@ -130,7 +130,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
         override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
           Future.successful(StorageGetData.Conflicted(existedData1, existedData2))
         }
-        override def put(cmd: StoragePutData): Future[Ack] = Ack.future
+        override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
       })
 
       // when
@@ -150,7 +150,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
         override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
           Future.successful(StorageGetData.Conflicted(existedData1, existedData2))
         }
-        override def put(cmd: StoragePutData): Future[Ack] = ???
+        override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
       })
 
       // when

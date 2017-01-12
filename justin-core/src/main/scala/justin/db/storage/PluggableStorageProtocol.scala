@@ -10,7 +10,7 @@ import scala.concurrent.Future
 
 trait PluggableStorageProtocol {
   def get(id: UUID)(resolveOriginality: UUID => DataOriginality): Future[StorageGetData]
-  def put(cmd: StoragePutData): Future[Ack]
+  def put(cmd: StoragePutData)(resolveOriginality: UUID => DataOriginality): Future[Ack]
 }
 
 object PluggableStorageProtocol {
