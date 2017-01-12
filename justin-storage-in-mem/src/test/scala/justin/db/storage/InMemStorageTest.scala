@@ -3,7 +3,7 @@ package justin.db.storage
 import java.util.UUID
 
 import justin.db.Data
-import justin.db.storage.PluggableStorageProtocol.{Ack, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.Await
@@ -19,9 +19,10 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // given
     val data = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
     val inMemStorage = new InMemStorage
+    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
 
     // when
-    val result = Await.result(inMemStorage.put(data), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // then
     result shouldBe Ack
@@ -32,9 +33,10 @@ class InMemStorageTest extends FlatSpec with Matchers {
     val id = UUID.randomUUID()
     val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
     val inMemStorage = new InMemStorage
+    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
 
     // when
-    val result = Await.result(inMemStorage.put(data), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // then
     result shouldBe Ack
@@ -44,10 +46,11 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // given
     val data = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
     val inMemStorage = new InMemStorage
-    Await.result(inMemStorage.put(data), atMost = 5 seconds)
+    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // when
-    val result = Await.result(inMemStorage.get(data.data.id)(null), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(data.data.id)(resolver), atMost = 5 seconds)
 
     // then
     result shouldBe StorageGetData.Single(data.data)
@@ -57,9 +60,10 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // given
     val noExistingId = UUID.randomUUID()
     val inMemStorage = new InMemStorage
+    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
 
     // when
-    val result = Await.result(inMemStorage.get(noExistingId)(null), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(noExistingId)(resolver), atMost = 5 seconds)
 
     // then
     result shouldBe StorageGetData.None
@@ -70,10 +74,11 @@ class InMemStorageTest extends FlatSpec with Matchers {
     val id = UUID.randomUUID()
     val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
     val inMemStorage = new InMemStorage
-    Await.result(inMemStorage.put(data), atMost = 5 seconds)
+    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // when
-    val result = Await.result(inMemStorage.get(id)(null), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(id)(resolver), atMost = 5 seconds)
 
     // then
     result shouldBe StorageGetData.Conflicted(data.data1, data.data2)

@@ -21,7 +21,7 @@ class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtoc
   private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, MapVal]]
 
   override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful {
-    def get(mmap: MMap, partitionId: RingPartitionId, id: UUID) = {
+    def get(mmap: MMap, partitionId: RingPartitionId) = {
       mmap.get(partitionId).fold[StorageGetData](StorageGetData.None) { _.get(id) match {
         case None                             => StorageGetData.None
         case Some(MapVal(data1, Some(data2))) => StorageGetData.Conflicted(data1, data2)
@@ -30,13 +30,29 @@ class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtoc
     }
 
     resolveOriginality(id) match {
-      case DataOriginality.Primary(partitionId) => get(primaries, partitionId, id)
-      case DataOriginality.Replica(partitionId) => get(replicas, partitionId, id)
+      case DataOriginality.Primary(partitionId) => get(primaries, partitionId)
+      case DataOriginality.Replica(partitionId) => get(replicas, partitionId)
     }
   }
 
-  // TODO: handle resolving of originality of Data
-  override def put(cmd: StoragePutData): Future[Ack] = {
+  override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
+    def update(mmap: MMap, partitionId: RingPartitionId, id: UUID, mapVal: MapVal) = {
+      mmap.get(partitionId) match {
+        case None              => mmap + (partitionId -> Map(id -> mapVal))
+        case Some(paritionMap) => mmap + (partitionId -> (paritionMap ++ Map(id -> mapVal)))
+      }
+    }
+
+    val (id, mapVal) = cmd match {
+      case StoragePutData.Single(data)                => (data.id, MapVal(data, None))
+      case StoragePutData.Conflict(uid, data1, data2) => (uid, MapVal(data1, Option(data2)))
+    }
+
+    resolveOriginality(id) match {
+      case DataOriginality.Primary(partitionId) => primaries = update(primaries, partitionId, id, mapVal)
+      case DataOriginality.Replica(partitionId) => replicas  = update(replicas, partitionId, id, mapVal)
+    }
+
     Ack.future
   }
 }
