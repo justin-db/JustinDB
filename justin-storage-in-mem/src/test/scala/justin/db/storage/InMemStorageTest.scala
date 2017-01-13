@@ -60,7 +60,9 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // given
     val noExistingId = UUID.randomUUID()
     val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    val resolver  = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    val otherData = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
+    Await.result(inMemStorage.put(otherData)(resolver), atMost = 5 seconds)
 
     // when
     val result = Await.result(inMemStorage.get(noExistingId)(resolver), atMost = 5 seconds)
