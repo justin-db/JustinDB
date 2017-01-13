@@ -42,7 +42,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
     result shouldBe Ack
   }
 
-  it should "get single data for appropriate identificator" in {
+  it should "get single data for appropriate identifier" in {
     // given
     val data = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
     val inMemStorage = new InMemStorage
@@ -69,7 +69,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
     result shouldBe StorageGetData.None
   }
 
-  it should "get conflicted data for appropriate identificator" in {
+  it should "get conflicted data for appropriate identifier" in {
     // given
     val id = UUID.randomUUID()
     val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
@@ -78,6 +78,21 @@ class InMemStorageTest extends FlatSpec with Matchers {
     Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // when
+    val result = Await.result(inMemStorage.get(id)(resolver), atMost = 5 seconds)
+
+    // then
+    result shouldBe StorageGetData.Conflicted(data.data1, data.data2)
+  }
+
+  it should "store and read replicated data" in {
+    // given
+    val id = UUID.randomUUID()
+    val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
+    val inMemStorage = new InMemStorage
+    val resolver = (id: UUID) => DataOriginality.Replica(ringPartitionId = 1)
+
+    // when
+    Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
     val result = Await.result(inMemStorage.get(id)(resolver), atMost = 5 seconds)
 
     // then
