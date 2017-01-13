@@ -55,4 +55,10 @@ class RingTest extends FlatSpec with Matchers {
     ring.getNodeId(lastIdx)     shouldBe defined
     ring.getNodeId(lastIdx + 1) should not be defined
   }
+
+  it should "stingify itself" in {
+    val ring = Ring.apply(nodesSize = 2, partitionsSize = 2)
+
+    ring.toString shouldBe "Map(0 -> NodeId(0), 1 -> NodeId(1))"
+  }
 }
