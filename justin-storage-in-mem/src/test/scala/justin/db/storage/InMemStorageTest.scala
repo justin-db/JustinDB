@@ -69,6 +69,20 @@ class InMemStorageTest extends FlatSpec with Matchers {
     result shouldBe StorageGetData.None
   }
 
+  it should "get none data for not existing partitionId" in {
+    // given
+    val uid = UUID.randomUUID()
+    val noExistingRingPartitionId = 1
+    val inMemStorage = new InMemStorage
+    val resolver = (id: UUID) => DataOriginality.Replica(ringPartitionId = noExistingRingPartitionId)
+
+    // when
+    val result = Await.result(inMemStorage.get(uid)(resolver), atMost = 5 seconds)
+
+    // then
+    result shouldBe StorageGetData.None
+  }
+
   it should "get conflicted data for appropriate identifier" in {
     // given
     val id = UUID.randomUUID()
