@@ -112,4 +112,25 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // then
     result shouldBe StorageGetData.Conflicted(data.data1, data.data2)
   }
+
+  it should "store and merge many data within under single partitionId" in {
+    // given
+    val id1 = UUID.randomUUID()
+    val id2 = UUID.randomUUID()
+    val data1 = StoragePutData.Single(Data(id1, "some-data"))
+    val data2 = StoragePutData.Single(Data(id2, "some-data"))
+    val resolver = (id: UUID) => DataOriginality.Replica(ringPartitionId = 1)
+    val inMemStorage = new InMemStorage
+
+    Await.result(inMemStorage.put(data1)(resolver), atMost = 5 seconds)
+    Await.result(inMemStorage.put(data2)(resolver), atMost = 5 seconds)
+
+    // when
+    val result1 = Await.result(inMemStorage.get(id1)(resolver), atMost = 5 seconds)
+    val result2 = Await.result(inMemStorage.get(id2)(resolver), atMost = 5 seconds)
+
+    // then
+    result1 shouldBe StorageGetData.Single(data1.data)
+    result2 shouldBe StorageGetData.Single(data2.data)
+  }
 }
