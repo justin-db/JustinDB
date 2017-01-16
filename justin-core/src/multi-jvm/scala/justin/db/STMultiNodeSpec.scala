@@ -1,10 +1,10 @@
 package justin.db
 
 import akka.remote.testkit.MultiNodeSpecCallbacks
-import org.scalatest.{BeforeAndAfterAll, FeatureSpecLike, Matchers}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 trait STMultiNodeSpec extends MultiNodeSpecCallbacks
-  with FeatureSpecLike
+  with WordSpecLike
   with Matchers
   with BeforeAndAfterAll {
 
