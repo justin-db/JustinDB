@@ -19,7 +19,7 @@ function buildJVM {
     INIT="clean"
     COMPILE="compile"
     COVERAGE="coverage"
-    TEST="test"
+    TEST="test;multi-jvm:test"
 
     COMMAND=";$INIT;$COVERAGE;$COMPILE;$TEST"
     echo
