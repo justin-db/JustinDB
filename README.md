@@ -38,6 +38,3 @@ In case it's not obvious, Justin performs no authentication, authorization, or a
 
 ## System Requirements
 JustinDB works with Java 8 and newer.
-
-## Book
-This project has dedicated book - http://speedcom.gitbooks.io/justindb/
