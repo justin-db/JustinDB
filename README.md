@@ -32,6 +32,10 @@ Besides that it has many welcome features around clustering:
 3. self maintenance
 4. fault tolerance
 
+### Authentication, authorization, validation
+
+In case it's not obvious, Justin performs no authentication, authorization, or any validation of input data. Clients must implement those things themselves.
+
 ## System Requirements
 JustinDB works with Java 8 and newer.
 
