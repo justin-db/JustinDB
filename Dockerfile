@@ -3,7 +3,7 @@ FROM openjdk:8-jre
 ADD run.sh /app/run.sh
 RUN chmod +x /app/run.sh
 
-ADD justin-db/client/http/target/scala-2.12/justin-db-client-http-assembly-0.1-539-ge874832-SNAPSHOT.jar /app/app.jar
+ADD justin-http-client/target/scala-2.12/justin-http-client-assembly-0.1-642-gbcbb380-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 80 81 82 2551 2552 2553
 
