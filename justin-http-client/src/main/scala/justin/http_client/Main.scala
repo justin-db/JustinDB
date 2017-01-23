@@ -43,7 +43,7 @@ object Main extends App {
         val consulClient = new ConsulClient(ConsulClientConfig(
           host = ConsulHost(config.getString("consul.host")),
           port = ConsulPort(config.getInt("consul.port")),
-          serviceName = ConsulServiceName(config.getString("consul.serviceName"))
+          serviceName = ConsulServiceName(config.getString("service.name"))
         ))
         val serviceAddresses = consulClient.getServiceAddresses
         logger.debug(s"Cluster bootstrap, service addresses: $serviceAddresses")
