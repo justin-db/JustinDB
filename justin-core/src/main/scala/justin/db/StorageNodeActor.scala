@@ -1,6 +1,6 @@
 package justin.db
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, ActorRef, Props}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.N
@@ -35,3 +35,5 @@ object StorageNodeActor {
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
   def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = Props(new StorageNodeActor(nodeId, storage, ring, n))
 }
+
+case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
