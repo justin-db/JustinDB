@@ -25,7 +25,7 @@ object MerkleTree {
 
     def buildTree(blocks: Array[Block]) = Try {
       val leafs = blocks.map(blockToLeaf)
-      var trees: Seq[TempMerkleTree] = leafs
+      var trees: Seq[TempMerkleTree] = leafs.toSeq
 
       while (trees.length > 1) {
         trees = trees.grouped(2)
