@@ -39,7 +39,7 @@ class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtoc
     def update(mmap: MMap, partitionId: RingPartitionId, id: UUID, mapVal: MapVal) = {
       mmap.get(partitionId) match {
         case None              => mmap + (partitionId -> Map(id -> mapVal))
-        case Some(paritionMap) => mmap + (partitionId -> (paritionMap ++ Map(id -> mapVal)))
+        case Some(partitionMap) => mmap + (partitionId -> (partitionMap ++ Map(id -> mapVal)))
       }
     }
 
