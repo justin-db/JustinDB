@@ -21,7 +21,7 @@ object MerkleTree {
     case class TempMerkleHashNode(digest: Digest, left: TempMerkleTree, right: TempMerkleTree) extends TempMerkleTree
     case class TempMerkleLeaf(digest: Digest) extends TempMerkleTree
 
-    def blockToLeaf(b: Block) = TempMerkleLeaf(ev.digest(b))
+    def blockToLeaf(b: Block): TempMerkleLeaf = TempMerkleLeaf(ev.digest(b))
 
     def buildTree(blocks: Array[Block]) = Try {
       val leafs = blocks.map(blockToLeaf)
