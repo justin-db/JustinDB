@@ -3,12 +3,12 @@ package justin.db
 import java.util.UUID
 
 import justin.db.StorageNodeActorProtocol._
-import justin.db.storage.PluggableStorageProtocol
+import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReplicaLocalReader(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
+class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionContext) {
 
   def apply(id: UUID, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeReadingResult] = {
     storage.get(id)(resolveDataOriginality).map {

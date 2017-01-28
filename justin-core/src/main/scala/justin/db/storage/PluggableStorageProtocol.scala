@@ -8,10 +8,15 @@ import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, Storage
 
 import scala.concurrent.Future
 
-trait PluggableStorageProtocol {
+trait GetStorageProtocol {
   def get(id: UUID)(resolveOriginality: UUID => DataOriginality): Future[StorageGetData]
+}
+
+trait PutStorageProtocol {
   def put(cmd: StoragePutData)(resolveOriginality: UUID => DataOriginality): Future[Ack]
 }
+
+trait PluggableStorageProtocol extends GetStorageProtocol with PutStorageProtocol
 
 object PluggableStorageProtocol {
   

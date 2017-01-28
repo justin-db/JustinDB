@@ -1,15 +1,15 @@
 package justin.db
 
 import justin.db.StorageNodeActorProtocol._
-import justin.db.storage.PluggableStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
+import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 import justin.db.versioning.VectorClockComparator.VectorClockRelation._
 import justin.db.versioning.{NodeIdVectorClock, VCs2Compare, VectorClockComparator}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReplicaLocalWriter(storage: PluggableStorageProtocol)(implicit ec: ExecutionContext) {
+class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(implicit ec: ExecutionContext) {
 
   def apply(data: Data, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeWritingResult] = {
     storage.get(data.id)(resolveDataOriginality).flatMap {

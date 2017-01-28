@@ -3,8 +3,8 @@ package justin.db
 import java.util.UUID
 
 import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult
-import justin.db.storage.PluggableStorageProtocol
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.GetStorageProtocol
+import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -19,12 +19,10 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val id   = UUID.randomUUID()
     val data = Data(id, "value")
-    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new GetStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
         Future.successful(StorageGetData.Single(data))
       }
-
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -37,11 +35,10 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
   it should "not found data for non-existing key" in {
     // given
     val id = UUID.randomUUID()
-    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new GetStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
         Future.successful(StorageGetData.None)
       }
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -56,11 +53,10 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id = UUID.randomUUID()
     val data1 = Data(id, "some-data-1")
     val data2 = Data(id, "some-data-2")
-    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new GetStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
         Future.successful(StorageGetData.Conflicted(data1, data2))
       }
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when
@@ -73,9 +69,8 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
   it should "recover failure reading" in {
     // given
     val id = UUID.randomUUID()
-    val service = new ReplicaLocalReader(new PluggableStorageProtocol {
+    val service = new ReplicaLocalReader(new GetStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.failed(new Exception)
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
 
     // when

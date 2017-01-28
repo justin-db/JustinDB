@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.consistent_hashing.NodeId
 import justin.db.StorageNodeActorProtocol.StorageNodeWritingResult
-import justin.db.storage.PluggableStorageProtocol
+import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.concurrent.ScalaFutures
@@ -26,7 +26,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val notTakenId = UUID.randomUUID()
     val data       = Data(notTakenId, "some-value")
-    val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+    val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.None)
       override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
     })
@@ -47,7 +47,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val notTakenId = UUID.randomUUID()
     val data       = Data(notTakenId, "some-value")
-    val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+    val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.None)
       override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Future.failed(new Exception)
     })
@@ -69,7 +69,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val id      = UUID.randomUUID()
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(2))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(1))))
-    val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+    val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
       override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
     })
@@ -86,7 +86,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val id      = UUID.randomUUID()
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(2) -> Counter(1))))
-    val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+    val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
       override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
     })
@@ -103,7 +103,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val id      = UUID.randomUUID()
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(2))))
-    val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+    val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
       override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
       override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
     })
@@ -126,7 +126,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
       val existedData1   = Data(id, "some-value", VectorClock(Map(NodeId(2) -> Counter(1))))
       val existedData2   = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
       val consequentData = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1), NodeId(2) -> Counter(1))))
-      val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+      val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
         override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
           Future.successful(StorageGetData.Conflicted(existedData1, existedData2))
         }
@@ -146,7 +146,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
       val existedData1   = Data(id, "some-value", VectorClock(Map(NodeId(2) -> Counter(1))))
       val existedData2   = Data(id, "some-value", VectorClock(Map(NodeId(3) -> Counter(1))))
       val consequentData = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1), NodeId(2) -> Counter(1))))
-      val writer = new ReplicaLocalWriter(new PluggableStorageProtocol {
+      val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
         override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
           Future.successful(StorageGetData.Conflicted(existedData1, existedData2))
         }
