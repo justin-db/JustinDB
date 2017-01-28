@@ -2,11 +2,6 @@ package justin.db
 
 import akka.actor.Props
 import akka.routing.{DefaultResizer, RoundRobinPool}
-import justin.consistent_hashing.{NodeId, Ring}
-import justin.db.replication.N
-import justin.db.storage.PluggableStorageProtocol
-
-import scala.concurrent.ExecutionContext
 
 object RoundRobinCoordinatorRouter {
   def routerName: String = "CoordinatorRouter"
