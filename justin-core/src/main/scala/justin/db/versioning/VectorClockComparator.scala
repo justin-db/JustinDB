@@ -18,22 +18,21 @@ class VectorClockComparator[Id] extends (VCs2Compare[Id] => VectorClockRelation)
       val vc1Val = vcs.baseVC.get(vc2Key)
       val vc2Val = vcs.potentiallyConsequentVC.get(vc2Key)
 
-      vc1Val.isEmpty || vc1Val.get.value == vc2Val.get.value match {
-        case true  => counter
-        case false =>
-          vc1Val.get.value > vc2Val.get.value match {
-            case true  => (counter._1 + 1, counter._2)
-            case false => (counter._1, counter._2 + 1)
-          }
+      if(vc1Val.isEmpty || vc1Val.get.value == vc2Val.get.value) {
+         counter
+      } else {
+        if(vc1Val.get.value > vc2Val.get.value) (counter._1 + 1, counter._2)
+        else (counter._1, counter._2 + 1)
       }
     }
 
-    if(isConflict(vc2ContainsAllKeysOfVc, vcContainsAllKeysOfVc2, counter1, counter2))
+    if(isConflict(vc2ContainsAllKeysOfVc, vcContainsAllKeysOfVc2, counter1, counter2)) {
       VectorClockRelation.Conflict
-    else if(isConsequent(vc2ContainsAllKeysOfVc, counter1, counter2))
+    } else if(isConsequent(vc2ContainsAllKeysOfVc, counter1, counter2)) {
       VectorClockRelation.Consequent
-    else
+    } else {
       VectorClockRelation.Predecessor
+    }
   }
 
   private def isConflict(vc2ContainsAllKeysOfVc: Boolean, vcContainsAllKeysOfVc2: Boolean, counter1: Int, counter2: Int) = {
