@@ -42,9 +42,10 @@ object ClusterSubscriberActorTest {
   def actorSystem: ActorSystem = {
     val config = ConfigFactory.parseString(
       """
+        |akka.loglevel = off
         |akka.actor.provider = cluster
         |akka.cluster.auto-join = off
-        |akka.metrics.enabled=off
+        |akka.cluster.metrics.enabled = off
       """.stripMargin).withFallback(ConfigFactory.load())
 
     ActorSystem("test-system", config)
