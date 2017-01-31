@@ -35,20 +35,6 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     }
   }
 
-  it should "get \"MultipleChoices\" http code for read conflicted data" in {
-    val r      = 1
-    val id     = UUID.randomUUID()
-    val data1  = Data(id, "value-1")
-    val data2  = Data(id, "value-2")
-    val router = new HttpRouter(getConflicted(data1, data2))
-
-    Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
-      status                       shouldBe StatusCodes.MultipleChoices
-      responseAs[String].parseJson shouldBe JsObject("value" -> JsString("Multiple Choices"))
-      header[VectorClockHeader]    shouldBe Some(VectorClockHeader(data1.vclock)) // TODO: this is not yet true
-    }
-  }
-
   it should "get \"NotFound\" http code for missed searched data" in {
     val value  = "value"
     val id     = UUID.randomUUID().toString
@@ -92,10 +78,6 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
 
   private def getFound(data: Data) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(data))
-  }
-
-  private def getConflicted(data1: Data, data2: Data) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
-    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Conflicted(data1, data2))
   }
 
   private def notFound(value: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
