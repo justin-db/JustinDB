@@ -17,7 +17,6 @@ object GetValueResponse {
   case class Found(data: Data)                    extends GetValueResponse
   case object NotFound                            extends GetValueResponse
   case class Failure(error: String)               extends GetValueResponse
-  case class Conflicted(data1: Data, data2: Data) extends GetValueResponse
 }
 
 sealed trait WriteValueResponse

@@ -22,8 +22,8 @@ class ReachConsensusReplicatedWritesTest extends FlatSpec with Matchers {
 
   it should "NOT reach consensus when number of successful write operation is smaller than desired" in {
     // given
-    val w = W(1)
-    val writes = List(ConflictedWrite)
+    val w = W(2)
+    val writes = List(FailedWrite, SuccessfulWrite)
 
     // when
     val result = ReachConsensusReplicatedWrites.apply(w)(writes)

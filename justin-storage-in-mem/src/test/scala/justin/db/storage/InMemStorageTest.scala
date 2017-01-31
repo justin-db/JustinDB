@@ -17,23 +17,9 @@ class InMemStorageTest extends FlatSpec with Matchers {
 
   it should "store single data" in {
     // given
-    val data = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
+    val data         = StoragePutData(Data(id = UUID.randomUUID(), "some-data"))
     val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
-
-    // when
-    val result = Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
-
-    // then
-    result shouldBe Ack
-  }
-
-  it should "store conflicted data" in {
-    // given
-    val id = UUID.randomUUID()
-    val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
-    val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    val resolver     = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
 
     // when
     val result = Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
@@ -44,9 +30,9 @@ class InMemStorageTest extends FlatSpec with Matchers {
 
   it should "get single data for appropriate identifier" in {
     // given
-    val data = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
+    val data         = StoragePutData(Data(id = UUID.randomUUID(), "some-data"))
     val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    val resolver     = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
     Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // when
@@ -60,8 +46,8 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // given
     val noExistingId = UUID.randomUUID()
     val inMemStorage = new InMemStorage
-    val resolver  = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
-    val otherData = StoragePutData.Single(Data(id = UUID.randomUUID(), "some-data"))
+    val resolver     = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
+    val otherData    = StoragePutData(Data(id = UUID.randomUUID(), "some-data"))
     Await.result(inMemStorage.put(otherData)(resolver), atMost = 5 seconds)
 
     // when
@@ -73,10 +59,10 @@ class InMemStorageTest extends FlatSpec with Matchers {
 
   it should "get none data for not existing partitionId" in {
     // given
-    val uid = UUID.randomUUID()
+    val uid                       = UUID.randomUUID()
     val noExistingRingPartitionId = 1
-    val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Replica(ringPartitionId = noExistingRingPartitionId)
+    val inMemStorage              = new InMemStorage
+    val resolver                  = (id: UUID) => DataOriginality.Replica(ringPartitionId = noExistingRingPartitionId)
 
     // when
     val result = Await.result(inMemStorage.get(uid)(resolver), atMost = 5 seconds)
@@ -85,43 +71,13 @@ class InMemStorageTest extends FlatSpec with Matchers {
     result shouldBe StorageGetData.None
   }
 
-  it should "get conflicted data for appropriate identifier" in {
-    // given
-    val id = UUID.randomUUID()
-    val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
-    val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
-    Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
-
-    // when
-    val result = Await.result(inMemStorage.get(id)(resolver), atMost = 5 seconds)
-
-    // then
-    result shouldBe StorageGetData.Conflicted(data.data1, data.data2)
-  }
-
-  it should "store and read replicated data" in {
-    // given
-    val id = UUID.randomUUID()
-    val data = StoragePutData.Conflict(id, Data(id, "some-data-1"), Data(id, "some-data-2"))
-    val inMemStorage = new InMemStorage
-    val resolver = (id: UUID) => DataOriginality.Replica(ringPartitionId = 1)
-
-    // when
-    Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
-    val result = Await.result(inMemStorage.get(id)(resolver), atMost = 5 seconds)
-
-    // then
-    result shouldBe StorageGetData.Conflicted(data.data1, data.data2)
-  }
-
   it should "store and merge many data within under single partitionId" in {
     // given
-    val id1 = UUID.randomUUID()
-    val id2 = UUID.randomUUID()
-    val data1 = StoragePutData.Single(Data(id1, "some-data"))
-    val data2 = StoragePutData.Single(Data(id2, "some-data"))
-    val resolver = (id: UUID) => DataOriginality.Replica(ringPartitionId = 1)
+    val id1          = UUID.randomUUID()
+    val id2          = UUID.randomUUID()
+    val data1        = StoragePutData(Data(id1, "some-data"))
+    val data2        = StoragePutData(Data(id2, "some-data"))
+    val resolver     = (id: UUID) => DataOriginality.Replica(ringPartitionId = 1)
     val inMemStorage = new InMemStorage
 
     Await.result(inMemStorage.put(data1)(resolver), atMost = 5 seconds)

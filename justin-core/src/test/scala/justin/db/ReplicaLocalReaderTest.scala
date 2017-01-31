@@ -48,24 +48,6 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     whenReady(result) { _ shouldBe StorageNodeReadingResult.NotFound }
   }
 
-  it should "found conflicted data for existing key" in {
-    // given
-    val id = UUID.randomUUID()
-    val data1 = Data(id, "some-data-1")
-    val data2 = Data(id, "some-data-2")
-    val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
-        Future.successful(StorageGetData.Conflicted(data1, data2))
-      }
-    })
-
-    // when
-    val result = service.apply(id, null)
-
-    // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.Conflicted(data1, data2) }
-  }
-
   it should "recover failure reading" in {
     // given
     val id = UUID.randomUUID()

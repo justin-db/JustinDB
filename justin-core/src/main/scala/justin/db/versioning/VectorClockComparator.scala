@@ -3,23 +3,21 @@ package justin.db.versioning
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 import justin.vector_clocks.VectorClock
 
-case class VCs2Compare[Id](baseVC: VectorClock[Id], potentiallyConsequentVC: VectorClock[Id])
+class VectorClockComparator[Id] extends ((VectorClock[Id], VectorClock[Id]) => VectorClockRelation) {
 
-// TODO: refactor (too much complexity)
-class VectorClockComparator[Id] extends (VCs2Compare[Id] => VectorClockRelation) {
-  override def apply(vcs: VCs2Compare[Id]): VectorClockRelation = {
-    val vcKeys  = vcs.baseVC.keys
-    val vc2Keys = vcs.potentiallyConsequentVC.keys
+  override def apply(baseVC: VectorClock[Id], comparedVC: VectorClock[Id]): VectorClockRelation = {
+    val vcKeys  = baseVC.keys
+    val vc2Keys = comparedVC.keys
 
-    val vc2ContainsAllKeysOfVc = !vcs.potentiallyConsequentVC.keys.forall(vcKeys.contains)
+    val vc2ContainsAllKeysOfVc = !comparedVC.keys.forall(vcKeys.contains)
     val vcContainsAllKeysOfVc2 = !vcKeys.forall(vc2Keys.contains)
 
     val (counter1, counter2) = vc2Keys.foldLeft((0,0)) { (counter, vc2Key) =>
-      val vc1Val = vcs.baseVC.get(vc2Key)
-      val vc2Val = vcs.potentiallyConsequentVC.get(vc2Key)
+      val vc1Val = baseVC.get(vc2Key)
+      val vc2Val = comparedVC.get(vc2Key)
 
       if(vc1Val.isEmpty || vc1Val.get.value == vc2Val.get.value) {
-         counter
+        counter
       } else {
         if(vc1Val.get.value > vc2Val.get.value) (counter._1 + 1, counter._2)
         else (counter._1, counter._2 + 1)

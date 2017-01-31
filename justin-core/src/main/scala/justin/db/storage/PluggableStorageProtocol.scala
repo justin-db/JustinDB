@@ -22,16 +22,11 @@ object PluggableStorageProtocol {
   
   sealed trait StorageGetData
   object StorageGetData {
-    case class Single(data: Data)                   extends StorageGetData
-    case class Conflicted(data1: Data, data2: Data) extends StorageGetData
-    case object None                                extends StorageGetData
+    case class Single(data: Data) extends StorageGetData
+    case object None              extends StorageGetData
   }
 
-  sealed trait StoragePutData
-  object StoragePutData {
-    case class Single(data: Data)                           extends StoragePutData
-    case class Conflict(id: UUID, data1: Data, data2: Data) extends StoragePutData
-  }
+  case class StoragePutData(data: Data) extends AnyVal
 
   sealed trait Ack
   case object Ack extends Ack {
