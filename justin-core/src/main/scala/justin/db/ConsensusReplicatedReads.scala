@@ -23,7 +23,7 @@ class ConsensusReplicatedReads {
           (onlyFoundReads.size >= r.r, onlyFoundReads.size == 1, foundOnlyConsequent(onlyFoundReads)) match {
             case (true, true, _)                 => ConsensusSummary.Consequent(onlyFoundReads.head.data)
             case (true, false, c) if c.size == 1 => ConsensusSummary.Consequent(c.head._1)
-            case (true, false, _)                => ConsensusSummary.Conflict(onlyFoundReads.map(_.data))
+            case (true, false, _)                => ConsensusSummary.Conflicts(onlyFoundReads.map(_.data))
             case (false, _, _)                   => ConsensusSummary.NotEnoughFound
           }
       }
@@ -49,6 +49,6 @@ object ConsensusReplicatedReads {
     case object AllFailed extends ConsensusSummary
     case object NotEnoughFound extends ConsensusSummary
     case class Consequent(data: Data) extends ConsensusSummary
-    case class Conflict(data: List[Data]) extends ConsensusSummary
+    case class Conflicts(data: List[Data]) extends ConsensusSummary
   }
 }

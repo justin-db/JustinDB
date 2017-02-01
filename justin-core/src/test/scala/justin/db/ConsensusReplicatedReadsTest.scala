@@ -90,6 +90,6 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.Conflict(searchedData.map(_.data))
+    madeConsensus shouldBe ConsensusSummary.Conflicts(searchedData.map(_.data))
   }
 }
