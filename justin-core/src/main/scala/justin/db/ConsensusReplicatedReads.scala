@@ -35,8 +35,8 @@ class ConsensusReplicatedReads {
     onlyFoundReads.flatMap { compared =>
       onlyFoundReads.filterNot(_ == compared)
         .map(base => (compared.data, vcComparator.apply(base.data.vclock, compared.data.vclock)))
-        .groupBy { case (c, _) => c }
-        .filter { case (_, l) => l.forall(_._2 == VectorClockRelation.Consequent) }
+        .groupBy { case (data, _) => data }
+        .filter { case (_, l) => l.forall { case (_, relation) => relation == VectorClockRelation.Consequent }}
     }
   }
 }
