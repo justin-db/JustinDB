@@ -48,19 +48,6 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     madeConsensus shouldBe ConsensusSummary.NotEnoughFound
   }
 
-  it should "agreed on \"Consequent\" when exactly once data is found and client expects only one replica" in {
-    // given
-    val r = 1
-    val foundData = Found(Data(UUID.randomUUID(), "value"))
-    val searchedData = List(NotFound, FailedRead, foundData)
-
-    // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
-
-    // then
-    madeConsensus shouldBe ConsensusSummary.Consequent(foundData.data)
-  }
-
   it should "agreed on \"Consequent\" scenario when client expectation is achieved and consequent data could be computed" in {
     // given
     val r = 3
@@ -77,7 +64,7 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     madeConsensus shouldBe ConsensusSummary.Consequent(searchedData.last.data)
   }
 
-  it should "agreed on \"Conflict\" scenario when client expectation is achieved but consequent data could be NOT computed" in {
+  it should "agreed on \"Conflict\" scenario when client expectation is achieved but consequent data could NOT be computed" in {
     // given
     val r = 3
     val searchedData = List(
@@ -91,5 +78,34 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
 
     // then
     madeConsensus shouldBe ConsensusSummary.Conflicts(searchedData.map(_.data))
+  }
+
+  it should "agreed on \"Found\" when exactly once data is found and client expects only one replica" in {
+    // given
+    val r = 1
+    val foundData = Found(Data(UUID.randomUUID(), "value"))
+    val searchedData = List(NotFound, FailedRead, foundData)
+
+    // when
+    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+
+    // then
+    madeConsensus shouldBe ConsensusSummary.Found(foundData.data)
+  }
+
+  it should "agreed on \"Found\" scenario when client expectation is achieved and all replicas agreed on same value" in {
+    // given
+    val r = 3
+    val searchedData = List(
+      Found(Data(UUID.randomUUID(), "value-1", "2:1")),
+      Found(Data(UUID.randomUUID(), "value-1", "2:1")),
+      Found(Data(UUID.randomUUID(), "value-1", "2:1"))
+    )
+
+    // when
+    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+
+    // then
+    madeConsensus shouldBe ConsensusSummary.Found(searchedData.head.data)
   }
 }

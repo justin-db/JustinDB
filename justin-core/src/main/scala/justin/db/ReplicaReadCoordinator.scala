@@ -44,7 +44,8 @@ class ReplicaReadCoordinator(
   }
 
   private def consensus2ReadingResult: ConsensusSummary => StorageNodeReadingResult = {
-    case ConsensusSummary.Consequent(data) => StorageNodeReadingResult.Found(data)
+    case ConsensusSummary.Consequent(data) => StorageNodeReadingResult.Found(data) // trigger Read-Repair entropy solving
+    case ConsensusSummary.Found(data)      => StorageNodeReadingResult.Found(data)
     case ConsensusSummary.Conflicts(data)  => StorageNodeReadingResult.Conflicts(data)
     case ConsensusSummary.NotEnoughFound   => StorageNodeReadingResult.NotFound
     case ConsensusSummary.AllFailed        => StorageNodeReadingResult.FailedRead
