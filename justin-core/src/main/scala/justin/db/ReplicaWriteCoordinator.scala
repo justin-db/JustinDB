@@ -1,6 +1,7 @@
 package justin.db
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
+import justin.db.ConsensusReplicatedWrites.ConsensusSummary
 import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.{N, PreferenceList, W}
 
@@ -21,19 +22,30 @@ class ReplicaWriteCoordinator(
 
   private def coordinateReplicated(w: W, data: Data, clusterMembers: ClusterMembers) = {
     val ringPartitionId = UUID2RingPartitionId.apply(data.id, ring)
+    PreferenceList(ringPartitionId, n, ring).fold(onLeft, onRight(w, data, clusterMembers))
+  }
 
-    PreferenceList(ringPartitionId, n, ring) match {
-      case Left(PreferenceList.LackOfCoordinator)                 => Future.successful(StorageNodeWritingResult.FailedWrite)
-      case Left(PreferenceList.NotSufficientSize(preferenceList)) => Future.successful(StorageNodeWritingResult.FailedWrite)
-      case Right(preferenceList) =>
-        val updatedData = Data.updateVclock(data, preferenceList)
-        ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
-          case ResolvedTargets(true, remotes)  if remotes.size + 1 >= w.w =>
-            (coordinateLocal(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge).map(ReachConsensusReplicatedWrites(w))
-          case ResolvedTargets(false, remotes) if remotes.size     >= w.w =>
-            remoteDataWriter.apply(remotes, updatedData).map(ReachConsensusReplicatedWrites(w))
-          case _ => Future.successful(StorageNodeWritingResult.FailedWrite)
-        }
+  private def onLeft(err: PreferenceList.Error) = Future.successful(StorageNodeWritingResult.FailedWrite)
+
+  private def onRight(w: W, data: Data, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
+    val updatedData = Data.updateVclock(data, preferenceList)
+    makeWrites(w, updatedData, clusterMembers, preferenceList)
+      .map(new ConsensusReplicatedWrites().reach(w))
+      .map(consensus2WritingResult)
+  }
+
+  private def makeWrites(w: W, updatedData: Data, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
+    ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
+      case ResolvedTargets(true, remotes)  if remotes.size + 1 >= w.w =>
+        (coordinateLocal(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge)
+      case ResolvedTargets(false, remotes) if remotes.size     >= w.w =>
+        remoteDataWriter.apply(remotes, updatedData)
+      case _  => Future.successful(List(StorageNodeWritingResult.FailedWrite))
     }
+  }
+
+  private def consensus2WritingResult: ConsensusSummary => StorageNodeWritingResult = {
+    case ConsensusSummary.NotEnoughWrites => StorageNodeWritingResult.FailedWrite
+    case ConsensusSummary.Ok              => StorageNodeWritingResult.SuccessfulWrite
   }
 }
