@@ -28,5 +28,6 @@ object PreferenceList {
 }
 
 case class PreferenceList(primaryNodeId: NodeId, replicasNodeId: List[NodeId]) {
-  def size: Int = 1 + replicasNodeId.size // 1 means Primary
+  def size: Int = all.size
+  def all: List[NodeId] = primaryNodeId :: replicasNodeId
 }
