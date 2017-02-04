@@ -9,12 +9,12 @@ object PreferenceList {
   case object LackOfCoordinator extends Error
   case class NotSufficientSize(preferenceList: PreferenceList) extends Error
 
-  def apply(baseId: RingPartitionId, n: N, ring: Ring): Either[Error, PreferenceList] = {
-    ring.getNodeId(baseId) match {
+  def apply(baseRingPartitionId: RingPartitionId, n: N, ring: Ring): Either[Error, PreferenceList] = {
+    ring.getNodeId(baseRingPartitionId) match {
       case None => Left(LackOfCoordinator)
       case Some(coordinatorNodeId) =>
-        val maxPartitionId = baseId + n.n - 1
-        val restNodesIds   = (baseId until maxPartitionId).map(getNextNodeId(ring)).flatten.distinct.filterNot(_ == coordinatorNodeId)
+        val maxPartitionId = baseRingPartitionId + n.n - 1
+        val restNodesIds   = (baseRingPartitionId until maxPartitionId).map(getNextNodeId(ring)).flatten.distinct.filterNot(_ == coordinatorNodeId)
         val preferenceList = PreferenceList(coordinatorNodeId, restNodesIds.toList)
 
         preferenceList.size >= n.n match {
