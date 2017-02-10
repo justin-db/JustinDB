@@ -30,9 +30,9 @@ class ReplicaReadCoordinator(
   private def onLeft(err: PreferenceList.Error) = Future.successful(StorageNodeReadingResult.FailedRead)
 
   private def onRight(r: R, id: UUID, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
-    gatherReads(r, id, clusterMembers, preferenceList)
-      .map(new ConsensusReplicatedReads().reach(r))
-      .map(consensus2ReadingResult)
+    val consensusFuture = gatherReads(r, id, clusterMembers, preferenceList).map(new ConsensusReplicatedReads().reach(r))
+    consensusFuture.foreach(triggerReadRepairIfConsequent)
+    consensusFuture.map(consensus2ReadingResult)
   }
 
   private def gatherReads(r: R, id: UUID, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
@@ -43,8 +43,12 @@ class ReplicaReadCoordinator(
     }
   }
 
+  private def triggerReadRepairIfConsequent: PartialFunction[ConsensusSummary, Unit] = {
+    case ConsensusSummary.Consequent(data) => ???
+  }
+
   private def consensus2ReadingResult: ConsensusSummary => StorageNodeReadingResult = {
-    case ConsensusSummary.Consequent(data) => StorageNodeReadingResult.Found(data) // trigger Read-Repair entropy solving
+    case ConsensusSummary.Consequent(data) => StorageNodeReadingResult.Found(data)
     case ConsensusSummary.Found(data)      => StorageNodeReadingResult.Found(data)
     case ConsensusSummary.Conflicts(data)  => StorageNodeReadingResult.Conflicts(data)
     case ConsensusSummary.NotEnoughFound   => StorageNodeReadingResult.NotFound
