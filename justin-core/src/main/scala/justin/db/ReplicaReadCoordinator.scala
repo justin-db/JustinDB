@@ -16,11 +16,11 @@ class ReplicaReadCoordinator(
 )(implicit ec: ExecutionContext) extends ((StorageNodeReadData, ClusterMembers) => Future[StorageNodeReadingResult]) {
 
   override def apply(cmd: StorageNodeReadData, clusterMembers: ClusterMembers): Future[StorageNodeReadingResult] = cmd match {
-    case StorageNodeReadData.Local(id)         => coordinateLocal(id)
+    case StorageNodeReadData.Local(id)         => readLocalData(id)
     case StorageNodeReadData.Replicated(r, id) => coordinateReplicated(r, id, clusterMembers)
   }
 
-  private def coordinateLocal(id: UUID) = localDataReader.apply(id, new ResolveDataOriginality(nodeId, ring))
+  private def readLocalData(id: UUID) = localDataReader.apply(id, new ResolveDataOriginality(nodeId, ring))
 
   private def coordinateReplicated(r: R, id: UUID, clusterMembers: ClusterMembers) = {
     val partitionId = UUID2RingPartitionId.apply(id, ring)
@@ -37,7 +37,7 @@ class ReplicaReadCoordinator(
 
   private def gatherReads(r: R, id: UUID, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
     ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
-      case ResolvedTargets(true, remotes)  if remotes.size + 1 >= r.r => (coordinateLocal(id) zip remoteDataReader.apply(remotes, id)).map(converge)
+      case ResolvedTargets(true, remotes)  if remotes.size + 1 >= r.r => (readLocalData(id) zip remoteDataReader.apply(remotes, id)).map(converge)
       case ResolvedTargets(false, remotes) if remotes.size >= r.r     => remoteDataReader.apply(remotes, id)
       case _                                                          => Future.successful(List(StorageNodeReadingResult.FailedRead))
     }
