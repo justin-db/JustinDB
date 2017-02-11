@@ -35,10 +35,11 @@ class HttpRouter(client: ActorRefStorageNodeClient)(implicit ec: ExecutionContex
     {
       (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
         onComplete(client.get(uuid, R(r))) {
-          case Success(GetValueResponse.Found(data))              => respondWithHeader(VectorClockHeader(data.vclock)) { complete(OK -> Result(data.value)) }
-          case Success(GetValueResponse.NotFound)                 => complete(NotFound -> Result(s"Not found value with id ${uuid.toString}"))
-          case Success(GetValueResponse.Failure(err))             => complete(BadRequest -> Result(err))
-          case Failure(ex)                                        => complete(InternalServerError -> Result(ex.getMessage))
+          case Success(GetValueResponse.Found(data))     => respondWithHeader(VectorClockHeader(data.vclock)) { complete(OK -> Result(data.value)) }
+          case Success(GetValueResponse.Conflicts(data)) => complete(MultipleChoices -> Result(data.toString)) // TODO: better representation of multiple choices
+          case Success(GetValueResponse.NotFound)        => complete(NotFound -> Result(s"Not found value with id ${uuid.toString}"))
+          case Success(GetValueResponse.Failure(err))    => complete(BadRequest -> Result(err))
+          case Failure(ex)                               => complete(InternalServerError -> Result(ex.getMessage))
         }
       }
     } ~
