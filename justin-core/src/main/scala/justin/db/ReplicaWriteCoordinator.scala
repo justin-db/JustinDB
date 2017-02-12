@@ -35,10 +35,10 @@ class ReplicaWriteCoordinator(
   }
 
   private def makeWrites(w: W, updatedData: Data, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
-    ResolveNodeTargets(nodeId, preferenceList, clusterMembers) match {
-      case ResolvedTargets(true, remotes)  if remotes.size + 1 >= w.w =>
+    ResolveNodeAddresses(nodeId, preferenceList, clusterMembers) match {
+      case ResolvedNodeAddresses(true, remotes)  if remotes.size + 1 >= w.w =>
         (coordinateLocal(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge)
-      case ResolvedTargets(false, remotes) if remotes.size     >= w.w =>
+      case ResolvedNodeAddresses(false, remotes) if remotes.size     >= w.w =>
         remoteDataWriter.apply(remotes, updatedData)
       case _  => Future.successful(List(StorageNodeWritingResult.FailedWrite))
     }

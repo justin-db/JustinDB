@@ -5,9 +5,9 @@ import justin.consistent_hashing.NodeId
 import justin.db.replication.PreferenceList
 import org.scalatest.{FlatSpec, Matchers}
 
-class ResolveNodeTargetsTest extends FlatSpec with Matchers {
+class ResolveNodeAddressesTest extends FlatSpec with Matchers {
 
-  behavior of "Resolver of Node targets"
+  behavior of "Resolver of Node Addresses"
 
   it should "mark \"local\" value as \"true\" when node is placed in the preference list" in {
     // given
@@ -16,7 +16,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
     val clusterMembers = ClusterMembers.empty
 
     // when
-    val resolved = ResolveNodeTargets(nodeId, preferenceList, clusterMembers)
+    val resolved = ResolveNodeAddresses(nodeId, preferenceList, clusterMembers)
 
     // then
     resolved.local shouldBe true
@@ -29,7 +29,7 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
     val clusterMembers = ClusterMembers.empty
 
     // when
-    val resolved = ResolveNodeTargets(nodeId, preferenceList, clusterMembers)
+    val resolved = ResolveNodeAddresses(nodeId, preferenceList, clusterMembers)
 
     // then
     resolved.local shouldBe false
@@ -42,10 +42,10 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
     val clusterMembers = ClusterMembers(Map(NodeId(2) -> StorageNodeActorRef(ActorRef.noSender), NodeId(3) -> StorageNodeActorRef(ActorRef.noSender)))
 
     // when
-    val resolved = ResolveNodeTargets(nodeId, preferenceList, clusterMembers)
+    val resolved = ResolveNodeAddresses(nodeId, preferenceList, clusterMembers)
 
     // then
-    resolved shouldBe ResolvedTargets(local = true, remotes = List(StorageNodeActorRef(ActorRef.noSender), StorageNodeActorRef(ActorRef.noSender)))
+    resolved shouldBe ResolvedNodeAddresses(local = true, remotes = List(StorageNodeActorRef(ActorRef.noSender), StorageNodeActorRef(ActorRef.noSender)))
   }
 
   it should "flatten not existed nodes from preference list in cluster members" in {
@@ -55,9 +55,9 @@ class ResolveNodeTargetsTest extends FlatSpec with Matchers {
     val clusterMembers = ClusterMembers(Map(NodeId(2) -> StorageNodeActorRef(ActorRef.noSender)))
 
     // when
-    val resolved = ResolveNodeTargets(nodeId, preferenceList, clusterMembers)
+    val resolved = ResolveNodeAddresses(nodeId, preferenceList, clusterMembers)
 
     // then
-    resolved shouldBe ResolvedTargets(local = true, remotes = List(StorageNodeActorRef(ActorRef.noSender)))
+    resolved shouldBe ResolvedNodeAddresses(local = true, remotes = List(StorageNodeActorRef(ActorRef.noSender)))
   }
 }
