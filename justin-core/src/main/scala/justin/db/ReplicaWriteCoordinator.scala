@@ -14,11 +14,11 @@ class ReplicaWriteCoordinator(
 )(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWritingResult]) {
 
   override def apply(cmd: StorageNodeWriteData, clusterMembers: ClusterMembers): Future[StorageNodeWritingResult] = cmd match {
-    case StorageNodeWriteData.Local(data)        => coordinateLocal(data)
+    case StorageNodeWriteData.Local(data)        => writeLocal(data)
     case StorageNodeWriteData.Replicate(w, data) => coordinateReplicated(w, data, clusterMembers)
   }
 
-  private def coordinateLocal(data: Data) = localDataWriter.apply(data, new ResolveDataOriginality(nodeId, ring))
+  private def writeLocal(data: Data) = localDataWriter.apply(data, new ResolveDataOriginality(nodeId, ring))
 
   private def coordinateReplicated(w: W, data: Data, clusterMembers: ClusterMembers) = {
     val ringPartitionId = UUID2RingPartitionId.apply(data.id, ring)
@@ -36,11 +36,9 @@ class ReplicaWriteCoordinator(
 
   private def makeWrites(w: W, updatedData: Data, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
     ResolveNodeAddresses(nodeId, preferenceList, clusterMembers) match {
-      case ResolvedNodeAddresses(true, remotes)  if remotes.size + 1 >= w.w =>
-        (coordinateLocal(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge)
-      case ResolvedNodeAddresses(false, remotes) if remotes.size     >= w.w =>
-        remoteDataWriter.apply(remotes, updatedData)
-      case _  => Future.successful(List(StorageNodeWritingResult.FailedWrite))
+      case ResolvedNodeAddresses(true, remotes)  if remotes.size + 1 >= w.w => (writeLocal(updatedData) zip remoteDataWriter.apply(remotes, updatedData)).map(converge)
+      case ResolvedNodeAddresses(false, remotes) if remotes.size     >= w.w => remoteDataWriter.apply(remotes, updatedData)
+      case _                                                                => Future.successful(List(StorageNodeWritingResult.FailedWrite))
     }
   }
 

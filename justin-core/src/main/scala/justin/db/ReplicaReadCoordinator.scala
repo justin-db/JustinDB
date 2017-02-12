@@ -39,7 +39,7 @@ class ReplicaReadCoordinator(
     ResolveNodeAddresses(nodeId, preferenceList, clusterMembers) match {
       case ResolvedNodeAddresses(true, remotes)  if remotes.size + 1 >= r.r => (readLocalData(id) zip remoteDataReader.apply(remotes, id)).map(converge)
       case ResolvedNodeAddresses(false, remotes) if remotes.size >= r.r     => remoteDataReader.apply(remotes, id)
-      case _                                                          => Future.successful(List(StorageNodeReadingResult.FailedRead))
+      case _                                                                => Future.successful(List(StorageNodeReadingResult.FailedRead))
     }
   }
 
