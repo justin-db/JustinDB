@@ -1,5 +1,7 @@
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 name           := "JustinDB"
 version        := "0.1"
@@ -51,6 +53,7 @@ lazy val core = (project in file("justin-core"))
 lazy val httpClient = (project in file("justin-http-client"))
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(BuildInfoPlugin)
+  .settings(assemblySettings)
   .settings(
     name := "justin-http-client",
     scalaVersion := Version.scala,
@@ -64,7 +67,7 @@ lazy val httpClient = (project in file("justin-http-client"))
   )
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
-  .dependsOn(core, storageInMem)
+  .dependsOn(core, storageInMem, consul)
 
 lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
   name := "justin-storage-in-mem",
@@ -94,6 +97,12 @@ lazy val consistentHashing = (project in file("justin-consistent-hashing")).sett
   name := "justin-consistent-hashing",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.consistenHashing
+)
+
+lazy val consul = (project in file("justin-consul")).settings(
+  name := "justin-consul",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.consul
 )
 
 // ALIASES

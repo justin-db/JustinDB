@@ -1,6 +1,6 @@
 package justin.http_client
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Cancellable}
 import akka.cluster.Cluster
 import akka.event.Logging
 import akka.http.scaladsl.Http
@@ -8,11 +8,14 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
+import justin.consul._
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
+
+import scala.concurrent.duration._
 
 object Main extends App {
   val config = ConfigFactory.parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
@@ -28,8 +31,45 @@ object Main extends App {
   logger.info("Build Info: ")
   logger.info(BuildInfo.toString)
 
-  Cluster(system).registerOnMemberUp {
+  val cluster = Cluster(system)
+
+  // retrying cluster join until success
+  val scheduler: Cancellable = system.scheduler.schedule(10 seconds, 30 seconds, new Runnable {
+    override def run(): Unit = {
+      val selfAddress = cluster.selfAddress
+      logger.debug(s"Cluster bootstrap, self address: $selfAddress")
+
+      val serviceSeeds = if (config.getBoolean("consul.enabled")) {
+        val consulClient = new ConsulClient(ConsulClientConfig(
+          host = ConsulHost(config.getString("consul.host")),
+          port = ConsulPort(config.getInt("consul.port")),
+          serviceName = ConsulServiceName(config.getString("service.name"))
+        ))
+        val serviceAddresses = consulClient.getServiceAddresses
+        logger.debug(s"Cluster bootstrap, service addresses: $serviceAddresses")
+
+        // http://doc.akka.io/docs/akka/2.4.4/scala/cluster-usage.html
+        //
+        // When using joinSeedNodes you should not include the node itself except for the node
+        // that is supposed to be the first seed node, and that should be placed first
+        // in parameter to joinSeedNodes.
+        serviceAddresses filter { address =>
+          address != selfAddress || address == serviceAddresses.head
+        }
+      } else {
+        List(selfAddress)
+      }
+
+      logger.debug(s"Cluster bootstrap, found service seeds: $serviceSeeds")
+
+      cluster.joinSeedNodes(serviceSeeds)
+    }
+  })
+
+  cluster.registerOnMemberUp {
     logger.info("Cluster is ready!")
+
+    scheduler.cancel()
 
     // STORAGE ACTOR
     val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
@@ -47,7 +87,7 @@ object Main extends App {
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
-    // HTTP API
+    // HTTP API init
     val routes = logRequestResult(system.name) {
         new HttpRouter(storageNodeActorRef).routes ~
         new HealthCheckRouter().routes ~

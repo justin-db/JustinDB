@@ -1,0 +1,82 @@
+version: '2'
+services:
+  consul1:
+    image: consul
+    command: consul agent -server -client=0.0.0.0 -bootstrap-expect=3 -data-dir=/tmp/consul -ui
+    hostname: consul1
+    ports:
+      - "8301:8300"
+      - "8401:8400"
+      - "8501:8500"
+      - "8601:8600"
+      - "9001:9001"
+
+  consul2:
+    image: consul
+    command: consul agent -server -client=0.0.0.0 -bootstrap-expect=3 -rejoin -retry-join=consul1 -data-dir=/tmp/consul -ui
+    hostname: consul2
+    links:
+      - consul1
+    ports:
+      - "8302:8300"
+      - "8402:8400"
+      - "8502:8500"
+      - "8602:8600"
+      - "9002:9001"
+
+  consul3:
+    image: consul
+    command: consul agent -server -client=0.0.0.0 -bootstrap-expect=3 -rejoin -retry-join=consul1 -data-dir=/tmp/consul -ui
+    hostname: consul3
+    links:
+      - consul1
+    ports:
+      - "8303:8300"
+      - "8403:8400"
+      - "8503:8500"
+      - "8603:8600"
+      - "9003:9001"
+
+  justindb-cluster1:
+    image: justin/justindb-cluster
+    hostname: justindb-cluster1
+    links:
+      - consul1
+      - justindb-cluster2
+      - justindb-cluster3
+    ports:
+      - "80:80"
+      - "2551:2551"
+    environment:
+      - CONSUL_HOST=consul1
+      - SERVICE_PORT=2551
+      - NODE_ID=1
+
+  justindb-cluster2:
+    image: justin/justindb-cluster
+    hostname: justindb-cluster2
+    links:
+      - consul1
+      - justindb-cluster3
+    ports:
+      - "81:80"
+      - "2552:2552"
+    environment:
+      - CONSUL_HOST=consul1
+      - SERVICE_AKKA_PORT=2552
+      - SERVICE_PORT=2552
+      - NODE_ID=2
+
+  justindb-cluster3:
+    image: justin/justindb-cluster
+    hostname: justindb-cluster3
+    links:
+      - consul1
+    ports:
+      - "82:80"
+      - "2553:2553"
+    environment:
+      - CONSUL_HOST=consul1
+      - SERVICE_AKKA_PORT=2553
+      - SERVICE_PORT=2553
+      - NODE_ID=3
