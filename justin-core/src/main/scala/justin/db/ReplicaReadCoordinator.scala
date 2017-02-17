@@ -44,7 +44,7 @@ class ReplicaReadCoordinator(
   }
 
   private def triggerReadRepairIfConsequent: PartialFunction[ConsensusSummary, Unit] = {
-    case ConsensusSummary.Consequent(data) => ???
+    case ConsensusSummary.Consequent(data) => println(s"Read Repair is fired of for $data") // TODO: finish this part with real logic
   }
 
   private def consensus2ReadingResult: ConsensusSummary => StorageNodeReadingResult = {
