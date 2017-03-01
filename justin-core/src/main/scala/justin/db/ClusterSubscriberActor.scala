@@ -24,12 +24,10 @@ trait ClusterSubscriberActor { self: Actor =>
   }
 
   private def register(nodeId: NodeId, ring: Ring, address: Address) = {
-    val nodesRefs = for {
+    for {
       siblingNodeId <- ring.nodesId.filterNot(_ == nodeId)
       nodeName       = StorageNodeActor.name(siblingNodeId)
       nodeRef        = context.actorSelection(RootActorPath(address) / "user" / nodeName)
-    } yield nodeRef
-
-    nodesRefs.foreach(_ ! RegisterNode(nodeId))
+    } yield nodeRef ! RegisterNode(nodeId)
   }
 }
