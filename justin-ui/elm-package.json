@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "justin admin ui",
+    "summary": "JustinDB Admin UI",
     "repository": "https://github.com/justin-db/justindb.git",
     "license": "BSD3",
     "source-directories": [
