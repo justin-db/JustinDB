@@ -6,7 +6,7 @@ class Ring(private val ring: Map[RingPartitionId, NodeId]) {
 
   def getNodeId(id: RingPartitionId): Option[NodeId] = ring.get(id)
 
-  lazy val size = ring.size
+  lazy val size: Int = ring.size
 
   lazy val nodesId: Set[NodeId] = ring.values.toSet
 
