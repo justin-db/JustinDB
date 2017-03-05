@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 
 class ServerSideEvents()(implicit ec: ExecutionContext, as: ActorSystem, am: ActorMaterializer) {
   import akka.http.scaladsl.server.Directives._
-  import de.heikoseeberger.akkasse.EventStreamMarshalling._ // That does the trick!
+  import de.heikoseeberger.akkasse.EventStreamMarshalling._
 
   // scalastyle:off magic.number
   private val (in: SourceQueueWithComplete[String], out: Source[String, NotUsed]) = {
