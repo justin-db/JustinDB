@@ -6,6 +6,8 @@ version        := "0.1"
 maintainer     := "Mateusz Maciaszek"
 packageSummary := "JustinDB Cluster"
 
+resolvers += Resolver.bintrayRepo("hseeberger", "maven")
+
 fork in run := true
 
 scalacOptions := Seq(
