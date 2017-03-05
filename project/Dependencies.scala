@@ -6,6 +6,7 @@ object Version {
 
   val akka        = "2.4.17"
   val akkaHttp    = "10.0.4"
+  val akkaSse     = "2.0.0"
   val scalatest   = "3.0.1"
   val scalacheck  = "1.13.4"
   val sigarLoader = "1.6.6"
@@ -45,6 +46,9 @@ object Library {
   // crjdt
   val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
   val crjdtCirce           = "eu.timepit"        %% "crjdt-circe"                       % Version.crjdt
+
+  // server side events
+  val akkaSse              = "de.heikoseeberger" %% "akka-sse"                          % Version.akkaSse
 }
 
 object Dependencies {
@@ -58,7 +62,7 @@ object Dependencies {
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback) ++ Seq(akkaHttpSprayJson)
 
-  val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt)
+  val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt) ++ Seq(akkaSse)
 
   val storageInMem = genericTest
 
