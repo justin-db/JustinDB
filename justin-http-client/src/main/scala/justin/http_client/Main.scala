@@ -54,7 +54,8 @@ object Main extends App with ServiceConfig {
         new HttpRouter(storageNodeActorRef).routes ~
         new HealthCheckRouter().routes ~
         new BuildInfoRouter().routes ~
-        new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes
+        new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
+        new ServerSideEvents().routes
     }
 
     Http()
