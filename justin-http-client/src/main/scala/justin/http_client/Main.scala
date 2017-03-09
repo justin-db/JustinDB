@@ -14,6 +14,7 @@ import justin.db.replication.N
 import justin.db.storage.InMemStorage
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
 
+// $COVERAGE-OFF$
 object Main extends App with ServiceConfig {
 
   override protected val config: Config = ConfigFactory
@@ -64,3 +65,5 @@ object Main extends App with ServiceConfig {
       .recover { case ex => logger.error(ex, "Could not start HTTP server") }
   }
 }
+// $COVERAGE-ON$
+
