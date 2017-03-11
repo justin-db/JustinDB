@@ -1,6 +1,6 @@
 # JustinDB
 
-<img src="https://github.com/justin-db/JustinDB/blob/logo-redme/logo.png" align="right" width="280" />
+<img src="https://github.com/justin-db/JustinDB/blob/master/logo.png" align="right" width="280" />
 
 [![Build Status](https://travis-ci.org/justin-db/JustinDB.svg?branch=master)](https://travis-ci.org/justin-db/JustinDB)
 [![codecov](https://codecov.io/gh/justin-db/JustinDB/branch/master/graph/badge.svg)](https://codecov.io/gh/justin-db/JustinDB)
