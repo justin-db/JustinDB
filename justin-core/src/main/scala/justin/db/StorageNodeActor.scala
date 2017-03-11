@@ -18,7 +18,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
     name  = RoundRobinCoordinatorRouter.routerName
   )
 
-  def receive: Receive = receiveDataPF orElse receiveClusterPF(nodeId, ring) orElse notHandledPF
+  def receive: Receive = receiveDataPF orElse receiveClusterDataPF(nodeId, ring) orElse notHandledPF
 
   private def receiveDataPF: Receive = {
     case readData: StorageNodeReadData   => coordinatorRouter ! ReplicaCoordinatorActorProtocol.ReadData(sender(), clusterMembers, readData)

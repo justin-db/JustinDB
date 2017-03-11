@@ -34,7 +34,7 @@ class ClusterSubscriberActorTest extends TestKit(ClusterSubscriberActorTest.acto
   }
 
   class TestActor(nodeId: NodeId, ring: Ring) extends Actor with ClusterSubscriberActor {
-    override def receive: Receive = receiveClusterPF(nodeId, ring)
+    override def receive: Receive = receiveClusterDataPF(nodeId, ring)
   }
 }
 

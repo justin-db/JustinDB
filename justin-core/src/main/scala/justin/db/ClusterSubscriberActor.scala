@@ -15,7 +15,7 @@ trait ClusterSubscriberActor { self: Actor =>
   override def preStart(): Unit = cluster.subscribe(this.self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(this.self)
 
-  def receiveClusterPF(nodeId: NodeId, ring: Ring): Receive = {
+  def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       clusterMembers = clusterMembers.add(senderNodeId, StorageNodeActorRef(sender()))
       sender() ! RegisterNode(nodeId)
