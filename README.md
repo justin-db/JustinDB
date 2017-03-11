@@ -7,7 +7,7 @@
 ![Project Status](https://img.shields.io/badge/status-beta-yellow.svg)
 
 ## Logo
-![JustinDB logo](https://github.com/justin-db/JustinDB/blob/master/logo.png)
+![JustinDB logo](https://github.com/justin-db/JustinDB/blob/logo-redme/logo.png)
 
 
 **Distributed Key-Value Storage built on top of Scala/Akka**
