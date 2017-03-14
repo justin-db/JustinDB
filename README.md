@@ -7,6 +7,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/f5f10352c6e74aa99d0f996cf0a77124)](https://www.codacy.com/app/mateusz-maciaszekhpc/JustinDB)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 ![Project Status](https://img.shields.io/badge/status-beta-yellow.svg)
+[![Gitter](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/justin-db/Lobby)
 
 **Distributed Key-Value Storage built on top of Scala/Akka**
 
