@@ -9,27 +9,28 @@ import justin.db.versioning.VectorClockComparator.VectorClockRelation
 
 class ConsensusReplicatedReads {
 
-  def reach(r: R): List[StorageNodeReadingResult] => ConsensusSummary = {
-    reads =>
-
-      lazy val allNotFoundReads = reads.forall(_ == StorageNodeReadingResult.NotFound)
-      lazy val allFailedReads   = reads.forall(_ == StorageNodeReadingResult.FailedRead)
-      lazy val onlyFoundReads   = reads.collect { case r: StorageNodeReadingResult.Found => r }
-
-      if(allNotFoundReads) {
-        ConsensusSummary.AllNotFound
-      } else if(allFailedReads) {
-        ConsensusSummary.AllFailed
-      } else {
-        (onlyFoundReads.size >= r.r, onlyFoundReads.size == 1, hasSameVC(onlyFoundReads), foundOnlyConsequent(onlyFoundReads)) match {
-          case (true, true, _, _)                 => ConsensusSummary.Found(onlyFoundReads.head.data)
-          case (true, false, true, _)             => ConsensusSummary.Found(onlyFoundReads.head.data)
-          case (true, false, _, c) if c.size == 1 => ConsensusSummary.Consequent(c.head._1)
-          case (true, false, _, _)                => ConsensusSummary.Conflicts(onlyFoundReads.map(_.data))
-          case (false, _, _, _)                   => ConsensusSummary.NotEnoughFound
-        }
+  def reach(r: R): List[StorageNodeReadingResult] => ConsensusSummary = { reads =>
+    if(areAllNotFound(reads)) {
+      ConsensusSummary.AllNotFound
+    } else if(areAllFailed(reads)) {
+      ConsensusSummary.AllFailed
+    } else {
+      val onlyFoundReads = collectFound(reads)
+      (onlyFoundReads.size >= r.r, onlyFoundReads.size == 1, hasSameVC(onlyFoundReads), foundOnlyConsequent(onlyFoundReads)) match {
+        case (true, true, _, _)                 => ConsensusSummary.Found(onlyFoundReads.head.data)
+        case (true, false, true, _)             => ConsensusSummary.Found(onlyFoundReads.head.data)
+        case (true, false, _, c) if c.size == 1 => ConsensusSummary.Consequent(c.head._1)
+        case (true, false, _, _)                => ConsensusSummary.Conflicts(onlyFoundReads.map(_.data))
+        case (false, _, _, _)                   => ConsensusSummary.NotEnoughFound
       }
+    }
   }
+
+  private def areAllNotFound(reads: List[StorageNodeReadingResult]) = reads.forall(_ == StorageNodeReadingResult.NotFound)
+
+  private def areAllFailed(reads: List[StorageNodeReadingResult]) = reads.forall(_ == StorageNodeReadingResult.FailedRead)
+
+  private def collectFound(reads: List[StorageNodeReadingResult]) = reads.collect { case r: StorageNodeReadingResult.Found => r }
 
   private def hasSameVC(onlyFoundReads: List[StorageNodeReadingResult.Found]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
 
