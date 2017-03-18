@@ -1,27 +1,27 @@
 package justin.db
 
 import justin.consistent_hashing.NodeId
-import justin.db.ConsensusReplicatedReads.ConsensusSummary
+import justin.db.ReplicaReadAgreement.ReadAgreement
 import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.replication.R
 import justin.db.versioning.VectorClockComparator
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 
-class ConsensusReplicatedReads {
+class ReplicaReadAgreement {
 
-  def reach(r: R): List[StorageNodeReadingResult] => ConsensusSummary = { reads =>
+  def reach(r: R): List[StorageNodeReadingResult] => ReadAgreement = { reads =>
     if(areAllNotFound(reads)) {
-      ConsensusSummary.AllNotFound
+      ReadAgreement.AllNotFound
     } else if(areAllFailed(reads)) {
-      ConsensusSummary.AllFailed
+      ReadAgreement.AllFailed
     } else {
       val onlyFoundReads = collectFound(reads)
       (onlyFoundReads.size >= r.r, onlyFoundReads.size == 1, hasSameVC(onlyFoundReads), foundOnlyConsequent(onlyFoundReads)) match {
-        case (true, true, _, _)                 => ConsensusSummary.Found(onlyFoundReads.head.data)
-        case (true, false, true, _)             => ConsensusSummary.Found(onlyFoundReads.head.data)
-        case (true, false, _, c) if c.size == 1 => ConsensusSummary.Consequent(c.head._1)
-        case (true, false, _, _)                => ConsensusSummary.Conflicts(onlyFoundReads.map(_.data))
-        case (false, _, _, _)                   => ConsensusSummary.NotEnoughFound
+        case (true, true, _, _)                 => ReadAgreement.Found(onlyFoundReads.head.data)
+        case (true, false, true, _)             => ReadAgreement.Found(onlyFoundReads.head.data)
+        case (true, false, _, c) if c.size == 1 => ReadAgreement.Consequent(c.head._1)
+        case (true, false, _, _)                => ReadAgreement.Conflicts(onlyFoundReads.map(_.data))
+        case (false, _, _, _)                   => ReadAgreement.NotEnoughFound
       }
     }
   }
@@ -46,17 +46,17 @@ class ConsensusReplicatedReads {
   }
 }
 
-object ConsensusReplicatedReads {
+object ReplicaReadAgreement {
 
-  sealed trait ConsensusSummary
-  object ConsensusSummary {
-    case object AllNotFound extends ConsensusSummary
-    case object AllFailed extends ConsensusSummary
-    case class Conflicts(data: List[Data]) extends ConsensusSummary
-    case object NotEnoughFound extends ConsensusSummary
+  sealed trait ReadAgreement
+  object ReadAgreement {
+    case object AllNotFound extends ReadAgreement
+    case object AllFailed extends ReadAgreement
+    case class Conflicts(data: List[Data]) extends ReadAgreement
+    case object NotEnoughFound extends ReadAgreement
     // this should be chosen when all replicas agreed on the same value
-    case class Found(data: Data) extends ConsensusSummary
+    case class Found(data: Data) extends ReadAgreement
     // this should be chosen when not all replicas agreed on but one of it has consequent vector clock
-    case class Consequent(data: Data) extends ConsensusSummary
+    case class Consequent(data: Data) extends ReadAgreement
   }
 }

@@ -3,7 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
-import justin.db.ConsensusReplicatedReads.ConsensusSummary
+import justin.db.ReplicaReadAgreement.ReadAgreement
 import justin.db.StorageNodeActorProtocol._
 import justin.db.replication.{N, PreferenceList, R}
 
@@ -30,7 +30,7 @@ class ReplicaReadCoordinator(
   private def onLeft(err: PreferenceList.Error) = Future.successful(StorageNodeReadingResult.FailedRead)
 
   private def onRight(r: R, id: UUID, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
-    val consensusFuture = gatherReads(r, id, clusterMembers, preferenceList).map(new ConsensusReplicatedReads().reach(r))
+    val consensusFuture = gatherReads(r, id, clusterMembers, preferenceList).map(new ReplicaReadAgreement().reach(r))
     consensusFuture.foreach(triggerReadRepairIfConsequent)
     consensusFuture.map(consensus2ReadingResult)
   }
@@ -43,16 +43,16 @@ class ReplicaReadCoordinator(
     }
   }
 
-  private def triggerReadRepairIfConsequent: PartialFunction[ConsensusSummary, Unit] = {
-    case ConsensusSummary.Consequent(data) => println(s"Read Repair is fired of for $data") // TODO: finish this part with real logic
+  private def triggerReadRepairIfConsequent: PartialFunction[ReadAgreement, Unit] = {
+    case ReadAgreement.Consequent(data) => println(s"Read Repair is fired of for $data") // TODO: finish this part with real logic
   }
 
-  private def consensus2ReadingResult: ConsensusSummary => StorageNodeReadingResult = {
-    case ConsensusSummary.Consequent(data) => StorageNodeReadingResult.Found(data)
-    case ConsensusSummary.Found(data)      => StorageNodeReadingResult.Found(data)
-    case ConsensusSummary.Conflicts(data)  => StorageNodeReadingResult.Conflicts(data)
-    case ConsensusSummary.NotEnoughFound   => StorageNodeReadingResult.NotFound
-    case ConsensusSummary.AllFailed        => StorageNodeReadingResult.FailedRead
-    case ConsensusSummary.AllNotFound      => StorageNodeReadingResult.NotFound
+  private def consensus2ReadingResult: ReadAgreement => StorageNodeReadingResult = {
+    case ReadAgreement.Consequent(data) => StorageNodeReadingResult.Found(data)
+    case ReadAgreement.Found(data)      => StorageNodeReadingResult.Found(data)
+    case ReadAgreement.Conflicts(data)  => StorageNodeReadingResult.Conflicts(data)
+    case ReadAgreement.NotEnoughFound   => StorageNodeReadingResult.NotFound
+    case ReadAgreement.AllFailed        => StorageNodeReadingResult.FailedRead
+    case ReadAgreement.AllNotFound      => StorageNodeReadingResult.NotFound
   }
 }

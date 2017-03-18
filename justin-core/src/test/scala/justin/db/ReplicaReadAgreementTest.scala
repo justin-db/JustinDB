@@ -2,13 +2,13 @@ package justin.db
 
 import java.util.UUID
 
-import justin.db.ConsensusReplicatedReads.ConsensusSummary
+import justin.db.ReplicaReadAgreement.ReadAgreement
 import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult.{FailedRead, Found, NotFound}
 import justin.db.replication.R
 import org.scalatest.{FlatSpec, Matchers}
 import justin.db.versioning.VectorClockOps._
 
-class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
+class ReplicaReadAgreementTest extends FlatSpec with Matchers {
 
   behavior of "Reach Consensus of Replicated Reads"
 
@@ -18,10 +18,10 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     val searchedData = List(NotFound, NotFound)
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.AllNotFound
+    madeConsensus shouldBe ReadAgreement.AllNotFound
   }
 
   it should "agreed on \"AllFailed\" when all operations during search failed" in {
@@ -30,10 +30,10 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     val searchedData = List(FailedRead, FailedRead)
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.AllFailed
+    madeConsensus shouldBe ReadAgreement.AllFailed
   }
 
   it should "agreed on \"NotEnoughFound\" when number of found replica is smaller that what client expects" in {
@@ -42,10 +42,10 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     val searchedData = List(NotFound, FailedRead, Found(Data(UUID.randomUUID(), "value")))
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.NotEnoughFound
+    madeConsensus shouldBe ReadAgreement.NotEnoughFound
   }
 
   it should "agreed on \"Consequent\" scenario when client expectation is achieved and consequent data could be computed" in {
@@ -58,10 +58,10 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     )
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.Consequent(searchedData.last.data)
+    madeConsensus shouldBe ReadAgreement.Consequent(searchedData.last.data)
   }
 
   it should "agreed on \"Conflict\" scenario when client expectation is achieved but consequent data could NOT be computed" in {
@@ -74,10 +74,10 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     )
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.Conflicts(searchedData.map(_.data))
+    madeConsensus shouldBe ReadAgreement.Conflicts(searchedData.map(_.data))
   }
 
   it should "agreed on \"Found\" when exactly once data is found and client expects only one replica" in {
@@ -87,10 +87,10 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     val searchedData = List(NotFound, FailedRead, foundData)
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.Found(foundData.data)
+    madeConsensus shouldBe ReadAgreement.Found(foundData.data)
   }
 
   it should "agreed on \"Found\" scenario when client expectation is achieved and all replicas agreed on same value" in {
@@ -103,9 +103,9 @@ class ConsensusReplicatedReadsTest extends FlatSpec with Matchers {
     )
 
     // when
-    val madeConsensus = new ConsensusReplicatedReads().reach(R(r))(searchedData)
+    val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
 
     // then
-    madeConsensus shouldBe ConsensusSummary.Found(searchedData.head.data)
+    madeConsensus shouldBe ReadAgreement.Found(searchedData.head.data)
   }
 }
