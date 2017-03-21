@@ -66,10 +66,16 @@ lazy val httpApi = (project in file("justin-http-api"))
   )
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
-  .dependsOn(core, storageInMem)
+  .dependsOn(core, storageInMem, storagePersistent)
 
 lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
   name := "justin-storage-in-mem",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.storageInMem
+).dependsOn(core)
+
+lazy val storagePersistent = (project in file("justin-storage-persistent")).settings(
+  name := "justin-storage-persistent",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storageInMem
 ).dependsOn(core)
