@@ -12,8 +12,10 @@ import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
-import justin.db.storage.InMemStorage
+import justin.db.storage.{InMemStorage, PersistentStorage}
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
+
+import scala.util.Try
 
 // $COVERAGE-OFF$
 object Main extends App with ServiceConfig {
@@ -32,6 +34,12 @@ object Main extends App with ServiceConfig {
   logger.info("Build Info: ")
   logger.info(BuildInfo.toString)
 
+  val storage = Try(config.getString("justin-db.storage")).toOption match {
+    case Some("inmem")      => new InMemStorage()
+    case Some("persistent") => new PersistentStorage()
+    case _                  => new InMemStorage() // default storage driver
+  }
+
   Cluster(system).registerOnMemberUp {
     logger.info("Cluster is ready!")
 
@@ -39,7 +47,6 @@ object Main extends App with ServiceConfig {
     val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
       val nodeId      = NodeId(`nodes-id`)
       val ring        = Ring(`ring-cluster-size`, `ring-partitions`)
-      val storage     = new InMemStorage()
       val replication = N(`replication-n`)
 
       system.actorOf(
