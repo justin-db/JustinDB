@@ -1,4 +1,4 @@
-package justin.http_client
+package justin.http_api
 
 import com.typesafe.config.Config
 

@@ -1,4 +1,4 @@
-package justin.http_client
+package justin.http_api
 
 import java.util.UUID
 
@@ -9,7 +9,7 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
 import justin.db.replication.{R, W}
 import justin.db.{Data, StorageNodeActorRef}
-import justin.http_client.HttpRouter.PutValue
+import justin.http_api.HttpRouter.PutValue
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json.{JsString, _}
 

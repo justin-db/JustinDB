@@ -1,4 +1,4 @@
-package justin.http_client
+package justin.http_api
 
 import akka.http.scaladsl.server.directives._
 import akka.http.scaladsl.testkit.ScalatestRouteTest

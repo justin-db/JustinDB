@@ -1,4 +1,4 @@
-package justin.http_client
+package justin.http_api
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
