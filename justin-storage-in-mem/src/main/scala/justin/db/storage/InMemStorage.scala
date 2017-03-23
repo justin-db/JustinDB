@@ -1,9 +1,6 @@
 package justin.db.storage
 
 import java.util.UUID
-
-import justin.consistent_hashing.Ring.RingPartitionId
-import justin.db.Data
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,9 +11,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
   import scala.collection.mutable
 
-  private type MMap           = mutable.Map[RingPartitionId, Map[UUID, Data]]
-  private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, Data]]
-  private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, Data]]
+  private type MMap           = mutable.Map[RingPartitionId, Map[UUID, JustinData]]
+  private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
+  private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
 
   override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful {
     def get(mmap: MMap, partitionId: RingPartitionId) = {
@@ -33,7 +30,7 @@ class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtoc
   }
 
   override def put(putData: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
-    def update(mmap: MMap, partitionId: RingPartitionId, data: Data) = {
+    def update(mmap: MMap, partitionId: RingPartitionId, data: JustinData) = {
       mmap.get(partitionId) match {
         case Some(partitionMap) => mmap + (partitionId -> (partitionMap ++ Map(data.id -> data)))
         case None               => mmap + (partitionId -> Map(data.id -> data))

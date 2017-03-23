@@ -12,7 +12,6 @@ import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
-import justin.db.storage.{InMemStorage, PersistentStorage}
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
 
 import scala.util.Try
@@ -35,9 +34,9 @@ object Main extends App with ServiceConfig {
   logger.info(BuildInfo.toString)
 
   val storage = Try(config.getString("justin-db.storage")).toOption match {
-    case Some("inmem")      => new InMemStorage()
-    case Some("persistent") => new PersistentStorage()
-    case _                  => new InMemStorage() // default storage driver
+    case Some("inmem")      => ???
+    case Some("persistent") => ???
+    case _                  => ??? // default storage driver
   }
 
   Cluster(system).registerOnMemberUp {
