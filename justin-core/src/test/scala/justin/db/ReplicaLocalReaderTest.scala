@@ -2,14 +2,16 @@ package justin.db
 
 import java.util.UUID
 
+import justin.consistent_hashing.NodeId
 import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult
-import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
+import justin.vector_clocks.VectorClock
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
+import storage.GetStorageProtocol
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
@@ -18,9 +20,9 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
   it should "found data for existing key" in {
     // given
     val id   = UUID.randomUUID()
-    val data = Data(id, "value")
+    val data = Data(id, "value", VectorClock[NodeId]().increase(NodeId(1)))
     val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = {
         Future.successful(StorageGetData.Single(data))
       }
     })
@@ -36,7 +38,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val id = UUID.randomUUID()
     val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = {
         Future.successful(StorageGetData.None)
       }
     })
@@ -52,7 +54,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val id = UUID.randomUUID()
     val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.failed(new Exception)
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.failed(new Exception)
     })
 
     // when

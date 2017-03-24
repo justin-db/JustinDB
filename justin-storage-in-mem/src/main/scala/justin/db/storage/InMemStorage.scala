@@ -2,23 +2,22 @@ package justin.db.storage
 
 import java.util.UUID
 
-import justin.consistent_hashing.Ring.RingPartitionId
-import justin.db.Data
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * NOT THREAD-SAFE!
   */
-class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
-  import scala.collection.mutable
+class InMemStorage extends PluggableStorageProtocol {
+  println("IN-MEMORY STORAGE LOADED")
 
-  private type MMap           = mutable.Map[RingPartitionId, Map[UUID, Data]]
-  private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, Data]]
-  private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, Data]]
+  private type MMap           = mutable.Map[RingPartitionId, Map[UUID, JustinData]]
+  private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
+  private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
 
-  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful {
+  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful {
     def get(mmap: MMap, partitionId: RingPartitionId) = {
       mmap.get(partitionId).fold[StorageGetData](StorageGetData.None) { _.get(id) match {
         case Some(data) => StorageGetData.Single(data)
@@ -32,8 +31,8 @@ class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtoc
     }
   }
 
-  override def put(putData: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
-    def update(mmap: MMap, partitionId: RingPartitionId, data: Data) = {
+  override def put(putData: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = {
+    def update(mmap: MMap, partitionId: RingPartitionId, data: JustinData) = {
       mmap.get(partitionId) match {
         case Some(partitionMap) => mmap + (partitionId -> (partitionMap ++ Map(data.id -> data)))
         case None               => mmap + (partitionId -> Map(data.id -> data))

@@ -48,7 +48,7 @@ lazy val core = (project in file("justin-core"))
     }
   )
   .configs (MultiJvm)
-  .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts)
+  .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
 
 lazy val httpApi = (project in file("justin-http-api"))
   .enablePlugins(JavaAppPackaging)
@@ -66,19 +66,24 @@ lazy val httpApi = (project in file("justin-http-api"))
   )
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
-  .dependsOn(core, storageInMem, storagePersistent)
+  .dependsOn(core, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
+
+lazy val storageAPi = (project in file("justin-storage-api")).settings(
+  name := "justin-storage-api",
+  scalaVersion := Version.scala
+)
 
 lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
   name := "justin-storage-in-mem",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storageInMem
-).dependsOn(core)
+).dependsOn(storageAPi)
 
 lazy val storagePersistent = (project in file("justin-storage-persistent")).settings(
   name := "justin-storage-persistent",
   scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storageInMem
-).dependsOn(core)
+  libraryDependencies ++= Dependencies.storagePersistent
+).dependsOn(storageAPi)
 
 lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
   name := "justin-merkle-trees",
