@@ -4,14 +4,14 @@ import java.util.UUID
 
 import PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait GetStorageProtocol {
-  def get(id: UUID)(resolveOriginality: UUID => DataOriginality): Future[StorageGetData]
+  def get(id: UUID)(resolveOriginality: UUID => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData]
 }
 
 trait PutStorageProtocol {
-  def put(cmd: StoragePutData)(resolveOriginality: UUID => DataOriginality): Future[Ack]
+  def put(cmd: StoragePutData)(resolveOriginality: UUID => DataOriginality)(implicit ec: ExecutionContext): Future[Ack]
 }
 
 trait PluggableStorageProtocol extends GetStorageProtocol with PutStorageProtocol

@@ -66,7 +66,7 @@ lazy val httpApi = (project in file("justin-http-api"))
   )
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
-  .dependsOn(core)
+  .dependsOn(core, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
 
 lazy val storageAPi = (project in file("justin-storage-api")).settings(
   name := "justin-storage-api",

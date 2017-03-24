@@ -11,7 +11,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import storage.GetStorageProtocol
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
@@ -22,7 +22,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val id   = UUID.randomUUID()
     val data = Data(id, "value", VectorClock[NodeId]().increase(NodeId(1)))
     val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = {
         Future.successful(StorageGetData.Single(data))
       }
     })
@@ -38,7 +38,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val id = UUID.randomUUID()
     val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = {
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = {
         Future.successful(StorageGetData.None)
       }
     })
@@ -54,7 +54,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     // given
     val id = UUID.randomUUID()
     val service = new ReplicaLocalReader(new GetStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.failed(new Exception)
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.failed(new Exception)
     })
 
     // when

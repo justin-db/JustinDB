@@ -11,7 +11,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
@@ -27,8 +27,8 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val notTakenId = UUID.randomUUID()
     val data       = Data(notTakenId, "some-value")
     val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.None)
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful(StorageGetData.None)
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = Ack.future
     })
 
     // when
@@ -48,8 +48,8 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val notTakenId = UUID.randomUUID()
     val data       = Data(notTakenId, "some-value")
     val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.None)
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Future.failed(new Exception)
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful(StorageGetData.None)
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = Future.failed(new Exception)
     })
 
     // when
@@ -70,8 +70,8 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(2))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(1))))
     val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = ???
     })
 
     // when
@@ -87,8 +87,8 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(2) -> Counter(1))))
     val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = Ack.future
     })
 
     // when
@@ -104,8 +104,8 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val data    = Data(id, "some-value", VectorClock(Map(NodeId(1) -> Counter(1))))
     val newData = Data(id, "some-value-2", VectorClock(Map(NodeId(1) -> Counter(2))))
     val writer = new ReplicaLocalWriter(new GetStorageProtocol with PutStorageProtocol {
-      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
-      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = Ack.future
+      override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful(StorageGetData.Single(data))
+      override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = Ack.future
     })
 
     // when
