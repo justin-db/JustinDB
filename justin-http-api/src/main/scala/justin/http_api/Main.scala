@@ -12,7 +12,7 @@ import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
-import justin.db.storage.PluggableStorageProtocol
+import justin.db.storage.JustinDriver
 import justin.db.{StorageNodeActor, StorageNodeActorRef}
 
 // $COVERAGE-OFF$
@@ -32,9 +32,7 @@ object Main extends App with ServiceConfig {
   logger.info("Build Info: ")
   logger.info(BuildInfo.toString)
 
-  val storage = Class.forName(config.getString("justin-db.storage"))
-    .newInstance()
-    .asInstanceOf[PluggableStorageProtocol]
+  val storage = JustinDriver.load(config.getString("justin-db.storage"))
 
   Cluster(system).registerOnMemberUp {
     logger.info("Cluster is ready!")
