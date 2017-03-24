@@ -18,12 +18,12 @@ object Data {
   }
 
   implicit def toInternal(data: Data): JustinData = {
-    val encodedVClock = new NodeIdVectorClockBase64().encode(data.vclock).get // TODO: check if encodeding of VClock is possible (make it typesafe)
+    val encodedVClock = new NodeIdVectorClockBase64().encode(data.vclock).get // TODO: check if encoding of VClock is possible (make it typesafe)
     JustinData(data.id, data.value, encodedVClock, data.timestamp)
   }
 
   implicit def fromInternal(justinData: JustinData): Data = {
-    val decodedVClock = new NodeIdVectorClockBase64().decode(justinData.vclock).get // TODO: check if decodeing of VClock is possible (make it typesafe)
+    val decodedVClock = new NodeIdVectorClockBase64().decode(justinData.vclock).get // TODO: check if decoding of VClock is possible (make it typesafe)
     Data(justinData.id, justinData.value, decodedVClock, justinData.timestamp)
   }
 }
