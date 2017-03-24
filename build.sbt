@@ -82,7 +82,7 @@ lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
 lazy val storagePersistent = (project in file("justin-storage-persistent")).settings(
   name := "justin-storage-persistent",
   scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storageInMem
+  libraryDependencies ++= Dependencies.storagePersistent
 ).dependsOn(storageAPi)
 
 lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
