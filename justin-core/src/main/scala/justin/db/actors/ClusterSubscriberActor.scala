@@ -4,8 +4,8 @@ import akka.actor.{Actor, Address, RootActorPath}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, MemberStatus}
 import justin.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActorProtocol.RegisterNode
 import justin.db.ClusterMembers
+import justin.db.actors.ClusterSubscriberActorProtocol.RegisterNode
 
 trait ClusterSubscriberActor { self: Actor =>
 
@@ -31,4 +31,8 @@ trait ClusterSubscriberActor { self: Actor =>
       nodeRef        = context.actorSelection(RootActorPath(address) / "user" / nodeName)
     } yield nodeRef ! RegisterNode(nodeId)
   }
+}
+
+object ClusterSubscriberActorProtocol {
+  case class RegisterNode(nodeId: NodeId)
 }

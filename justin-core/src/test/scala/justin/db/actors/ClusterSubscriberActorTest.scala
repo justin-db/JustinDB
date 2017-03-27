@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
-import justin.db.StorageNodeActorProtocol.RegisterNode
+import justin.db.actors.ClusterSubscriberActorProtocol.RegisterNode
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 

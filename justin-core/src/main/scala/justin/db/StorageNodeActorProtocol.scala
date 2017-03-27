@@ -39,7 +39,4 @@ object StorageNodeActorProtocol {
     case class ConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWritingResult
   }
   // ------
-
-  // ----- CLUSTER PART ----
-  case class RegisterNode(nodeId: NodeId)
 }
