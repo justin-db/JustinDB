@@ -1,4 +1,4 @@
-package justin.db
+package justin.db.actors
 
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}

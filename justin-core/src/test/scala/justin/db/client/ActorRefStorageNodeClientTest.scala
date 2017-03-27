@@ -6,7 +6,8 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult, StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.replication.{R, W}
-import justin.db.{Data, StorageNodeActorRef}
+import justin.db.Data
+import justin.db.actors.StorageNodeActorRef
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 

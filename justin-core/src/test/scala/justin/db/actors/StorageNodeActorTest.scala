@@ -1,4 +1,4 @@
-package justin.db
+package justin.db.actors
 
 import justin.consistent_hashing.NodeId
 import org.scalatest.{FlatSpec, Matchers}

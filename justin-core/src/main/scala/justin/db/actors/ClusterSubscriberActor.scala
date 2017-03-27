@@ -1,10 +1,11 @@
-package justin.db
+package justin.db.actors
 
 import akka.actor.{Actor, Address, RootActorPath}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, MemberStatus}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.StorageNodeActorProtocol.RegisterNode
+import justin.db.ClusterMembers
 
 trait ClusterSubscriberActor { self: Actor =>
 

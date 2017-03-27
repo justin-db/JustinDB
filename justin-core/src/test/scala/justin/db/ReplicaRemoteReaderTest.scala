@@ -5,6 +5,7 @@ import java.util.UUID
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
+import justin.db.actors.StorageNodeActorRef
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 

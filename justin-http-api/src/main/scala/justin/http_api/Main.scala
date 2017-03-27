@@ -13,7 +13,7 @@ import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
 import justin.db.storage.JustinDriver
-import justin.db.{StorageNodeActor, StorageNodeActorRef}
+import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 
 // $COVERAGE-OFF$
 object Main extends App with ServiceConfig {

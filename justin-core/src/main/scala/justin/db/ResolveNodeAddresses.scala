@@ -1,6 +1,7 @@
 package justin.db
 
 import justin.consistent_hashing.NodeId
+import justin.db.actors.StorageNodeActorRef
 import justin.db.replication.PreferenceList
 
 case class ResolvedNodeAddresses(local: Boolean, remotes: List[StorageNodeActorRef])
