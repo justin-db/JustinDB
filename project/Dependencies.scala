@@ -41,9 +41,9 @@ object Library {
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
 
   // other
-  val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
-  val scopt                = "com.github.scopt"  %% "scopt"                             % Version.scopt
-  val logback              = "ch.qos.logback"     % "logback-classic"                   % Version.logback
+  val kamonSigar           = "io.kamon"                   % "sigar-loader"              % Version.sigarLoader
+  val scopt                = "com.github.scopt"           %% "scopt"                    % Version.scopt
+  val logback              = "ch.qos.logback"              % "logback-classic"          % Version.logback
 
   // crjdt
   val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
@@ -58,7 +58,7 @@ object Dependencies {
 
   private val genericTest = Seq(scalactic, scalatest % "test")
 
-  private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit)
+  private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit, akkaKryo)
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit, akkaStream)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
