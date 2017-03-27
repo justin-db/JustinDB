@@ -2,8 +2,8 @@ package justin.db.replica
 
 import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
+import justin.db.actors.protocol.StorageNodeReadingResult
 import justin.db.versioning.VectorClockComparator
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 

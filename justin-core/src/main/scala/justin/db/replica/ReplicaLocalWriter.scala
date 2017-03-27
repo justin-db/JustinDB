@@ -1,7 +1,7 @@
 package justin.db.replica
 
+import justin.db.actors.protocol.StorageNodeWritingResult
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.db.versioning.VectorClockComparator

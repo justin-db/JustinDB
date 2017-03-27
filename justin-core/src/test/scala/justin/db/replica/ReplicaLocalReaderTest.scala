@@ -3,8 +3,8 @@ package justin.db.replica
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
+import justin.db.actors.protocol.StorageNodeReadingResult
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
 import justin.vector_clocks.VectorClock

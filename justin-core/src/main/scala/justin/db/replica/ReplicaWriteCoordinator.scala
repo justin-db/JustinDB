@@ -2,8 +2,8 @@ package justin.db.replica
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db._
-import justin.db.actors.StorageNodeActorProtocol.{StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
+import justin.db.actors.protocol.{StorageNodeWriteData, StorageNodeWritingResult}
 
 import scala.concurrent.{ExecutionContext, Future}
 

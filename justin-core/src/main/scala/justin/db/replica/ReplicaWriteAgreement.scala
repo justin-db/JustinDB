@@ -1,7 +1,7 @@
 package justin.db.replica
 
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult
 import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
+import justin.db.actors.protocol.StorageNodeWritingResult
 
 class ReplicaWriteAgreement {
 

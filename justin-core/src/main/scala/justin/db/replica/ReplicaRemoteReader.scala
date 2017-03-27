@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.pattern.ask
 import akka.util.Timeout
-import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
+import justin.db.actors.protocol.{StorageNodeReadData, StorageNodeReadingResult}
 import justin.db.actors.StorageNodeActorRef
 
 import scala.concurrent.duration._

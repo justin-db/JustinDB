@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.{StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.actors.protocol.{StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.actors.StorageNodeActorRef
 import justin.db.replica.ReplicaRemoteWriter
 import org.scalatest.concurrent.ScalaFutures

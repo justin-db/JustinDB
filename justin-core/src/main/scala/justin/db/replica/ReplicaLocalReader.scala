@@ -2,7 +2,7 @@ package justin.db.replica
 
 import java.util.UUID
 
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
+import justin.db.actors.protocol.StorageNodeReadingResult
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
 
