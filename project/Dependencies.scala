@@ -9,7 +9,7 @@ object Version {
   val akkaHttp    = "10.0.5"
   val akkaSse     = "2.0.0"
   val scalatest   = "3.0.1"
-  val scalacheck  = "1.13.4"
+  val scalacheck  = "1.13.5"
   val sigarLoader = "1.6.6"
   val scopt       = "3.5.0"
   val crjdt       = "0.0.7"
