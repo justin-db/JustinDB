@@ -5,6 +5,7 @@ object Version {
   val scalaBinary = scala.substring(0,4)
 
   val akka        = "2.4.17"
+  val akkaKryo    = "0.5.2"
   val akkaHttp    = "10.0.4"
   val akkaSse     = "2.0.0"
   val scalatest   = "3.0.1"
@@ -16,9 +17,10 @@ object Version {
 }
 
 object Library {
-  val akkaActor            = "com.typesafe.akka" %% "akka-actor"                        % Version.akka
-  val akkaSfl4j            = "com.typesafe.akka" %% "akka-slf4j"                        % Version.akka
-  val akkaTestkit          = "com.typesafe.akka" %% "akka-testkit"                      % Version.akka
+  val akkaActor            = "com.typesafe.akka"     %% "akka-actor"                    % Version.akka
+  val akkaSfl4j            = "com.typesafe.akka"     %% "akka-slf4j"                    % Version.akka
+  val akkaTestkit          = "com.typesafe.akka"     %% "akka-testkit"                  % Version.akka
+  val akkaKryo             = "com.github.romix.akka" %% "akka-kryo-serialization"       % Version.akkaKryo
 
   // http
   val akkaHttp             = "com.typesafe.akka" %% "akka-http"                         % Version.akkaHttp
