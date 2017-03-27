@@ -1,6 +1,6 @@
 package justin.db
 
-import justin.db.StorageNodeActorProtocol._
+import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
 import storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.db.versioning.VectorClockComparator

@@ -2,9 +2,10 @@ package justin.db
 
 import java.util.UUID
 
-import justin.db.StorageNodeActorProtocol._
+import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
 import storage.GetStorageProtocol
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionContext) {

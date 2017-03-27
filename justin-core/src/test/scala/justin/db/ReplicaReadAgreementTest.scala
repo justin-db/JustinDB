@@ -3,7 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.db.ReplicaReadAgreement.ReadAgreement
-import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult.{FailedRead, Found, NotFound}
+import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult.{FailedRead, Found, NotFound}
 import justin.db.replication.R
 import org.scalatest.{FlatSpec, Matchers}
 import justin.db.versioning.VectorClockOps._

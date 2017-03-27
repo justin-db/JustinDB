@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.ReplicaReadAgreement.ReadAgreement
-import justin.db.StorageNodeActorProtocol._
+import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
 import justin.db.replication.{N, PreferenceList, R}
 
 import scala.concurrent.{ExecutionContext, Future}

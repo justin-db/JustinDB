@@ -3,7 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
-import justin.db.StorageNodeActorProtocol.StorageNodeWritingResult
+import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult
 import storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import justin.vector_clocks.{Counter, VectorClock}

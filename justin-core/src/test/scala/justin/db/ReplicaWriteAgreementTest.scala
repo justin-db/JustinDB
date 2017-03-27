@@ -1,7 +1,7 @@
 package justin.db
 
 import justin.db.ReplicaWriteAgreement.WriteAgreement
-import justin.db.StorageNodeActorProtocol.StorageNodeWritingResult.{FailedWrite, SuccessfulWrite}
+import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult.{FailedWrite, SuccessfulWrite}
 import justin.db.replication.W
 import org.scalatest.{FlatSpec, Matchers}
 

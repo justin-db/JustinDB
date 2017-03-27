@@ -3,7 +3,7 @@ package justin.db
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
-import justin.db.StorageNodeActorProtocol.StorageNodeReadingResult
+import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
 import justin.vector_clocks.VectorClock
 import org.scalatest.concurrent.ScalaFutures
