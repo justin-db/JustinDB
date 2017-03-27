@@ -13,7 +13,7 @@ object Version {
   val sigarLoader = "1.6.6"
   val scopt       = "3.5.0"
   val crjdt       = "0.0.7"
-  val logback     = "1.2.1"
+  val logback     = "1.2.2"
 }
 
 object Library {
