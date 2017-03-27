@@ -6,7 +6,7 @@ object Version {
 
   val akka        = "2.4.17"
   val akkaKryo    = "0.5.2"
-  val akkaHttp    = "10.0.4"
+  val akkaHttp    = "10.0.5"
   val akkaSse     = "2.0.0"
   val scalatest   = "3.0.1"
   val scalacheck  = "1.13.4"
