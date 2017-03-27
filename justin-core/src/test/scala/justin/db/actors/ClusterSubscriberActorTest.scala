@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
-import justin.db.actors.protocol.RegisterNode
+import justin.db.actors.protocol.ClusterSubscriberActorProtocol
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 
@@ -23,10 +23,10 @@ class ClusterSubscriberActorTest extends TestKit(ClusterSubscriberActorTest.acto
     val testActor = TestActorRef(new TestActor(nodeId, Ring.apply(3, 1)))
 
     // when
-    testActor ! RegisterNode(NodeId(2))
+    testActor ! ClusterSubscriberActorProtocol(NodeId(2))
 
     // then
-    expectMsg(RegisterNode(nodeId))
+    expectMsg(ClusterSubscriberActorProtocol(nodeId))
   }
 
   override def afterAll {
