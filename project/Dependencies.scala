@@ -64,6 +64,7 @@ object Dependencies {
 
   val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt) ++ Seq(akkaSse)
 
+  val storageApi = genericTest
   val storageInMem = genericTest
   val storagePersistent = genericTest
 

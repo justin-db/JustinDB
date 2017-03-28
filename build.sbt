@@ -75,7 +75,8 @@ lazy val httpApi = (project in file("justin-http-api"))
 
 lazy val storageAPi = (project in file("justin-storage-api")).settings(
   name := "justin-storage-api",
-  scalaVersion := Version.scala
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.storageApi
 )
 
 lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
