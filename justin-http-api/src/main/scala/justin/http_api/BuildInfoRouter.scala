@@ -4,15 +4,14 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.stream.Materializer
-import buildinfo.BuildInfo
 
 import scala.concurrent.ExecutionContext
 
 class BuildInfoRouter(implicit ec: ExecutionContext, mat: Materializer) {
 
-  val routes: Route = path("info") {
+  def routes(buildInfoJson: String): Route = path("info") {
     get {
-      complete(HttpResponse(entity = HttpEntity(ContentType(MediaTypes.`application/json`), BuildInfo.toJson)))
+      complete(HttpResponse(entity = HttpEntity(ContentType(MediaTypes.`application/json`), buildInfoJson)))
     }
   }
 }

@@ -14,7 +14,6 @@ scalacOptions := Seq(
   "-feature",
   "-deprecation",
   "-unchecked",
-  "-Xlint:_",
   "-Xfatal-warnings",
   "-encoding",
   "utf8",
@@ -29,6 +28,19 @@ initialize := {
 }
 
 // PROJECT DEFINITIONS
+lazy val root = (project in file("."))
+  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(BuildInfoPlugin)
+  .settings(
+    scalaVersion := Version.scala,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit, git.gitCurrentBranch),
+    buildInfoOptions += BuildInfoOption.ToJson
+  )
+  .settings(versionWithGit)
+  .settings(git.useGitDescribe := true)
+  .aggregate(core, httpApi, storageInMem, storagePersistent)
+  .dependsOn(core, httpApi, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
+
 lazy val core = (project in file("justin-core"))
   .settings(SbtMultiJvm.multiJvmSettings: _*)
   .settings(
@@ -51,8 +63,6 @@ lazy val core = (project in file("justin-core"))
   .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
 
 lazy val httpApi = (project in file("justin-http-api"))
-  .enablePlugins(JavaAppPackaging)
-  .enablePlugins(BuildInfoPlugin)
   .settings(
     name := "justin-http-api",
     scalaVersion := Version.scala,
@@ -60,13 +70,7 @@ lazy val httpApi = (project in file("justin-http-api"))
     fork in Test := true,
     javaOptions in Test += "-Dconfig.resource=test.conf"
   )
-  .settings(
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit, git.gitCurrentBranch),
-    buildInfoOptions += BuildInfoOption.ToJson
-  )
-  .settings(versionWithGit)
-  .settings(git.useGitDescribe := true)
-  .dependsOn(core, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
+  .dependsOn(core)
 
 lazy val storageAPi = (project in file("justin-storage-api")).settings(
   name := "justin-storage-api",
@@ -111,6 +115,3 @@ lazy val consistentHashing = (project in file("justin-consistent-hashing")).sett
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
-
-// RUN
-run in Compile <<= (run in Compile in httpApi)
