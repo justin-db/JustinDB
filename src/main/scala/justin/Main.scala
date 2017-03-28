@@ -1,4 +1,4 @@
-package justin.http_api
+package justin
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
@@ -9,11 +9,12 @@ import akka.stream.ActorMaterializer
 import buildinfo.BuildInfo
 import com.typesafe.config.{Config, ConfigFactory}
 import justin.consistent_hashing.{NodeId, Ring}
+import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replication.N
 import justin.db.storage.JustinDriver
-import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
+import justin.http_api._
 
 // $COVERAGE-OFF$
 object Main extends App with ServiceConfig {
@@ -32,7 +33,7 @@ object Main extends App with ServiceConfig {
   logger.info("Build Info: ")
   logger.info(BuildInfo.toString)
 
-  val storage = JustinDriver.load(config.getString("justin-db.storage"))
+  val storage = JustinDriver.load(`storage-backend`)
 
   Cluster(system).registerOnMemberUp {
     logger.info("Cluster is ready!")
@@ -56,7 +57,7 @@ object Main extends App with ServiceConfig {
     val routes = logRequestResult(system.name) {
         new HttpRouter(storageNodeActorRef).routes ~
         new HealthCheckRouter().routes ~
-        new BuildInfoRouter().routes ~
+        new BuildInfoRouter().routes(BuildInfo.toJson) ~
         new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
         new ServerSideEvents().routes
     }
