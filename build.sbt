@@ -60,6 +60,7 @@ lazy val core = (project in file("justin-core"))
     }
   )
   .configs (MultiJvm)
+  .aggregate(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
   .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
 
 lazy val httpApi = (project in file("justin-http-api"))
