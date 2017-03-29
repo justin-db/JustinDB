@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionContext) {
 
-  def apply(id: UUID, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeReadingResult] = {
+  def apply(id: UUID, resolveDataOriginality: IsPrimaryOrReplica): Future[StorageNodeReadingResult] = {
     storage.get(id)(resolveDataOriginality).map {
       case StorageGetData.Single(justinData) => StorageNodeReadingResult.Found(justinData)
       case StorageGetData.None               => StorageNodeReadingResult.NotFound

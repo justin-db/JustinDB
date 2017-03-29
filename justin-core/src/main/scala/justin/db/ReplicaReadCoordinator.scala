@@ -20,7 +20,7 @@ class ReplicaReadCoordinator(
     case StorageNodeReadData.Replicated(r, id) => coordinateReplicated(r, id, clusterMembers)
   }
 
-  private def readLocalData(id: UUID) = localDataReader.apply(id, new ResolveDataOriginality(nodeId, ring))
+  private def readLocalData(id: UUID) = localDataReader.apply(id, new IsPrimaryOrReplica(nodeId, ring))
 
   private def coordinateReplicated(r: R, id: UUID, clusterMembers: ClusterMembers) = {
     val partitionId = UUID2RingPartitionId.apply(id, ring)

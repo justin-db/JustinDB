@@ -10,14 +10,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(implicit ec: ExecutionContext) {
 
-  def apply(newData: Data, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeWritingResult] = {
+  def apply(newData: Data, resolveDataOriginality: IsPrimaryOrReplica): Future[StorageNodeWritingResult] = {
     storage.get(newData.id)(resolveDataOriginality).flatMap {
       case StorageGetData.None            => putSingleSuccessfulWrite(newData, resolveDataOriginality)
       case StorageGetData.Single(oldData) => handleExistedSingleData(oldData, newData, resolveDataOriginality)
     } recover { case _                    => StorageNodeWritingResult.FailedWrite }
   }
 
-  private def handleExistedSingleData(oldData: Data, newData: Data, resolveDataOriginality: ResolveDataOriginality) = {
+  private def handleExistedSingleData(oldData: Data, newData: Data, resolveDataOriginality: IsPrimaryOrReplica) = {
     new VectorClockComparator().apply(oldData.vclock, newData.vclock) match {
       case VectorClockRelation.Predecessor => Future.successful(StorageNodeWritingResult.FailedWrite)
       case VectorClockRelation.Conflict    => Future.successful(StorageNodeWritingResult.ConflictedWrite(oldData, newData))
@@ -25,7 +25,7 @@ class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(im
     }
   }
 
-  private def putSingleSuccessfulWrite(newData: Data, resolveDataOriginality: ResolveDataOriginality) = {
+  private def putSingleSuccessfulWrite(newData: Data, resolveDataOriginality: IsPrimaryOrReplica) = {
     storage.put(StoragePutData(newData))(resolveDataOriginality).map(_ => StorageNodeWritingResult.SuccessfulWrite)
   }
 }
