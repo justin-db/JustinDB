@@ -10,10 +10,11 @@ import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import justin.db.Data
 import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
-import justin.db.replication.{R, W}
+import justin.db.replica.W
 import justin.http_api.Unmarshallers.UUIDUnmarshaller
 import spray.json.DefaultJsonProtocol._
 import JustinDirectives._
+import justin.db.replica.{R, W}
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}

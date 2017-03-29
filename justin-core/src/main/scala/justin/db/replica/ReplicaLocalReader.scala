@@ -1,17 +1,17 @@
-package justin.db
+package justin.db.replica
 
 import java.util.UUID
 
 import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
+import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
-import storage.GetStorageProtocol
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionContext) {
 
-  def apply(id: UUID, resolveDataOriginality: ResolveDataOriginality): Future[StorageNodeReadingResult] = {
-    storage.get(id)(resolveDataOriginality).map {
+  def apply(id: UUID, isPrimaryOrReplica: IsPrimaryOrReplica): Future[StorageNodeReadingResult] = {
+    storage.get(id)(isPrimaryOrReplica).map {
       case StorageGetData.Single(justinData) => StorageNodeReadingResult.Found(justinData)
       case StorageGetData.None               => StorageNodeReadingResult.NotFound
     } recover { case _                       => StorageNodeReadingResult.FailedRead }

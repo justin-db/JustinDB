@@ -1,17 +1,18 @@
-package justin.db
+package justin.db.replica
 
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
+import justin.db.Data
 import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
+import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
 import justin.vector_clocks.VectorClock
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
-import storage.GetStorageProtocol
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
 

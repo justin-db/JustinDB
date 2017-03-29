@@ -1,9 +1,9 @@
-package justin.db
+package justin.db.replica
 
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
-import justin.db.replication.PreferenceList
+import justin.db.Data
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 

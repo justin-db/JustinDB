@@ -6,7 +6,8 @@ import akka.actor.{Actor, ActorRef, Props}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db._
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeWriteData}
-import justin.db.replication.{N, R, W}
+import justin.db.replica._
+import justin.db.replica.W
 import justin.db.storage.PluggableStorageProtocol
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {

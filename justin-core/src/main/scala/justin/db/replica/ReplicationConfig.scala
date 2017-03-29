@@ -1,4 +1,4 @@
-package justin.db.replication
+package justin.db.replica
 
 /**
   * the number of nodes to replicate to

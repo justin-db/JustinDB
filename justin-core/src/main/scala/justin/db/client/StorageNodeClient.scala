@@ -3,7 +3,8 @@ package justin.db.client
 import java.util.UUID
 
 import justin.db.Data
-import justin.db.replication.{R, W}
+import justin.db.replica.{R, W}
+import justin.db.replica.W
 
 import scala.concurrent.Future
 

@@ -12,7 +12,7 @@ import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
-import justin.db.replication.N
+import justin.db.replica.N
 import justin.db.storage.JustinDriver
 import justin.http_api._
 

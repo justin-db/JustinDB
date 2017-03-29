@@ -4,10 +4,11 @@ import java.util.UUID
 
 import akka.pattern.ask
 import akka.util.Timeout
-import justin.db.replication.{R, W}
+import justin.db.replica.W
 import justin.db.Data
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult, StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.actors.StorageNodeActorRef
+import justin.db.replica.{R, W}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}

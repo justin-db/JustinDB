@@ -1,11 +1,11 @@
-package justin.db
+package justin.db.replica
 
 import java.util.UUID
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
-import justin.db.ReplicaReadAgreement.ReadAgreement
+import justin.db._
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
-import justin.db.replication.{N, PreferenceList, R}
+import justin.db.replica.ReplicaReadAgreement.ReadAgreement
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,7 +20,7 @@ class ReplicaReadCoordinator(
     case StorageNodeReadData.Replicated(r, id) => coordinateReplicated(r, id, clusterMembers)
   }
 
-  private def readLocalData(id: UUID) = localDataReader.apply(id, new ResolveDataOriginality(nodeId, ring))
+  private def readLocalData(id: UUID) = localDataReader.apply(id, new IsPrimaryOrReplica(nodeId, ring))
 
   private def coordinateReplicated(r: R, id: UUID, clusterMembers: ClusterMembers) = {
     val partitionId = UUID2RingPartitionId.apply(id, ring)
