@@ -1,8 +1,9 @@
 package justin.db.actors
 
 import akka.actor.{Actor, ActorRef, Props}
+import justin.db.ClusterMembers
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeWriteData}
-import justin.db.{ClusterMembers, ReplicaReadCoordinator, ReplicaWriteCoordinator}
+import justin.db.replica.{ReplicaReadCoordinator, ReplicaWriteCoordinator}
 
 import scala.concurrent.ExecutionContext
 

@@ -7,9 +7,10 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
-import justin.db.replication.{R, W}
+import justin.db.replica.W
 import justin.db.Data
 import justin.db.actors.StorageNodeActorRef
+import justin.db.replica.{R, W}
 import justin.http_api.HttpRouter.PutValue
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json.{JsString, _}

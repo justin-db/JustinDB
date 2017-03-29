@@ -1,11 +1,11 @@
-package justin.db
+package justin.db.replica
 
 import java.util.UUID
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
-import justin.db.ReplicaReadAgreement.ReadAgreement
+import justin.db._
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
-import justin.db.replication.{N, PreferenceList, R}
+import justin.db.replica.ReplicaReadAgreement.ReadAgreement
 
 import scala.concurrent.{ExecutionContext, Future}
 

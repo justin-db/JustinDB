@@ -1,4 +1,4 @@
-package justin.db.replication
+package justin.db.replica
 
 import justin.consistent_hashing.{NodeId, Ring}
 import org.scalatest.{FlatSpec, Matchers}

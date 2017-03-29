@@ -1,8 +1,8 @@
-package justin.db
+package justin.db.replica
 
-import justin.db.ReplicaWriteAgreement.WriteAgreement
 import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult.{FailedWrite, SuccessfulWrite}
-import justin.db.replication.W
+import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
+import justin.db.replica.{ReplicaWriteAgreement, W}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ReplicaWriteAgreementTest extends FlatSpec with Matchers {

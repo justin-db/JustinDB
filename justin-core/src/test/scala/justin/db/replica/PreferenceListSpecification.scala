@@ -1,4 +1,4 @@
-package justin.db.replication
+package justin.db.replica
 
 import justin.consistent_hashing.Ring
 import org.scalacheck.Prop._

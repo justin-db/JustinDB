@@ -1,9 +1,10 @@
-package justin.db
+package justin.db.replica
 
 import java.util.UUID
 
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
+import justin.db.Data
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult}
 import justin.db.actors.StorageNodeActorRef
 import org.scalatest.concurrent.ScalaFutures

@@ -1,7 +1,8 @@
-package justin.db
+package justin.db.replica
 
 import akka.pattern.ask
 import akka.util.Timeout
+import justin.db.Data
 import justin.db.actors.StorageNodeActorProtocol.{StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.actors.StorageNodeActorRef
 

@@ -3,6 +3,7 @@ package justin.db
 import akka.actor.Props
 import akka.routing.{DefaultResizer, RoundRobinPool}
 import justin.db.actors.ReplicaCoordinatorActor
+import justin.db.replica.{ReplicaReadCoordinator, ReplicaWriteCoordinator}
 
 object RoundRobinCoordinatorRouter {
   def routerName: String = "CoordinatorRouter"
