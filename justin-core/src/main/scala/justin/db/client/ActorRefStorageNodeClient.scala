@@ -32,7 +32,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't write data: $data"
 
     (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {
-      case StorageNodeWritingResult.SuccessfulWrite       => WriteValueResponse.Success
+      case StorageNodeWritingResult.SuccessfulWrite(id)   => WriteValueResponse.Success
       case StorageNodeWritingResult.ConflictedWrite(_, _) => WriteValueResponse.Conflict
       case StorageNodeWritingResult.FailedWrite           => WriteValueResponse.Failure(errorMsg)
     }.recover { case _                                    => WriteValueResponse.Failure(errorMsg) }

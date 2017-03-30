@@ -27,6 +27,6 @@ class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(im
   }
 
   private def putSingleSuccessfulWrite(newData: Data, resolveDataOriginality: IsPrimaryOrReplica) = {
-    storage.put(StoragePutData(newData))(resolveDataOriginality).map(_ => StorageNodeWritingResult.SuccessfulWrite)
+    storage.put(StoragePutData(newData))(resolveDataOriginality).map(_ => StorageNodeWritingResult.SuccessfulWrite(newData.id))
   }
 }

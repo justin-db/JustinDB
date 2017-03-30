@@ -1,5 +1,7 @@
 package justin.db.replica
 
+import java.util.UUID
+
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db._
 import justin.db.actors.protocol.{StorageNodeWriteData, StorageNodeWriteDataLocal, StorageNodeWritingResult}
@@ -31,7 +33,7 @@ class ReplicaWriteCoordinator(
     val updatedData = Data.updateVclock(data, preferenceList)
     makeWrites(w, updatedData, clusterMembers, preferenceList)
       .map(new ReplicaWriteAgreement().reach(w))
-      .map(consensus2WritingResult)
+      .map(consensus2WritingResult(updatedData.id))
   }
 
   private def makeWrites(w: W, updatedData: Data, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
@@ -42,8 +44,8 @@ class ReplicaWriteCoordinator(
     }
   }
 
-  private def consensus2WritingResult: WriteAgreement => StorageNodeWritingResult = {
+  private def consensus2WritingResult(id: => UUID): WriteAgreement => StorageNodeWritingResult = {
     case WriteAgreement.NotEnoughWrites => StorageNodeWritingResult.FailedWrite
-    case WriteAgreement.Ok              => StorageNodeWritingResult.SuccessfulWrite
+    case WriteAgreement.Ok              => StorageNodeWritingResult.SuccessfulWrite(id)
   }
 }

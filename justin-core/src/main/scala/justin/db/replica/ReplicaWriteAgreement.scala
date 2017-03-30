@@ -8,7 +8,7 @@ class ReplicaWriteAgreement {
   // TODO: more cases should be taken into account e.g. what if all writes were failed or one of it is conflicted?
   def reach(w: W): List[StorageNodeWritingResult] => WriteAgreement = {
     writes =>
-      val okWrites = writes.count(_ == StorageNodeWritingResult.SuccessfulWrite)
+      val okWrites = writes.collect { case ok: StorageNodeWritingResult.SuccessfulWrite => ok }.size
       if(okWrites >= w.w) WriteAgreement.Ok else WriteAgreement.NotEnoughWrites
   }
 }
