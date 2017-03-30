@@ -2,9 +2,9 @@ import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 name           := "JustinDB"
-version        := "0.1"
+version        := "0.2"
 maintainer     := "Mateusz Maciaszek"
-packageSummary := "JustinDB Cluster"
+packageSummary := "JustinDB"
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
