@@ -6,7 +6,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import justin.db.replica.W
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeReadData, StorageNodeReadingResult, StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.actors.protocol._
 import justin.db.actors.StorageNodeActorRef
 import justin.db.replica.{R, W}
 
@@ -32,7 +32,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't write data: $data"
 
     (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {
-      case StorageNodeWritingResult.StorageNodeSuccessfulWrite(id)   => WriteValueResponse.Success
+      case StorageNodeSuccessfulWrite(id)   => WriteValueResponse.Success
       case StorageNodeWritingResult.ConflictedWrite(_, _) => WriteValueResponse.Conflict
       case StorageNodeWritingResult.FailedWrite           => WriteValueResponse.Failure(errorMsg)
     }.recover { case _                                    => WriteValueResponse.Failure(errorMsg) }

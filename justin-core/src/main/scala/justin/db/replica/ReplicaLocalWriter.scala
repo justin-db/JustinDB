@@ -1,6 +1,6 @@
 package justin.db.replica
 
-import justin.db.actors.protocol.StorageNodeWritingResult
+import justin.db.actors.protocol.{StorageNodeSuccessfulWrite, StorageNodeWritingResult}
 import justin.db.Data
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
@@ -27,6 +27,6 @@ class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(im
   }
 
   private def putSingleSuccessfulWrite(newData: Data, resolveDataOriginality: IsPrimaryOrReplica) = {
-    storage.put(StoragePutData(newData))(resolveDataOriginality).map(_ => StorageNodeWritingResult.StorageNodeSuccessfulWrite(newData.id))
+    storage.put(StoragePutData(newData))(resolveDataOriginality).map(_ => StorageNodeSuccessfulWrite(newData.id))
   }
 }

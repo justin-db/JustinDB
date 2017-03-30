@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.actors.protocol.StorageNodeWritingResult
+import justin.db.actors.protocol.{StorageNodeSuccessfulWrite, StorageNodeWritingResult}
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.vector_clocks.{Counter, VectorClock}
@@ -36,7 +36,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(data, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.StorageNodeSuccessfulWrite(notTakenId) }
+    whenReady(result) { _ shouldBe StorageNodeSuccessfulWrite(notTakenId) }
   }
 
   /**
@@ -113,6 +113,6 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(newData, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.StorageNodeSuccessfulWrite(id) }
+    whenReady(result) { _ shouldBe StorageNodeSuccessfulWrite(id) }
   }
 }

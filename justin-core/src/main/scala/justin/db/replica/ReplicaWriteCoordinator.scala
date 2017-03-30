@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db._
-import justin.db.actors.protocol.{StorageNodeWriteData, StorageNodeWriteDataLocal, StorageNodeWritingResult}
+import justin.db.actors.protocol.{StorageNodeSuccessfulWrite, StorageNodeWriteData, StorageNodeWriteDataLocal, StorageNodeWritingResult}
 import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,6 +46,6 @@ class ReplicaWriteCoordinator(
 
   private def consensus2WritingResult(id: => UUID): WriteAgreement => StorageNodeWritingResult = {
     case WriteAgreement.NotEnoughWrites => StorageNodeWritingResult.FailedWrite
-    case WriteAgreement.Ok              => StorageNodeWritingResult.StorageNodeSuccessfulWrite(id)
+    case WriteAgreement.Ok              => StorageNodeSuccessfulWrite(id)
   }
 }

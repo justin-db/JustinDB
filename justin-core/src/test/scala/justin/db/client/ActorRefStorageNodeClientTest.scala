@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.replica.W
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeReadData, StorageNodeReadingResult, StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.actors.protocol._
 import justin.db.actors.StorageNodeActorRef
 import justin.db.replica.{R, W}
 import org.scalatest.concurrent.ScalaFutures
@@ -83,7 +83,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.StorageNodeSuccessfulWrite(id))
+    val actorRef = writeTestActorRef(msgBack = StorageNodeSuccessfulWrite(id))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
