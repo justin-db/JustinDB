@@ -32,7 +32,7 @@ object StorageNodeWriteData {
 // OUTPUT
 sealed trait StorageNodeWritingResult
 object StorageNodeWritingResult {
-  case class SuccessfulWrite(id: UUID)                     extends StorageNodeWritingResult
+  case class StorageNodeSuccessfulWrite(id: UUID)                     extends StorageNodeWritingResult
   case object FailedWrite                                  extends StorageNodeWritingResult
   case class ConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWritingResult
 }

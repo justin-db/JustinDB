@@ -36,7 +36,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(data, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite(notTakenId) }
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.StorageNodeSuccessfulWrite(notTakenId) }
   }
 
   /**
@@ -113,6 +113,6 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(newData, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.SuccessfulWrite(id) }
+    whenReady(result) { _ shouldBe StorageNodeWritingResult.StorageNodeSuccessfulWrite(id) }
   }
 }

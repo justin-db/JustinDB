@@ -46,6 +46,6 @@ class ReplicaWriteCoordinator(
 
   private def consensus2WritingResult(id: => UUID): WriteAgreement => StorageNodeWritingResult = {
     case WriteAgreement.NotEnoughWrites => StorageNodeWritingResult.FailedWrite
-    case WriteAgreement.Ok              => StorageNodeWritingResult.SuccessfulWrite(id)
+    case WriteAgreement.Ok              => StorageNodeWritingResult.StorageNodeSuccessfulWrite(id)
   }
 }
