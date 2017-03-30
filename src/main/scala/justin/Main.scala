@@ -40,7 +40,7 @@ object Main extends App with ServiceConfig {
 
     // STORAGE ACTOR
     val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
-      val nodeId      = NodeId(`nodes-id`)
+      val nodeId      = NodeId(`node-id`)
       val ring        = Ring(`ring-cluster-size`, `ring-partitions`)
       val replication = N(`replication-n`)
 
