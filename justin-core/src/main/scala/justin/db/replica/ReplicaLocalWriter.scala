@@ -15,12 +15,12 @@ class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(im
     storage.get(newData.id)(isPrimaryOrReplica).flatMap {
       case StorageGetData.None            => putSingleSuccessfulWrite(newData, isPrimaryOrReplica)
       case StorageGetData.Single(oldData) => handleExistedSingleData(oldData, newData, isPrimaryOrReplica)
-    } recover { case _                    => StorageNodeWritingResult.FailedWrite(newData.id) }
+    } recover { case _                    => StorageNodeWritingResult.StorageNodeFailedWrite(newData.id) }
   }
 
   private def handleExistedSingleData(oldData: Data, newData: Data, isPrimaryOrReplica: IsPrimaryOrReplica) = {
     new VectorClockComparator().apply(oldData.vclock, newData.vclock) match {
-      case VectorClockRelation.Predecessor => Future.successful(StorageNodeWritingResult.FailedWrite(newData.id))
+      case VectorClockRelation.Predecessor => Future.successful(StorageNodeWritingResult.StorageNodeFailedWrite(newData.id))
       case VectorClockRelation.Conflict    => Future.successful(StorageNodeWritingResult.ConflictedWrite(oldData, newData))
       case VectorClockRelation.Consequent  => putSingleSuccessfulWrite(newData, isPrimaryOrReplica)
     }

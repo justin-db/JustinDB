@@ -22,14 +22,14 @@ class ReplicaRemoteWriterTest extends TestKit(ActorSystem("test-system"))
     val service = new ReplicaRemoteWriter()(system.dispatcher)
     val data = Data(id = UUID.randomUUID(), value = "exemplary-value")
     val storageSuccessfulActorRef = testActorRef(msgBack = StorageNodeSuccessfulWrite(data.id))
-    val storageFailedActorRef     = testActorRef(msgBack = StorageNodeWritingResult.FailedWrite)
+    val storageFailedActorRef     = testActorRef(msgBack = StorageNodeWritingResult.StorageNodeFailedWrite)
     val storageNodeRefs           = List(storageSuccessfulActorRef, storageFailedActorRef).map(StorageNodeActorRef)
 
     // when
     val writingResult = service.apply(storageNodeRefs, data)
 
     // then
-    whenReady(writingResult) { _ shouldBe List(StorageNodeSuccessfulWrite(data.id), StorageNodeWritingResult.FailedWrite) }
+    whenReady(writingResult) { _ shouldBe List(StorageNodeSuccessfulWrite(data.id), StorageNodeWritingResult.StorageNodeFailedWrite) }
   }
 
   it should "recover failed behavior of actor" in {
@@ -43,7 +43,7 @@ class ReplicaRemoteWriterTest extends TestKit(ActorSystem("test-system"))
     val writingResult = service.apply(storageNodeRefs, data)
 
     // then
-    whenReady(writingResult) { _ shouldBe List(StorageNodeWritingResult.FailedWrite) }
+    whenReady(writingResult) { _ shouldBe List(StorageNodeWritingResult.StorageNodeFailedWrite) }
   }
 
   private def testActorRef(msgBack: => Any) = {

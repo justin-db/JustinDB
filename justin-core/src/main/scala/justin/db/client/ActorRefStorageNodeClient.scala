@@ -33,7 +33,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
     (storageNodeActor.storageNodeActor ? StorageNodeWriteData.Replicate(w, data)).mapTo[StorageNodeWritingResult].map {
       case StorageNodeSuccessfulWrite(id)   => WriteValueResponse.Success
       case StorageNodeWritingResult.ConflictedWrite(_, _) => WriteValueResponse.Conflict
-      case StorageNodeWritingResult.FailedWrite(id)       => WriteValueResponse.Failure(errorMsg)
+      case StorageNodeWritingResult.StorageNodeFailedWrite(id)       => WriteValueResponse.Failure(errorMsg)
     }.recover { case _                                    => WriteValueResponse.Failure(errorMsg) }
   }
 }
