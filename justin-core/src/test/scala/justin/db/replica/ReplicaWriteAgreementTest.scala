@@ -2,8 +2,7 @@ package justin.db.replica
 
 import java.util.UUID
 
-import justin.db.actors.protocol.StorageNodeSuccessfulWrite
-import justin.db.actors.protocol.StorageNodeWritingResult.StorageNodeFailedWrite
+import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
 import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
 import org.scalatest.{FlatSpec, Matchers}
 

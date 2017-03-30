@@ -3,9 +3,8 @@ package justin.db.replica
 import akka.pattern.ask
 import akka.util.Timeout
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.actors.StorageNodeActorRef
-import justin.db.actors.protocol.{StorageNodeWriteDataLocal, StorageNodeWritingResult}
+import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeWriteDataLocal, StorageNodeWritingResult}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,6 +20,6 @@ class ReplicaRemoteWriter(implicit ec: ExecutionContext) {
   private def putLocalValue(node: StorageNodeActorRef, data: Data): Future[StorageNodeWritingResult] = {
     (node.storageNodeActor ? StorageNodeWriteDataLocal(data))
       .mapTo[StorageNodeWritingResult]
-      .recover { case _ => StorageNodeWritingResult.StorageNodeFailedWrite(data.id) }
+      .recover { case _ => StorageNodeFailedWrite(data.id) }
   }
 }

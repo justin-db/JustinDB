@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeSuccessfulWrite, StorageNodeWritingResult}
+import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWritingResult}
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.vector_clocks.{Counter, VectorClock}
@@ -57,7 +57,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(data, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.StorageNodeFailedWrite }
+    whenReady(result) { _ shouldBe StorageNodeFailedWrite(notTakenId) }
   }
 
   /**
@@ -79,7 +79,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(newData, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWritingResult.StorageNodeFailedWrite }
+    whenReady(result) { _ shouldBe StorageNodeFailedWrite(id) }
   }
 
   it should "get conflicted write when trying to save new data with conflicted vector clock comparing to already existed one" in {
