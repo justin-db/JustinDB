@@ -8,8 +8,13 @@ class SerializerInit extends StrictLogging {
   def customize(kryo: Kryo): Unit = {
     logger.info("Initialized Kryo")
 
+    // cluster
     kryo.register(classOf[justin.db.actors.protocol.RegisterNode], RegisterNodeSerializer, 50)
+
+    // write
     kryo.register(classOf[justin.db.actors.protocol.StorageNodeWriteDataLocal], StorageNodeWriteDataLocalSerializer, 51)
-//    kryo.register(classOf[justin.db.actors.protocol.StorageNodeReadData.Replicated], StorageNodeWriteDataReplicateSerializer, 52)
+
+    // read
+    kryo.register(classOf[justin.db.actors.protocol.StorageNodeSuccessfulWrite], StorageNodeSuccessfulWriteSerializer, 60)
   }
 }
