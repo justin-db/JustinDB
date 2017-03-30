@@ -11,8 +11,10 @@ class SerializerInit extends StrictLogging {
     // cluster
     kryo.register(classOf[justin.db.actors.protocol.RegisterNode], RegisterNodeSerializer, 50)
 
-    // write
+    // write -- input
     kryo.register(classOf[justin.db.actors.protocol.StorageNodeWriteDataLocal], StorageNodeWriteDataLocalSerializer, 51)
+    // write -- output
+    kryo.register(classOf[justin.db.actors.protocol.StorageNodeFailedWrite], StorageNodeFailedWriteSerializer, 52)
 
     // read
     kryo.register(classOf[justin.db.actors.protocol.StorageNodeSuccessfulWrite], StorageNodeSuccessfulWriteSerializer, 60)
