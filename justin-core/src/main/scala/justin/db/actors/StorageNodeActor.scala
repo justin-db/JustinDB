@@ -38,4 +38,3 @@ object StorageNodeActor {
 }
 
 case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
-

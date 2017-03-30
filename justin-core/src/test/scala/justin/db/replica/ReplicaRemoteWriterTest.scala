@@ -5,8 +5,8 @@ import java.util.UUID
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeWriteData, StorageNodeWritingResult}
 import justin.db.actors.StorageNodeActorRef
+import justin.db.actors.protocol.{StorageNodeWriteDataLocal, StorageNodeWritingResult}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -49,7 +49,7 @@ class ReplicaRemoteWriterTest extends TestKit(ActorSystem("test-system"))
   private def testActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeWriteData.Local(id) => sender() ! msgBack
+        case StorageNodeWriteDataLocal(id) => sender() ! msgBack
       }
     })
   }

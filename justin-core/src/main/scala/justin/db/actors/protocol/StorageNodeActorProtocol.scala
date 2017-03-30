@@ -25,8 +25,8 @@ object StorageNodeReadingResult {
 // ----- WRITE PART ----
 // INPUT
 sealed trait StorageNodeWriteData
+case class StorageNodeWriteDataLocal(data: Data) extends StorageNodeWriteData
 object StorageNodeWriteData {
-  case class Local(data: Data)           extends StorageNodeWriteData
   case class Replicate(w: W, data: Data) extends StorageNodeWriteData
 }
 // OUTPUT
