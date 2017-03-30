@@ -4,7 +4,6 @@ import java.util.UUID
 
 import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.replica.ReplicaLocalWriter
 import justin.db.actors.protocol.StorageNodeWritingResult
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}

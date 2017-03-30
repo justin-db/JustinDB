@@ -3,7 +3,7 @@ package justin.db.actors.protocol
 import java.util.UUID
 
 import justin.db.Data
-import justin.db.replication.{R, W}
+import justin.db.replica.{R, W}
 
 // ----- READ PART ----
 // INPUT
