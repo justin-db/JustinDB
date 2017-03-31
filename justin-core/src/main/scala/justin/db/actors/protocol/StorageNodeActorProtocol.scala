@@ -10,12 +10,12 @@ case class StorageNodeLocalRead(id: UUID) extends StorageNodeReadRequest
 object StorageNodeReadRequest {
   case class Replicated(r: R, id: UUID) extends StorageNodeReadRequest // Is this ever wired between remotes Actors?
 }
-sealed trait StorageNodeReadingResult
-object StorageNodeReadingResult {
-  case class Found(data: Data)           extends StorageNodeReadingResult
-  case class Conflicts(data: List[Data]) extends StorageNodeReadingResult
-  case object NotFound                   extends StorageNodeReadingResult
-  case object FailedRead                 extends StorageNodeReadingResult
+sealed trait StorageNodeReadResponse
+object StorageNodeReadResponse {
+  case class Found(data: Data)           extends StorageNodeReadResponse
+  case class Conflicts(data: List[Data]) extends StorageNodeReadResponse
+  case object NotFound                   extends StorageNodeReadResponse
+  case object FailedRead                 extends StorageNodeReadResponse
 }
 
 sealed trait StorageNodeWriteData

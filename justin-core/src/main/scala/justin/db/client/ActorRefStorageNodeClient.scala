@@ -19,11 +19,11 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
   override def get(id: UUID, r: R): Future[GetValueResponse] = {
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}"
 
-    (storageNodeActor.storageNodeActor ? StorageNodeReadRequest.Replicated(r, id)).mapTo[StorageNodeReadingResult].map {
-      case StorageNodeReadingResult.Found(data)     => GetValueResponse.Found(data)
-      case StorageNodeReadingResult.Conflicts(data) => GetValueResponse.Conflicts(data)
-      case StorageNodeReadingResult.NotFound        => GetValueResponse.NotFound
-      case StorageNodeReadingResult.FailedRead      => GetValueResponse.Failure(errorMsg)
+    (storageNodeActor.storageNodeActor ? StorageNodeReadRequest.Replicated(r, id)).mapTo[StorageNodeReadResponse].map {
+      case StorageNodeReadResponse.Found(data)     => GetValueResponse.Found(data)
+      case StorageNodeReadResponse.Conflicts(data) => GetValueResponse.Conflicts(data)
+      case StorageNodeReadResponse.NotFound        => GetValueResponse.NotFound
+      case StorageNodeReadResponse.FailedRead      => GetValueResponse.Failure(errorMsg)
     }.recover { case _                              => GetValueResponse.Failure(errorMsg) }
   }
 

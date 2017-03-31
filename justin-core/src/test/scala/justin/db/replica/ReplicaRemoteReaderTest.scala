@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.Data
 import justin.db.actors.StorageNodeActorRef
-import justin.db.actors.protocol.{StorageNodeLocalRead, StorageNodeReadingResult}
+import justin.db.actors.protocol.{StorageNodeLocalRead, StorageNodeReadResponse}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -22,15 +22,15 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
     val service = new ReplicaRemoteReader()(system.dispatcher)
     val id = UUID.randomUUID()
     val foundData = Data(id, "value")
-    val storageNotFoundActorRef = testActorRef(msgBack = StorageNodeReadingResult.NotFound)
-    val storageFoundActorRef    = testActorRef(msgBack = StorageNodeReadingResult.Found(foundData))
+    val storageNotFoundActorRef = testActorRef(msgBack = StorageNodeReadResponse.NotFound)
+    val storageFoundActorRef    = testActorRef(msgBack = StorageNodeReadResponse.Found(foundData))
     val storageNodeRefs         = List(storageNotFoundActorRef, storageFoundActorRef).map(StorageNodeActorRef)
 
     // when
     val readingResult = service.apply(storageNodeRefs, id)
 
     // then
-    whenReady(readingResult) { _ shouldBe List(StorageNodeReadingResult.NotFound, StorageNodeReadingResult.Found(foundData)) }
+    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.NotFound, StorageNodeReadResponse.Found(foundData)) }
   }
 
   it should "recover failed behavior of actor" in {
@@ -44,7 +44,7 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
     val readingResult = service.apply(storageNodeRefs, id)
 
     // then
-    whenReady(readingResult) { _ shouldBe List(StorageNodeReadingResult.FailedRead) }
+    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.FailedRead) }
   }
 
   private def testActorRef(msgBack: => Any) = {

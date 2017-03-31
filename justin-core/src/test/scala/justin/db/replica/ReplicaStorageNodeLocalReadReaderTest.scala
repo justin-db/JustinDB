@@ -3,7 +3,7 @@ package justin.db.replica
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
-import justin.db.actors.protocol.StorageNodeReadingResult
+import justin.db.actors.protocol.StorageNodeReadResponse
 import justin.db.Data
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
@@ -32,7 +32,7 @@ class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with 
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.Found(data) }
+    whenReady(result) { _ shouldBe StorageNodeReadResponse.Found(data) }
   }
 
   it should "not found data for non-existing key" in {
@@ -48,7 +48,7 @@ class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with 
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.NotFound }
+    whenReady(result) { _ shouldBe StorageNodeReadResponse.NotFound }
   }
 
   it should "recover failure reading" in {
@@ -62,6 +62,6 @@ class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with 
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.FailedRead }
+    whenReady(result) { _ shouldBe StorageNodeReadResponse.FailedRead }
   }
 }

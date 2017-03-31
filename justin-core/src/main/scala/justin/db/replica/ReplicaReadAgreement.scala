@@ -3,13 +3,13 @@ package justin.db.replica
 import justin.consistent_hashing.NodeId
 import justin.db.Data
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
-import justin.db.actors.protocol.StorageNodeReadingResult
+import justin.db.actors.protocol.StorageNodeReadResponse
 import justin.db.versioning.VectorClockComparator
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 
 class ReplicaReadAgreement {
 
-  def reach(r: R): List[StorageNodeReadingResult] => ReadAgreement = { reads =>
+  def reach(r: R): List[StorageNodeReadResponse] => ReadAgreement = { reads =>
     if(areAllNotFound(reads)) {
       ReadAgreement.AllNotFound
     } else if(areAllFailed(reads)) {
@@ -26,15 +26,15 @@ class ReplicaReadAgreement {
     }
   }
 
-  private def areAllNotFound(reads: List[StorageNodeReadingResult]) = reads.forall(_ == StorageNodeReadingResult.NotFound)
+  private def areAllNotFound(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.NotFound)
 
-  private def areAllFailed(reads: List[StorageNodeReadingResult]) = reads.forall(_ == StorageNodeReadingResult.FailedRead)
+  private def areAllFailed(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.FailedRead)
 
-  private def collectFound(reads: List[StorageNodeReadingResult]) = reads.collect { case r: StorageNodeReadingResult.Found => r }
+  private def collectFound(reads: List[StorageNodeReadResponse]) = reads.collect { case r: StorageNodeReadResponse.Found => r }
 
-  private def hasSameVC(onlyFoundReads: List[StorageNodeReadingResult.Found]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
+  private def hasSameVC(onlyFoundReads: List[StorageNodeReadResponse.Found]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
 
-  private def foundOnlyConsequent(onlyFoundReads: List[StorageNodeReadingResult.Found]) = {
+  private def foundOnlyConsequent(onlyFoundReads: List[StorageNodeReadResponse.Found]) = {
     val vcComparator = new VectorClockComparator[NodeId]
 
     onlyFoundReads.flatMap { compared =>

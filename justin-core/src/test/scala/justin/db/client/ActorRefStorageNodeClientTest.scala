@@ -27,7 +27,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Found(data))
+    val actorRef = getTestActorRef(msgBack = StorageNodeReadResponse.Found(data))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -40,7 +40,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   it should "handle actor's \"NotFound\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.NotFound)
+    val actorRef = getTestActorRef(msgBack = StorageNodeReadResponse.NotFound)
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -53,7 +53,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   it should "handle actor's \"FailedRead\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.FailedRead)
+    val actorRef = getTestActorRef(msgBack = StorageNodeReadResponse.FailedRead)
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
