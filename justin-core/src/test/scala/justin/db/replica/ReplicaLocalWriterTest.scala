@@ -96,7 +96,7 @@ class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
     val result = writer.apply(newData, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeWriteResponse.ConflictedWrite(data, newData) }
+    whenReady(result) { _ shouldBe StorageNodeWriteResponse.StorageNodeConflictedWrite(data, newData) }
   }
 
   it should "get successful write when trying to save new data with consequent vector clock comparing to already existed one" in {

@@ -21,7 +21,7 @@ object StorageNodeWriteResponseSerializer extends Serializer[StorageNodeWriteRes
     case StorageNodeFailedWrite(id)                     =>
       output.writeInt(Discriminator.FailedWrite)
       output.writeString(id.toString) // UUID
-    case StorageNodeWriteResponse.ConflictedWrite(_, _) =>
+    case StorageNodeWriteResponse.StorageNodeConflictedWrite(_, _) =>
       ???
   }
 

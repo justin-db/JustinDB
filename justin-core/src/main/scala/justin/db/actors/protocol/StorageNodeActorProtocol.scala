@@ -29,5 +29,5 @@ case class StorageNodeSuccessfulWrite(id: UUID)            extends StorageNodeWr
 case class StorageNodeFailedWrite(id: UUID)                extends StorageNodeWriteResponse
 
 object StorageNodeWriteResponse {
-  case class ConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWriteResponse
+  case class StorageNodeConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWriteResponse
 }

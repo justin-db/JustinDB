@@ -125,7 +125,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = writeTestActorRef(msgBack = StorageNodeWriteResponse.ConflictedWrite(data, data))
+    val actorRef = writeTestActorRef(msgBack = StorageNodeWriteResponse.StorageNodeConflictedWrite(data, data))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
