@@ -1,6 +1,6 @@
 package justin.db.replica
 
-import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
+import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
 import justin.db.Data
 import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
@@ -21,7 +21,7 @@ class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(im
   private def handleExistedSingleData(oldData: Data, newData: Data, isPrimaryOrReplica: IsPrimaryOrReplica) = {
     new VectorClockComparator().apply(oldData.vclock, newData.vclock) match {
       case VectorClockRelation.Predecessor => Future.successful(StorageNodeFailedWrite(newData.id))
-      case VectorClockRelation.Conflict    => Future.successful(StorageNodeWriteResponse.StorageNodeConflictedWrite(oldData, newData))
+      case VectorClockRelation.Conflict    => Future.successful(StorageNodeConflictedWrite(oldData, newData))
       case VectorClockRelation.Consequent  => putSingleSuccessfulWrite(newData, isPrimaryOrReplica)
     }
   }

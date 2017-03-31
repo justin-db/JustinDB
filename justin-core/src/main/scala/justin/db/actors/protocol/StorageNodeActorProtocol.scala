@@ -25,9 +25,6 @@ object StorageNodeWriteData {
 }
 
 sealed trait StorageNodeWriteResponse
-case class StorageNodeSuccessfulWrite(id: UUID)            extends StorageNodeWriteResponse
-case class StorageNodeFailedWrite(id: UUID)                extends StorageNodeWriteResponse
-
-object StorageNodeWriteResponse {
-  case class StorageNodeConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWriteResponse
-}
+case class StorageNodeSuccessfulWrite(id: UUID)                     extends StorageNodeWriteResponse
+case class StorageNodeFailedWrite(id: UUID)                         extends StorageNodeWriteResponse
+case class StorageNodeConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWriteResponse

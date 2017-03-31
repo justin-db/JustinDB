@@ -4,7 +4,7 @@ import java.util.UUID
 
 import com.esotericsoftware.kryo.io.{Input, Output}
 import com.esotericsoftware.kryo.{Kryo, Serializer}
-import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
+import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
 
 object StorageNodeWriteResponseSerializer extends Serializer[StorageNodeWriteResponse] {
 
@@ -21,7 +21,7 @@ object StorageNodeWriteResponseSerializer extends Serializer[StorageNodeWriteRes
     case StorageNodeFailedWrite(id)                     =>
       output.writeInt(Discriminator.FailedWrite)
       output.writeString(id.toString) // UUID
-    case StorageNodeWriteResponse.StorageNodeConflictedWrite(_, _) =>
+    case StorageNodeConflictedWrite(oldData, newData) =>
       ???
   }
 
