@@ -16,5 +16,6 @@ class SerializerInit extends StrictLogging {
     // write -- output
     kryo.register(classOf[justin.db.actors.protocol.StorageNodeFailedWrite], StorageNodeWriteResponseSerializer, 52)
     kryo.register(classOf[justin.db.actors.protocol.StorageNodeSuccessfulWrite], StorageNodeWriteResponseSerializer, 53)
+    kryo.register(classOf[justin.db.actors.protocol.StorageNodeConflictedWrite], StorageNodeWriteResponseSerializer, 54)
   }
 }
