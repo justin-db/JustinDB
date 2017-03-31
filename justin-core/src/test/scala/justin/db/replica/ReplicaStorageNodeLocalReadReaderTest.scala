@@ -48,7 +48,7 @@ class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with 
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadResponse.NotFound }
+    whenReady(result) { _ shouldBe StorageNodeReadResponse.StorageNodeNotFoundRead }
   }
 
   it should "recover failure reading" in {

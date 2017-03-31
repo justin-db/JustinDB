@@ -51,8 +51,8 @@ class ReplicaReadCoordinator(
     case ReadAgreement.Consequent(data) => StorageNodeFoundRead(data)
     case ReadAgreement.Found(data)      => StorageNodeFoundRead(data)
     case ReadAgreement.Conflicts(data)  => StorageNodeConflictedRead(data)
-    case ReadAgreement.NotEnoughFound   => StorageNodeReadResponse.NotFound(id)
+    case ReadAgreement.NotEnoughFound   => StorageNodeReadResponse.StorageNodeNotFoundRead(id)
     case ReadAgreement.AllFailed        => StorageNodeReadResponse.FailedRead
-    case ReadAgreement.AllNotFound      => StorageNodeReadResponse.NotFound(id)
+    case ReadAgreement.AllNotFound      => StorageNodeReadResponse.StorageNodeNotFoundRead(id)
   }
 }

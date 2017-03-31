@@ -40,7 +40,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   it should "handle actor's \"NotFound\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadResponse.NotFound)
+    val actorRef = getTestActorRef(msgBack = StorageNodeReadResponse.StorageNodeNotFoundRead)
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when

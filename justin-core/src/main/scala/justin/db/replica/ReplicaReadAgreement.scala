@@ -26,7 +26,7 @@ class ReplicaReadAgreement {
     }
   }
 
-  private def areAllNotFound(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.NotFound)
+  private def areAllNotFound(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.StorageNodeNotFoundRead)
 
   private def areAllFailed(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.FailedRead)
 
