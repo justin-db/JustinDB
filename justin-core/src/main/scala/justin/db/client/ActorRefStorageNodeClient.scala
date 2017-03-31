@@ -20,7 +20,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}"
 
     (storageNodeActor.storageNodeActor ? StorageNodeReadRequest.Replicated(r, id)).mapTo[StorageNodeReadResponse].map {
-      case StorageNodeReadResponse.Found(data)     => GetValueResponse.Found(data)
+      case StorageNodeReadResponse.StorageNodeFoundRead(data)     => GetValueResponse.Found(data)
       case StorageNodeReadResponse.Conflicts(data) => GetValueResponse.Conflicts(data)
       case StorageNodeReadResponse.NotFound        => GetValueResponse.NotFound
       case StorageNodeReadResponse.FailedRead      => GetValueResponse.Failure(errorMsg)

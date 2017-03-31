@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.db.Data
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
-import justin.db.actors.protocol.StorageNodeReadResponse.{FailedRead, Found, NotFound}
+import justin.db.actors.protocol.StorageNodeReadResponse.{FailedRead, StorageNodeFoundRead, NotFound}
 import org.scalatest.{FlatSpec, Matchers}
 import justin.db.versioning.VectorClockOps._
 import org.scalatest.{FlatSpec, Matchers}
@@ -40,7 +40,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"NotEnoughFound\" when number of found replica is smaller that what client expects" in {
     // given
     val r = 2
-    val searchedData = List(NotFound, FailedRead, Found(Data(UUID.randomUUID(), "value")))
+    val searchedData = List(NotFound, FailedRead, StorageNodeFoundRead(Data(UUID.randomUUID(), "value")))
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -53,9 +53,9 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 3
     val searchedData = List(
-      Found(Data(UUID.randomUUID(), "value-1", "1:1")),
-      Found(Data(UUID.randomUUID(), "value-2", "1:2")),
-      Found(Data(UUID.randomUUID(), "value-3", "1:3"))
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "1:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-2", "1:2")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-3", "1:3"))
     )
 
     // when
@@ -69,9 +69,9 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 3
     val searchedData = List(
-      Found(Data(UUID.randomUUID(), "value-1", "1:1")),
-      Found(Data(UUID.randomUUID(), "value-2", "1:2")),
-      Found(Data(UUID.randomUUID(), "value-3", "2:1"))
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "1:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-2", "1:2")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-3", "2:1"))
     )
 
     // when
@@ -84,7 +84,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"Found\" when exactly once data is found and client expects only one replica" in {
     // given
     val r = 1
-    val foundData = Found(Data(UUID.randomUUID(), "value"))
+    val foundData = StorageNodeFoundRead(Data(UUID.randomUUID(), "value"))
     val searchedData = List(NotFound, FailedRead, foundData)
 
     // when
@@ -98,9 +98,9 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 3
     val searchedData = List(
-      Found(Data(UUID.randomUUID(), "value-1", "2:1")),
-      Found(Data(UUID.randomUUID(), "value-1", "2:1")),
-      Found(Data(UUID.randomUUID(), "value-1", "2:1"))
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "2:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "2:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "2:1"))
     )
 
     // when

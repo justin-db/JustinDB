@@ -12,7 +12,7 @@ class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionCont
 
   def apply(id: UUID, isPrimaryOrReplica: IsPrimaryOrReplica): Future[StorageNodeReadResponse] = {
     storage.get(id)(isPrimaryOrReplica).map {
-      case StorageGetData.Single(justinData) => StorageNodeReadResponse.Found(justinData)
+      case StorageGetData.Single(justinData) => StorageNodeReadResponse.StorageNodeFoundRead(justinData)
       case StorageGetData.None               => StorageNodeReadResponse.NotFound
     } recover { case _                       => StorageNodeReadResponse.FailedRead }
   }

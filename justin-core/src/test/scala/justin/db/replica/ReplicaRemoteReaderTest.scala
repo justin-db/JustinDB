@@ -23,14 +23,14 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
     val id = UUID.randomUUID()
     val foundData = Data(id, "value")
     val storageNotFoundActorRef = testActorRef(msgBack = StorageNodeReadResponse.NotFound)
-    val storageFoundActorRef    = testActorRef(msgBack = StorageNodeReadResponse.Found(foundData))
+    val storageFoundActorRef    = testActorRef(msgBack = StorageNodeReadResponse.StorageNodeFoundRead(foundData))
     val storageNodeRefs         = List(storageNotFoundActorRef, storageFoundActorRef).map(StorageNodeActorRef)
 
     // when
     val readingResult = service.apply(storageNodeRefs, id)
 
     // then
-    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.NotFound, StorageNodeReadResponse.Found(foundData)) }
+    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.NotFound, StorageNodeReadResponse.StorageNodeFoundRead(foundData)) }
   }
 
   it should "recover failed behavior of actor" in {

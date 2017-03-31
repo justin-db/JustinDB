@@ -30,11 +30,11 @@ class ReplicaReadAgreement {
 
   private def areAllFailed(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.FailedRead)
 
-  private def collectFound(reads: List[StorageNodeReadResponse]) = reads.collect { case r: StorageNodeReadResponse.Found => r }
+  private def collectFound(reads: List[StorageNodeReadResponse]) = reads.collect { case r: StorageNodeReadResponse.StorageNodeFoundRead => r }
 
-  private def hasSameVC(onlyFoundReads: List[StorageNodeReadResponse.Found]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
+  private def hasSameVC(onlyFoundReads: List[StorageNodeReadResponse.StorageNodeFoundRead]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
 
-  private def foundOnlyConsequent(onlyFoundReads: List[StorageNodeReadResponse.Found]) = {
+  private def foundOnlyConsequent(onlyFoundReads: List[StorageNodeReadResponse.StorageNodeFoundRead]) = {
     val vcComparator = new VectorClockComparator[NodeId]
 
     onlyFoundReads.flatMap { compared =>

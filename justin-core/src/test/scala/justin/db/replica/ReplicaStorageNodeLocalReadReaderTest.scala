@@ -32,7 +32,7 @@ class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with 
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadResponse.Found(data) }
+    whenReady(result) { _ shouldBe StorageNodeReadResponse.StorageNodeFoundRead(data) }
   }
 
   it should "not found data for non-existing key" in {

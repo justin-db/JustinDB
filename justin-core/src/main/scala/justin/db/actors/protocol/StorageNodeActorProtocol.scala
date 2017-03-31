@@ -12,7 +12,7 @@ object StorageNodeReadRequest {
 }
 sealed trait StorageNodeReadResponse
 object StorageNodeReadResponse {
-  case class Found(data: Data)           extends StorageNodeReadResponse
+  case class StorageNodeFoundRead(data: Data)           extends StorageNodeReadResponse
   case class Conflicts(data: List[Data]) extends StorageNodeReadResponse
   case object NotFound                   extends StorageNodeReadResponse
   case object FailedRead                 extends StorageNodeReadResponse
