@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.Data
 import justin.db.actors.StorageNodeActorRef
-import justin.db.actors.protocol.{StorageNodeFoundRead, StorageNodeLocalRead, StorageNodeNotFoundRead, StorageNodeReadResponse}
+import justin.db.actors.protocol._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -45,7 +45,7 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
     val readingResult = service.apply(storageNodeRefs, id)
 
     // then
-    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.StorageNodeFailedRead) }
+    whenReady(readingResult) { _ shouldBe List(StorageNodeFailedRead(id)) }
   }
 
   private def testActorRef(msgBack: => Any) = {

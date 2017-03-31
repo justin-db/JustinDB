@@ -2,7 +2,7 @@ package justin.db.replica
 
 import java.util.UUID
 
-import justin.db.actors.protocol.{StorageNodeFoundRead, StorageNodeNotFoundRead, StorageNodeReadResponse}
+import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead, StorageNodeReadResponse}
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
 
@@ -14,6 +14,6 @@ class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionCont
     storage.get(id)(isPrimaryOrReplica).map {
       case StorageGetData.Single(justinData) => StorageNodeFoundRead(justinData)
       case StorageGetData.None               => StorageNodeNotFoundRead(id)
-    } recover { case _                       => StorageNodeReadResponse.StorageNodeFailedRead(id) }
+    } recover { case _                       => StorageNodeFailedRead(id) }
   }
 }
