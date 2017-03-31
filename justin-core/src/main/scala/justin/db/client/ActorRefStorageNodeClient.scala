@@ -22,7 +22,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
     (storageNodeActor.storageNodeActor ? StorageNodeReadRequest.Replicated(r, id)).mapTo[StorageNodeReadResponse].map {
       case StorageNodeFoundRead(data)      => GetValueResponse.Found(data)
       case StorageNodeConflictedRead(data) => GetValueResponse.Conflicts(data)
-      case StorageNodeReadResponse.StorageNodeNotFoundRead(id)        => GetValueResponse.NotFound
+      case StorageNodeNotFoundRead(id)        => GetValueResponse.NotFound
       case StorageNodeReadResponse.FailedRead      => GetValueResponse.Failure(errorMsg)
     }.recover { case _                              => GetValueResponse.Failure(errorMsg) }
   }

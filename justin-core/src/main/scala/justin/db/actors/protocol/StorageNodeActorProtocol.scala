@@ -13,8 +13,8 @@ object StorageNodeReadRequest {
 sealed trait StorageNodeReadResponse
 case class StorageNodeFoundRead(data: Data)                 extends StorageNodeReadResponse
 case class StorageNodeConflictedRead(conflicts: List[Data]) extends StorageNodeReadResponse
+case class StorageNodeNotFoundRead(id: UUID)                extends StorageNodeReadResponse
 object StorageNodeReadResponse {
-  case class StorageNodeNotFoundRead(id: UUID)          extends StorageNodeReadResponse
   case object FailedRead                 extends StorageNodeReadResponse
 }
 
