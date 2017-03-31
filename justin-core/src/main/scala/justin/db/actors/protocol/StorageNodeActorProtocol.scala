@@ -8,7 +8,7 @@ import justin.db.replica.{R, W}
 sealed trait StorageNodeReadRequest
 case class StorageNodeLocalRead(id: UUID) extends StorageNodeReadRequest
 object StorageNodeReadRequest {
-  case class Replicated(r: R, id: UUID) extends StorageNodeReadRequest
+  case class Replicated(r: R, id: UUID) extends StorageNodeReadRequest // Is this ever wired between remotes Actors?
 }
 sealed trait StorageNodeReadingResult
 object StorageNodeReadingResult {
