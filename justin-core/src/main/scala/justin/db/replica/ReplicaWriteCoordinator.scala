@@ -13,9 +13,9 @@ class ReplicaWriteCoordinator(
   nodeId: NodeId, ring: Ring, n: N,
   localDataWriter: ReplicaLocalWriter,
   remoteDataWriter: ReplicaRemoteWriter
-)(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWritingResult]) {
+)(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWriteResponse]) {
 
-  override def apply(cmd: StorageNodeWriteData, clusterMembers: ClusterMembers): Future[StorageNodeWritingResult] = cmd match {
+  override def apply(cmd: StorageNodeWriteData, clusterMembers: ClusterMembers): Future[StorageNodeWriteResponse] = cmd match {
     case StorageNodeWriteDataLocal(data)         => writeLocal(data)
     case StorageNodeWriteData.Replicate(w, data) => coordinateReplicated(w, data, clusterMembers)
   }
@@ -44,7 +44,7 @@ class ReplicaWriteCoordinator(
     }
   }
 
-  private def consensus2WritingResult(id: UUID): WriteAgreement => StorageNodeWritingResult = {
+  private def consensus2WritingResult(id: UUID): WriteAgreement => StorageNodeWriteResponse = {
     case WriteAgreement.NotEnoughWrites => StorageNodeFailedWrite(id)
     case WriteAgreement.Ok              => StorageNodeSuccessfulWrite(id)
   }

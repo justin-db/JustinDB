@@ -24,10 +24,10 @@ object StorageNodeWriteData {
   case class Replicate(w: W, data: Data) extends StorageNodeWriteData // Is this ever wired between remotes Actors?
 }
 
-sealed trait StorageNodeWritingResult
-case class StorageNodeSuccessfulWrite(id: UUID)            extends StorageNodeWritingResult
-case class StorageNodeFailedWrite(id: UUID)                extends StorageNodeWritingResult
+sealed trait StorageNodeWriteResponse
+case class StorageNodeSuccessfulWrite(id: UUID)            extends StorageNodeWriteResponse
+case class StorageNodeFailedWrite(id: UUID)                extends StorageNodeWriteResponse
 
-object StorageNodeWritingResult {
-  case class ConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWritingResult
+object StorageNodeWriteResponse {
+  case class ConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWriteResponse
 }
