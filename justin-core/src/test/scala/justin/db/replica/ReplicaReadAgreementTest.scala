@@ -28,7 +28,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"AllFailed\" when all operations during search failed" in {
     // given
     val r = 1
-    val searchedData = List(FailedRead, FailedRead)
+    val searchedData = List(FailedRead(UUID.randomUUID()), FailedRead(UUID.randomUUID()))
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -40,7 +40,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"NotEnoughFound\" when number of found replica is smaller that what client expects" in {
     // given
     val r = 2
-    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), FailedRead, StorageNodeFoundRead(Data(UUID.randomUUID(), "value")))
+    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), FailedRead(UUID.randomUUID()), StorageNodeFoundRead(Data(UUID.randomUUID(), "value")))
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -85,7 +85,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 1
     val foundData = StorageNodeFoundRead(Data(UUID.randomUUID(), "value"))
-    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), FailedRead, foundData)
+    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), FailedRead(UUID.randomUUID()), foundData)
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)

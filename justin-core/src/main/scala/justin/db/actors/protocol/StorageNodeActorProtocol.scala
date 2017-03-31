@@ -15,7 +15,7 @@ case class StorageNodeFoundRead(data: Data)                 extends StorageNodeR
 case class StorageNodeConflictedRead(conflicts: List[Data]) extends StorageNodeReadResponse
 case class StorageNodeNotFoundRead(id: UUID)                extends StorageNodeReadResponse
 object StorageNodeReadResponse {
-  case object FailedRead                 extends StorageNodeReadResponse
+  case class FailedRead(id: UUID)                 extends StorageNodeReadResponse
 }
 
 sealed trait StorageNodeWriteData

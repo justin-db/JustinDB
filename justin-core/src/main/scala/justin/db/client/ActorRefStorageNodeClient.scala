@@ -23,8 +23,8 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
       case StorageNodeFoundRead(data)      => GetValueResponse.Found(data)
       case StorageNodeConflictedRead(data) => GetValueResponse.Conflicts(data)
       case StorageNodeNotFoundRead(id)        => GetValueResponse.NotFound
-      case StorageNodeReadResponse.FailedRead      => GetValueResponse.Failure(errorMsg)
-    }.recover { case _                              => GetValueResponse.Failure(errorMsg) }
+      case StorageNodeReadResponse.FailedRead(id) => GetValueResponse.Failure(errorMsg)
+    }.recover { case _                            => GetValueResponse.Failure(errorMsg) }
   }
 
   override def write(data: Data, w: W): Future[WriteValueResponse] = {

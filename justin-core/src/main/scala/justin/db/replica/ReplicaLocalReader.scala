@@ -14,6 +14,6 @@ class ReplicaLocalReader(storage: GetStorageProtocol)(implicit ec: ExecutionCont
     storage.get(id)(isPrimaryOrReplica).map {
       case StorageGetData.Single(justinData) => StorageNodeFoundRead(justinData)
       case StorageGetData.None               => StorageNodeNotFoundRead(id)
-    } recover { case _                       => StorageNodeReadResponse.FailedRead }
+    } recover { case _                       => StorageNodeReadResponse.FailedRead(id) }
   }
 }

@@ -24,10 +24,10 @@ class ReplicaReadCoordinator(
 
   private def coordinateReplicated(r: R, id: UUID, clusterMembers: ClusterMembers) = {
     val partitionId = UUID2RingPartitionId.apply(id, ring)
-    PreferenceList(partitionId, n, ring).fold(onLeft, onRight(r, id, clusterMembers))
+    PreferenceList(partitionId, n, ring).fold(onLeft(id), onRight(r, id, clusterMembers))
   }
 
-  private def onLeft(err: PreferenceList.Error) = Future.successful(StorageNodeReadResponse.FailedRead)
+  private def onLeft(id: UUID)(err: PreferenceList.Error) = Future.successful(StorageNodeReadResponse.FailedRead(id))
 
   private def onRight(r: R, id: UUID, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
     val consensusFuture = gatherReads(r, id, clusterMembers, preferenceList).map(new ReplicaReadAgreement().reach(r))
@@ -39,7 +39,7 @@ class ReplicaReadCoordinator(
     ResolveNodeAddresses(nodeId, preferenceList, clusterMembers) match {
       case ResolvedNodeAddresses(true, remotes)  if remotes.size + 1 >= r.r => (readLocalData(id) zip remoteDataReader.apply(remotes, id)).map(converge)
       case ResolvedNodeAddresses(false, remotes) if remotes.size >= r.r     => remoteDataReader.apply(remotes, id)
-      case _                                                                => Future.successful(List(StorageNodeReadResponse.FailedRead))
+      case _                                                                => Future.successful(List(StorageNodeReadResponse.FailedRead(id)))
     }
   }
 
@@ -52,7 +52,7 @@ class ReplicaReadCoordinator(
     case ReadAgreement.Found(data)      => StorageNodeFoundRead(data)
     case ReadAgreement.Conflicts(data)  => StorageNodeConflictedRead(data)
     case ReadAgreement.NotEnoughFound   => StorageNodeNotFoundRead(id)
-    case ReadAgreement.AllFailed        => StorageNodeReadResponse.FailedRead
+    case ReadAgreement.AllFailed        => StorageNodeReadResponse.FailedRead(id)
     case ReadAgreement.AllNotFound      => StorageNodeNotFoundRead(id)
   }
 }
