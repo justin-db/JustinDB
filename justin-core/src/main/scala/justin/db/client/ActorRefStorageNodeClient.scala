@@ -19,7 +19,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
   override def get(id: UUID, r: R): Future[GetValueResponse] = {
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}"
 
-    (storageNodeActor.storageNodeActor ? StorageNodeReadRequest.Replicated(r, id)).mapTo[StorageNodeReadResponse].map {
+    (storageNodeActor.storageNodeActor ? Internal.ReadReplica(r, id)).mapTo[StorageNodeReadResponse].map {
       case StorageNodeFoundRead(data)      => GetValueResponse.Found(data)
       case StorageNodeConflictedRead(data) => GetValueResponse.Conflicts(data)
       case StorageNodeNotFoundRead(id)     => GetValueResponse.NotFound
@@ -30,7 +30,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
   override def write(data: Data, w: W): Future[WriteValueResponse] = {
     lazy val errorMsg = s"[HttpStorageNodeClient] Couldn't write data: $data"
 
-    (storageNodeActor.storageNodeActor ? StorageNodeWriteRequest.Replicate(w, data)).mapTo[StorageNodeWriteResponse].map {
+    (storageNodeActor.storageNodeActor ? Internal.WriteReplica(w, data)).mapTo[StorageNodeWriteResponse].map {
       case StorageNodeSuccessfulWrite(id)   => WriteValueResponse.Success
       case StorageNodeConflictedWrite(_, _) => WriteValueResponse.Conflict
       case StorageNodeFailedWrite(id)       => WriteValueResponse.Failure(errorMsg)

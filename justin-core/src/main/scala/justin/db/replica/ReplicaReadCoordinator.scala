@@ -16,8 +16,8 @@ class ReplicaReadCoordinator(
 )(implicit ec: ExecutionContext) extends ((StorageNodeReadRequest, ClusterMembers) => Future[StorageNodeReadResponse]) {
 
   override def apply(cmd: StorageNodeReadRequest, clusterMembers: ClusterMembers): Future[StorageNodeReadResponse] = cmd match {
-    case StorageNodeLocalRead(id)         => readLocalData(id)
-    case StorageNodeReadRequest.Replicated(r, id) => coordinateReplicated(r, id, clusterMembers)
+    case StorageNodeLocalRead(id)   => readLocalData(id)
+    case Internal.ReadReplica(r, id) => coordinateReplicated(r, id, clusterMembers)
   }
 
   private def readLocalData(id: UUID) = localDataReader.apply(id, new IsPrimaryOrReplica(nodeId, ring))

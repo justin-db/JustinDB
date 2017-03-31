@@ -142,7 +142,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   private def getTestActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeReadRequest.Replicated(r, id) => sender() ! msgBack
+        case Internal.ReadReplica(r, id) => sender() ! msgBack
       }
     })
   }
@@ -150,7 +150,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   private def writeTestActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeWriteRequest.Replicate(w, data) => sender() ! msgBack
+        case Internal.WriteReplica(w, data) => sender() ! msgBack
       }
     })
   }
