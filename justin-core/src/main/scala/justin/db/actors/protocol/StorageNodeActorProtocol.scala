@@ -16,10 +16,10 @@ case class StorageNodeConflictedRead(conflicts: List[Data]) extends StorageNodeR
 case class StorageNodeNotFoundRead(id: UUID)                extends StorageNodeReadResponse
 case class StorageNodeFailedRead(id: UUID)                  extends StorageNodeReadResponse
 
-sealed trait StorageNodeWriteData
-case class StorageNodeWriteDataLocal(data: Data) extends StorageNodeWriteData
-object StorageNodeWriteData {
-  case class Replicate(w: W, data: Data) extends StorageNodeWriteData // Is this ever wired between remotes Actors?
+sealed trait StorageNodeWriteRequest
+case class StorageNodeWriteDataLocal(data: Data) extends StorageNodeWriteRequest
+object StorageNodeWriteRequest {
+  case class Replicate(w: W, data: Data) extends StorageNodeWriteRequest // Is this ever wired between remotes Actors?
 }
 
 sealed trait StorageNodeWriteResponse

@@ -13,11 +13,11 @@ class ReplicaWriteCoordinator(
   nodeId: NodeId, ring: Ring, n: N,
   localDataWriter: ReplicaLocalWriter,
   remoteDataWriter: ReplicaRemoteWriter
-)(implicit ec: ExecutionContext) extends ((StorageNodeWriteData, ClusterMembers) => Future[StorageNodeWriteResponse]) {
+)(implicit ec: ExecutionContext) extends ((StorageNodeWriteRequest, ClusterMembers) => Future[StorageNodeWriteResponse]) {
 
-  override def apply(cmd: StorageNodeWriteData, clusterMembers: ClusterMembers): Future[StorageNodeWriteResponse] = cmd match {
+  override def apply(cmd: StorageNodeWriteRequest, clusterMembers: ClusterMembers): Future[StorageNodeWriteResponse] = cmd match {
     case StorageNodeWriteDataLocal(data)         => writeLocal(data)
-    case StorageNodeWriteData.Replicate(w, data) => coordinateReplicated(w, data, clusterMembers)
+    case StorageNodeWriteRequest.Replicate(w, data) => coordinateReplicated(w, data, clusterMembers)
   }
 
   private def writeLocal(data: Data) = localDataWriter.apply(data, new IsPrimaryOrReplica(nodeId, ring))
