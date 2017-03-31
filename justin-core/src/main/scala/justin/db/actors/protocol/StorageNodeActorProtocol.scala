@@ -6,8 +6,8 @@ import justin.db.Data
 import justin.db.replica.{R, W}
 
 sealed trait StorageNodeReadRequest
+case class StorageNodeLocalRead(id: UUID) extends StorageNodeReadRequest
 object StorageNodeReadRequest {
-  case class Local(id: UUID)            extends StorageNodeReadRequest
   case class Replicated(r: R, id: UUID) extends StorageNodeReadRequest
 }
 sealed trait StorageNodeReadingResult

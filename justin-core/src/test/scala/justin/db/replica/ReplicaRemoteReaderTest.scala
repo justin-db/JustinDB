@@ -5,8 +5,8 @@ import java.util.UUID
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeReadRequest, StorageNodeReadingResult}
 import justin.db.actors.StorageNodeActorRef
+import justin.db.actors.protocol.{StorageNodeLocalRead, StorageNodeReadingResult}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -50,7 +50,7 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
   private def testActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeReadRequest.Local(id) => sender() ! msgBack
+        case StorageNodeLocalRead(id) => sender() ! msgBack
       }
     })
   }

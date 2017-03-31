@@ -14,7 +14,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
+class ReplicaStorageNodeLocalReadWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Replica Local Writer"
 

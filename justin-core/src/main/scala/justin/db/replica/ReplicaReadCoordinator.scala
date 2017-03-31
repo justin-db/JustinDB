@@ -5,7 +5,7 @@ import java.util.UUID
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db._
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
-import justin.db.actors.protocol.{StorageNodeReadRequest, StorageNodeReadingResult}
+import justin.db.actors.protocol.{StorageNodeLocalRead, StorageNodeReadRequest, StorageNodeReadingResult}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,7 +16,7 @@ class ReplicaReadCoordinator(
 )(implicit ec: ExecutionContext) extends ((StorageNodeReadRequest, ClusterMembers) => Future[StorageNodeReadingResult]) {
 
   override def apply(cmd: StorageNodeReadRequest, clusterMembers: ClusterMembers): Future[StorageNodeReadingResult] = cmd match {
-    case StorageNodeReadRequest.Local(id)         => readLocalData(id)
+    case StorageNodeLocalRead(id)         => readLocalData(id)
     case StorageNodeReadRequest.Replicated(r, id) => coordinateReplicated(r, id, clusterMembers)
   }
 
