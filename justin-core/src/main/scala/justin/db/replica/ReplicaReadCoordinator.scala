@@ -30,9 +30,11 @@ class ReplicaReadCoordinator(
   private def onLeft(id: UUID)(err: PreferenceList.Error) = Future.successful(StorageNodeFailedRead(id))
 
   private def onRight(r: R, id: UUID, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
-    val consensusFuture = gatherReads(r, id, clusterMembers, preferenceList).map(new ReplicaReadAgreement().reach(r))
-    consensusFuture.foreach(triggerReadRepairIfConsequent)
-    consensusFuture.map(consensus2ReadingResult(id))
+    gatherReads(r, id, clusterMembers, preferenceList).map { reads =>
+      val consensus = new ReplicaReadAgreement().reach(r)(reads)
+      triggerReadRepairIfConsequent(consensus) // Side effect
+      consensus2ReadingResult(id)(consensus)
+    }
   }
 
   private def gatherReads(r: R, id: UUID, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
