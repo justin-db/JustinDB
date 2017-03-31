@@ -3,7 +3,7 @@ package justin.db.replica
 import justin.consistent_hashing.NodeId
 import justin.db.Data
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
-import justin.db.actors.protocol.StorageNodeReadResponse
+import justin.db.actors.protocol.{StorageNodeFoundRead, StorageNodeReadResponse}
 import justin.db.versioning.VectorClockComparator
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
 
@@ -30,11 +30,11 @@ class ReplicaReadAgreement {
 
   private def areAllFailed(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.FailedRead)
 
-  private def collectFound(reads: List[StorageNodeReadResponse]) = reads.collect { case r: StorageNodeReadResponse.StorageNodeFoundRead => r }
+  private def collectFound(reads: List[StorageNodeReadResponse]) = reads.collect { case r: StorageNodeFoundRead => r }
 
-  private def hasSameVC(onlyFoundReads: List[StorageNodeReadResponse.StorageNodeFoundRead]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
+  private def hasSameVC(onlyFoundReads: List[StorageNodeFoundRead]) = onlyFoundReads.map(_.data.vclock).distinct.size == 1
 
-  private def foundOnlyConsequent(onlyFoundReads: List[StorageNodeReadResponse.StorageNodeFoundRead]) = {
+  private def foundOnlyConsequent(onlyFoundReads: List[StorageNodeFoundRead]) = {
     val vcComparator = new VectorClockComparator[NodeId]
 
     onlyFoundReads.flatMap { compared =>

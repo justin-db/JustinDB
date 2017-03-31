@@ -5,7 +5,7 @@ import java.util.UUID
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db._
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
-import justin.db.actors.protocol.{StorageNodeLocalRead, StorageNodeReadRequest, StorageNodeReadResponse}
+import justin.db.actors.protocol.{StorageNodeFoundRead, StorageNodeLocalRead, StorageNodeReadRequest, StorageNodeReadResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,8 +48,8 @@ class ReplicaReadCoordinator(
   }
 
   private def consensus2ReadingResult: ReadAgreement => StorageNodeReadResponse = {
-    case ReadAgreement.Consequent(data) => StorageNodeReadResponse.StorageNodeFoundRead(data)
-    case ReadAgreement.Found(data)      => StorageNodeReadResponse.StorageNodeFoundRead(data)
+    case ReadAgreement.Consequent(data) => StorageNodeFoundRead(data)
+    case ReadAgreement.Found(data)      => StorageNodeFoundRead(data)
     case ReadAgreement.Conflicts(data)  => StorageNodeReadResponse.Conflicts(data)
     case ReadAgreement.NotEnoughFound   => StorageNodeReadResponse.NotFound
     case ReadAgreement.AllFailed        => StorageNodeReadResponse.FailedRead
