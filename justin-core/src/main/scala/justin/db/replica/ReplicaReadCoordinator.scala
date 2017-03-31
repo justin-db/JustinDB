@@ -32,7 +32,7 @@ class ReplicaReadCoordinator(
   private def onRight(r: R, id: UUID, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
     val consensusFuture = gatherReads(r, id, clusterMembers, preferenceList).map(new ReplicaReadAgreement().reach(r))
     consensusFuture.foreach(triggerReadRepairIfConsequent)
-    consensusFuture.map(consensus2ReadingResult)
+    consensusFuture.map(consensus2ReadingResult(id))
   }
 
   private def gatherReads(r: R, id: UUID, clusterMembers: ClusterMembers, preferenceList: PreferenceList) = {
@@ -47,12 +47,12 @@ class ReplicaReadCoordinator(
     case ReadAgreement.Consequent(data) => println(s"Read Repair is fired of for $data") // TODO: finish this part with real logic
   }
 
-  private def consensus2ReadingResult: ReadAgreement => StorageNodeReadResponse = {
+  private def consensus2ReadingResult(id: => UUID): ReadAgreement => StorageNodeReadResponse = {
     case ReadAgreement.Consequent(data) => StorageNodeFoundRead(data)
     case ReadAgreement.Found(data)      => StorageNodeFoundRead(data)
     case ReadAgreement.Conflicts(data)  => StorageNodeConflictedRead(data)
-    case ReadAgreement.NotEnoughFound   => StorageNodeReadResponse.NotFound
+    case ReadAgreement.NotEnoughFound   => StorageNodeReadResponse.NotFound(id)
     case ReadAgreement.AllFailed        => StorageNodeReadResponse.FailedRead
-    case ReadAgreement.AllNotFound      => StorageNodeReadResponse.NotFound
+    case ReadAgreement.AllNotFound      => StorageNodeReadResponse.NotFound(id)
   }
 }
