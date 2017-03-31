@@ -50,7 +50,7 @@ class ReplicaReadCoordinator(
   private def consensus2ReadingResult: ReadAgreement => StorageNodeReadResponse = {
     case ReadAgreement.Consequent(data) => StorageNodeFoundRead(data)
     case ReadAgreement.Found(data)      => StorageNodeFoundRead(data)
-    case ReadAgreement.Conflicts(data)  => StorageNodeReadResponse.Conflicts(data)
+    case ReadAgreement.Conflicts(data)  => StorageNodeReadResponse.StorageNodeConflictedRead(data)
     case ReadAgreement.NotEnoughFound   => StorageNodeReadResponse.NotFound
     case ReadAgreement.AllFailed        => StorageNodeReadResponse.FailedRead
     case ReadAgreement.AllNotFound      => StorageNodeReadResponse.NotFound
