@@ -7,7 +7,7 @@ import justin.db.Data
 object ListOfDataSerializer extends Serializer[List[Data]] {
   override def write(kryo: Kryo, output: Output, listOfData: List[Data]): Unit = {
     val length = listOfData.size
-    output.writeInt(length)
+    output.writeInt(length, true)
     if(length != 0) {
       val it = listOfData.iterator
       while(it.hasNext)
