@@ -62,6 +62,6 @@ class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with 
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadResponse.FailedRead }
+    whenReady(result) { _ shouldBe StorageNodeReadResponse.StorageNodeFailedRead }
   }
 }

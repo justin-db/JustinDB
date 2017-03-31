@@ -28,7 +28,7 @@ class ReplicaReadAgreement {
 
   private def areAllNotFound(reads: List[StorageNodeReadResponse]) = reads.collect { case nf: StorageNodeNotFoundRead => nf }.size == reads.size
 
-  private def areAllFailed(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.FailedRead)
+  private def areAllFailed(reads: List[StorageNodeReadResponse]) = reads.forall(_ == StorageNodeReadResponse.StorageNodeFailedRead)
 
   private def collectFound(reads: List[StorageNodeReadResponse]) = reads.collect { case r: StorageNodeFoundRead => r }
 

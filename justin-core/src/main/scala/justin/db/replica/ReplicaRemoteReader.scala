@@ -21,6 +21,6 @@ class ReplicaRemoteReader(implicit ec: ExecutionContext) {
   private def getValue(node: StorageNodeActorRef, id: UUID): Future[StorageNodeReadResponse] = {
     (node.storageNodeActor ? StorageNodeLocalRead(id))
       .mapTo[StorageNodeReadResponse]
-      .recover { case _ => StorageNodeReadResponse.FailedRead(id) }
+      .recover { case _ => StorageNodeReadResponse.StorageNodeFailedRead(id) }
   }
 }

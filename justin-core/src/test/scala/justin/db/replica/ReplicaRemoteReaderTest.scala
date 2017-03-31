@@ -45,7 +45,7 @@ class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
     val readingResult = service.apply(storageNodeRefs, id)
 
     // then
-    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.FailedRead) }
+    whenReady(readingResult) { _ shouldBe List(StorageNodeReadResponse.StorageNodeFailedRead) }
   }
 
   private def testActorRef(msgBack: => Any) = {
