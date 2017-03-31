@@ -5,10 +5,10 @@ import java.util.UUID
 import justin.db.Data
 import justin.db.replica.{R, W}
 
-sealed trait StorageNodeReadData
-object StorageNodeReadData {
-  case class Local(id: UUID)            extends StorageNodeReadData
-  case class Replicated(r: R, id: UUID) extends StorageNodeReadData
+sealed trait StorageNodeReadRequest
+object StorageNodeReadRequest {
+  case class Local(id: UUID)            extends StorageNodeReadRequest
+  case class Replicated(r: R, id: UUID) extends StorageNodeReadRequest
 }
 sealed trait StorageNodeReadingResult
 object StorageNodeReadingResult {

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.pattern.ask
 import akka.util.Timeout
-import justin.db.actors.protocol.{StorageNodeReadData, StorageNodeReadingResult}
+import justin.db.actors.protocol.{StorageNodeReadRequest, StorageNodeReadingResult}
 import justin.db.actors.StorageNodeActorRef
 
 import scala.concurrent.duration._
@@ -19,7 +19,7 @@ class ReplicaRemoteReader(implicit ec: ExecutionContext) {
   }
 
   private def getValue(node: StorageNodeActorRef, id: UUID): Future[StorageNodeReadingResult] = {
-    (node.storageNodeActor ? StorageNodeReadData.Local(id))
+    (node.storageNodeActor ? StorageNodeReadRequest.Local(id))
       .mapTo[StorageNodeReadingResult]
       .recover { case _ => StorageNodeReadingResult.FailedRead }
   }

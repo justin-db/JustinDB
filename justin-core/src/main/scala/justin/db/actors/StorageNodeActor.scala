@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db._
 import justin.db.storage.PluggableStorageProtocol
-import justin.db.actors.protocol.{ReadData, StorageNodeReadData, StorageNodeWriteData, WriteData}
+import justin.db.actors.protocol.{ReadData, StorageNodeReadRequest, StorageNodeWriteData, WriteData}
 import justin.db.replica._
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {
@@ -22,7 +22,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   def receive: Receive = receiveDataPF orElse receiveClusterDataPF(nodeId, ring) orElse notHandledPF
 
   private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadData   => coordinatorRouter ! ReadData(sender(), clusterMembers, readData)
+    case readData: StorageNodeReadRequest   => coordinatorRouter ! ReadData(sender(), clusterMembers, readData)
     case writeData: StorageNodeWriteData => coordinatorRouter ! WriteData(sender(), clusterMembers, writeData)
   }
 

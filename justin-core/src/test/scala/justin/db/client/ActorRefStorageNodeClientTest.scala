@@ -142,7 +142,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   private def getTestActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeReadData.Replicated(r, id) => sender() ! msgBack
+        case StorageNodeReadRequest.Replicated(r, id) => sender() ! msgBack
       }
     })
   }
