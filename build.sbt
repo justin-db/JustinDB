@@ -20,6 +20,8 @@ scalacOptions := Seq(
   "-language:implicitConversions"
 )
 
+coverageExcludedPackages := "justin.db.kryo.*"
+
 // Force building with Java 8
 initialize := {
   val required = "1.8"
