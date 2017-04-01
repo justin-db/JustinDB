@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
 import justin.db.replica.W
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeReadingResult, StorageNodeWriteData, StorageNodeWritingResult}
+import justin.db.actors.protocol._
 import justin.db.actors.StorageNodeActorRef
 import justin.db.replica.{R, W}
 import org.scalatest.concurrent.ScalaFutures
@@ -27,7 +27,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.Found(data))
+    val actorRef = getTestActorRef(msgBack = StorageNodeFoundRead(data))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -40,7 +40,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   it should "handle actor's \"NotFound\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.NotFound)
+    val actorRef = getTestActorRef(msgBack = StorageNodeNotFoundRead(id))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -53,7 +53,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   it should "handle actor's \"FailedRead\" message for asked data" in {
     // given
     val id       = UUID.randomUUID()
-    val actorRef = getTestActorRef(msgBack = StorageNodeReadingResult.FailedRead)
+    val actorRef = getTestActorRef(msgBack = StorageNodeFailedRead(id))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -83,7 +83,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.SuccessfulWrite)
+    val actorRef = writeTestActorRef(msgBack = StorageNodeSuccessfulWrite(id))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -97,7 +97,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.FailedWrite)
+    val actorRef = writeTestActorRef(msgBack = StorageNodeFailedWrite(id))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -125,7 +125,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     // given
     val id       = UUID.randomUUID()
     val data     = Data(id, "value")
-    val actorRef = writeTestActorRef(msgBack = StorageNodeWritingResult.ConflictedWrite(data, data))
+    val actorRef = writeTestActorRef(msgBack = StorageNodeConflictedWrite(data, data))
     val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
 
     // when
@@ -142,7 +142,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   private def getTestActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeReadData.Replicated(r, id) => sender() ! msgBack
+        case Internal.ReadReplica(r, id) => sender() ! msgBack
       }
     })
   }
@@ -150,7 +150,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
   private def writeTestActorRef(msgBack: => Any) = {
     TestActorRef(new Actor {
       override def receive: Receive = {
-        case StorageNodeWriteData.Replicate(w, data) => sender() ! msgBack
+        case Internal.WriteReplica(w, data) => sender() ! msgBack
       }
     })
   }

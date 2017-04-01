@@ -3,8 +3,8 @@ package justin.db.replica
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
+import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead, StorageNodeReadResponse}
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
 import justin.vector_clocks.VectorClock
@@ -14,7 +14,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
+class ReplicaStorageNodeLocalReadReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Replica Local Reader"
 
@@ -32,7 +32,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.Found(data) }
+    whenReady(result) { _ shouldBe StorageNodeFoundRead(data) }
   }
 
   it should "not found data for non-existing key" in {
@@ -48,7 +48,7 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.NotFound }
+    whenReady(result) { _ shouldBe StorageNodeNotFoundRead(id) }
   }
 
   it should "recover failure reading" in {
@@ -62,6 +62,6 @@ class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
     val result = service.apply(id, null)
 
     // then
-    whenReady(result) { _ shouldBe StorageNodeReadingResult.FailedRead }
+    whenReady(result) { _ shouldBe StorageNodeFailedRead(id) }
   }
 }

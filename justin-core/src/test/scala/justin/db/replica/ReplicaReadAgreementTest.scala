@@ -3,7 +3,7 @@ package justin.db.replica
 import java.util.UUID
 
 import justin.db.Data
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeReadingResult.{FailedRead, Found, NotFound}
+import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead}
 import justin.db.replica.ReplicaReadAgreement.ReadAgreement
 import justin.db.versioning.VectorClockOps._
 import org.scalatest.{FlatSpec, Matchers}
@@ -15,7 +15,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"AllNotFound\" when all searched data couldn't be found" in {
     // given
     val r = 1
-    val searchedData = List(NotFound, NotFound)
+    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), StorageNodeNotFoundRead(UUID.randomUUID()))
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -27,7 +27,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"AllFailed\" when all operations during search failed" in {
     // given
     val r = 1
-    val searchedData = List(FailedRead, FailedRead)
+    val searchedData = List(StorageNodeFailedRead(UUID.randomUUID()), StorageNodeFailedRead(UUID.randomUUID()))
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -39,7 +39,7 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"NotEnoughFound\" when number of found replica is smaller that what client expects" in {
     // given
     val r = 2
-    val searchedData = List(NotFound, FailedRead, Found(Data(UUID.randomUUID(), "value")))
+    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), StorageNodeFailedRead(UUID.randomUUID()), StorageNodeFoundRead(Data(UUID.randomUUID(), "value")))
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -52,9 +52,9 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 3
     val searchedData = List(
-      Found(Data(UUID.randomUUID(), "value-1", "1:1")),
-      Found(Data(UUID.randomUUID(), "value-2", "1:2")),
-      Found(Data(UUID.randomUUID(), "value-3", "1:3"))
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "1:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-2", "1:2")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-3", "1:3"))
     )
 
     // when
@@ -68,9 +68,9 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 3
     val searchedData = List(
-      Found(Data(UUID.randomUUID(), "value-1", "1:1")),
-      Found(Data(UUID.randomUUID(), "value-2", "1:2")),
-      Found(Data(UUID.randomUUID(), "value-3", "2:1"))
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "1:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-2", "1:2")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-3", "2:1"))
     )
 
     // when
@@ -83,8 +83,8 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"Found\" when exactly once data is found and client expects only one replica" in {
     // given
     val r = 1
-    val foundData = Found(Data(UUID.randomUUID(), "value"))
-    val searchedData = List(NotFound, FailedRead, foundData)
+    val foundData = StorageNodeFoundRead(Data(UUID.randomUUID(), "value"))
+    val searchedData = List(StorageNodeNotFoundRead(UUID.randomUUID()), StorageNodeFailedRead(UUID.randomUUID()), foundData)
 
     // when
     val madeConsensus = new ReplicaReadAgreement().reach(R(r))(searchedData)
@@ -97,9 +97,9 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // given
     val r = 3
     val searchedData = List(
-      Found(Data(UUID.randomUUID(), "value-1", "2:1")),
-      Found(Data(UUID.randomUUID(), "value-1", "2:1")),
-      Found(Data(UUID.randomUUID(), "value-1", "2:1"))
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "2:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "2:1")),
+      StorageNodeFoundRead(Data(UUID.randomUUID(), "value-1", "2:1"))
     )
 
     // when

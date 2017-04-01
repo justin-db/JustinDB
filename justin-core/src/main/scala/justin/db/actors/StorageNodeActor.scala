@@ -1,14 +1,11 @@
 package justin.db.actors
 
-import java.util.UUID
-
 import akka.actor.{Actor, ActorRef, Props}
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db._
-import justin.db.actors.StorageNodeActorProtocol.{StorageNodeReadData, StorageNodeWriteData}
-import justin.db.replica._
-import justin.db.replica.W
 import justin.db.storage.PluggableStorageProtocol
+import justin.db.actors.protocol._
+import justin.db.replica._
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with ClusterSubscriberActor {
 
@@ -25,8 +22,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   def receive: Receive = receiveDataPF orElse receiveClusterDataPF(nodeId, ring) orElse notHandledPF
 
   private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadData   => coordinatorRouter ! ReplicaCoordinatorActorProtocol.ReadData(sender(), clusterMembers, readData)
-    case writeData: StorageNodeWriteData => coordinatorRouter ! ReplicaCoordinatorActorProtocol.WriteData(sender(), clusterMembers, writeData)
+    case readData: StorageNodeReadRequest   => coordinatorRouter ! ReadData(sender(), clusterMembers, readData)
+    case writeData: StorageNodeWriteRequest => coordinatorRouter ! WriteData(sender(), clusterMembers, writeData)
   }
 
   private def notHandledPF: Receive = {
@@ -41,39 +38,3 @@ object StorageNodeActor {
 }
 
 case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
-
-object StorageNodeActorProtocol {
-
-  // ----- READ PART ----
-  // INPUT
-  sealed trait StorageNodeReadData
-  object StorageNodeReadData {
-    case class Local(id: UUID)            extends StorageNodeReadData
-    case class Replicated(r: R, id: UUID) extends StorageNodeReadData
-  }
-  // OUTPUT
-  sealed trait StorageNodeReadingResult
-  object StorageNodeReadingResult {
-    case class Found(data: Data)           extends StorageNodeReadingResult
-    case class Conflicts(data: List[Data]) extends StorageNodeReadingResult
-    case object NotFound                   extends StorageNodeReadingResult
-    case object FailedRead                 extends StorageNodeReadingResult
-  }
-  // ------
-
-  // ----- WRITE PART ----
-  // INPUT
-  sealed trait StorageNodeWriteData
-  object StorageNodeWriteData {
-    case class Local(data: Data)           extends StorageNodeWriteData
-    case class Replicate(w: W, data: Data) extends StorageNodeWriteData
-  }
-  // OUTPUT
-  sealed trait StorageNodeWritingResult
-  object StorageNodeWritingResult {
-    case object SuccessfulWrite                              extends StorageNodeWritingResult
-    case object FailedWrite                                  extends StorageNodeWritingResult
-    case class ConflictedWrite(oldData: Data, newData: Data) extends StorageNodeWritingResult
-  }
-  // ------
-}

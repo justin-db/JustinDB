@@ -1,8 +1,9 @@
 package justin.db.replica
 
-import justin.db.actors.StorageNodeActorProtocol.StorageNodeWritingResult.{FailedWrite, SuccessfulWrite}
+import java.util.UUID
+
+import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
 import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
-import justin.db.replica.{ReplicaWriteAgreement, W}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ReplicaWriteAgreementTest extends FlatSpec with Matchers {
@@ -12,7 +13,7 @@ class ReplicaWriteAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"SuccessfulWrite\" if number of successful write is not less than client expectations" in {
     // given
     val w = W(2)
-    val writes = List(SuccessfulWrite, SuccessfulWrite, FailedWrite)
+    val writes = List(StorageNodeSuccessfulWrite(UUID.randomUUID()), StorageNodeSuccessfulWrite(UUID.randomUUID()), StorageNodeFailedWrite(UUID.randomUUID()))
 
     // when
     val result = new ReplicaWriteAgreement().reach(w)(writes)
@@ -24,7 +25,7 @@ class ReplicaWriteAgreementTest extends FlatSpec with Matchers {
   it should "agreed on \"NotEnoughWrites\" if number of successful write is less than client expectations" in {
     // given
     val w = W(3)
-    val writes = List(SuccessfulWrite, SuccessfulWrite, FailedWrite)
+    val writes = List(StorageNodeSuccessfulWrite(UUID.randomUUID()), StorageNodeSuccessfulWrite(UUID.randomUUID()), StorageNodeFailedWrite(UUID.randomUUID()))
 
     // when
     val result = new ReplicaWriteAgreement().reach(w)(writes)

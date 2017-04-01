@@ -1,24 +1,27 @@
 import sbt._
 
 object Version {
-  val scala       = "2.12.1"
-  val scalaBinary = scala.substring(0,4)
+  val scala        = "2.12.1"
+  val scalaBinary  = scala.substring(0,4)
 
-  val akka        = "2.4.17"
-  val akkaHttp    = "10.0.4"
-  val akkaSse     = "2.0.0"
-  val scalatest   = "3.0.1"
-  val scalacheck  = "1.13.4"
-  val sigarLoader = "1.6.6"
-  val scopt       = "3.5.0"
-  val crjdt       = "0.0.7"
-  val logback     = "1.2.1"
+  val akka         = "2.4.17"
+  val akkaKryo     = "0.5.2"
+  val akkaHttp     = "10.0.5"
+  val akkaSse      = "2.0.0"
+  val scalatest    = "3.0.1"
+  val scalacheck   = "1.13.5"
+  val sigarLoader  = "1.6.6"
+  val scopt        = "3.5.0"
+  val crjdt        = "0.0.7"
+  val logback      = "1.2.2"
+  val scalaLogging = "3.5.0"
 }
 
 object Library {
-  val akkaActor            = "com.typesafe.akka" %% "akka-actor"                        % Version.akka
-  val akkaSfl4j            = "com.typesafe.akka" %% "akka-slf4j"                        % Version.akka
-  val akkaTestkit          = "com.typesafe.akka" %% "akka-testkit"                      % Version.akka
+  val akkaActor            = "com.typesafe.akka"     %% "akka-actor"                    % Version.akka
+  val akkaSfl4j            = "com.typesafe.akka"     %% "akka-slf4j"                    % Version.akka
+  val akkaTestkit          = "com.typesafe.akka"     %% "akka-testkit"                  % Version.akka
+  val akkaKryo             = "com.github.romix.akka" %% "akka-kryo-serialization"       % Version.akkaKryo
 
   // http
   val akkaHttp             = "com.typesafe.akka" %% "akka-http"                         % Version.akkaHttp
@@ -39,9 +42,10 @@ object Library {
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
 
   // other
-  val kamonSigar           = "io.kamon"           % "sigar-loader"                      % Version.sigarLoader
-  val scopt                = "com.github.scopt"  %% "scopt"                             % Version.scopt
-  val logback              = "ch.qos.logback"     % "logback-classic"                   % Version.logback
+  val kamonSigar           = "io.kamon"                   % "sigar-loader"              % Version.sigarLoader
+  val scopt                = "com.github.scopt"           %% "scopt"                    % Version.scopt
+  val logback              = "ch.qos.logback"              % "logback-classic"          % Version.logback
+  val scalaLogging         = "com.typesafe.scala-logging" %% "scala-logging"            % Version.scalaLogging
 
   // crjdt
   val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
@@ -56,11 +60,11 @@ object Dependencies {
 
   private val genericTest = Seq(scalactic, scalatest % "test")
 
-  private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit)
+  private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit, akkaKryo)
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit, akkaStream)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
-  val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback) ++ Seq(akkaHttpSprayJson)
+  val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
 
   val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt) ++ Seq(akkaSse)
 
