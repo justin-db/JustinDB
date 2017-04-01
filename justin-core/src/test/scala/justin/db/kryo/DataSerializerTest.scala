@@ -24,16 +24,16 @@ class DataSerializerTest extends FlatSpec with Matchers {
     val timestamp      = System.currentTimeMillis()
     val serializedData = Data(id = UUID.randomUUID(), value = "some value", vClock, timestamp)
 
-    // serialize
+    // serialization
     val bos    = new ByteArrayOutputStream()
     val output = new Output(bos)
-    val bytes = kryo.writeObject(output, serializedData)
+    val bytes  = kryo.writeObject(output, serializedData)
     output.flush()
 
-    // deserialize
+    // deserialization
     val bis              = new ByteArrayInputStream(bos.toByteArray)
-    val ki               = new Input(bis)
-    val deserializedData = kryo.readObject(ki, classOf[Data])
+    val input            = new Input(bis)
+    val deserializedData = kryo.readObject(input, classOf[Data])
 
     serializedData shouldBe deserializedData
   }
