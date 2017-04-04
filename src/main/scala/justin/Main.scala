@@ -29,11 +29,17 @@ object Main extends App with ServiceConfig {
 
   val logger = Logging(system, getClass)
 
+  val storage = JustinDriver.load(`storage-backend`)
+
   logger.info("JustinDB version: " + BuildInfo.version)
   logger.info("Build Info: ")
   logger.info(BuildInfo.toString)
-
-  val storage = JustinDriver.load(`storage-backend`)
+  logger.info("Properties: ")
+  logger.info("-- Storage: " + storage.getClass.getSimpleName)
+  logger.info("-- NodeId: " + `node-id`)
+  logger.info("-- Cluster size: " + `ring-cluster-size`)
+  logger.info("-- Partitions number: " + `ring-partitions`)
+  logger.info("-- Replication factor: " + `replication-n`)
 
   Cluster(system).registerOnMemberUp {
     logger.info("Cluster is ready!")
