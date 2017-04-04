@@ -15,6 +15,8 @@ case class ClusterMembers(private val members: Map[NodeId, StorageNodeActorRef])
   def get(nodeId: NodeId): Option[StorageNodeActorRef] = members.get(nodeId)
 
   def size: Int = members.size
+
+  override def toString: String = members.toString()
 }
 
 object ClusterMembers {
