@@ -20,7 +20,7 @@ object ListOfDataSerializer extends Serializer[List[Data]] {
     var result = List.empty[Data]
 
     while(length > 0) {
-      DataSerializer.read(kryo, input, classOf[Data])
+      result = result :+ DataSerializer.read(kryo, input, classOf[Data])
       length -= 1
     }
     result
