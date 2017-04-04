@@ -7,8 +7,8 @@ class StorageNodeActorTest extends FlatSpec with Matchers {
 
   behavior of "Storage Node Actor"
 
-  it should "has defined role \"StorageNode\"" in {
-    StorageNodeActor.role shouldBe "StorageNode"
+  it should "has defined role \"storagenode\"" in {
+    StorageNodeActor.role shouldBe "storagenode"
   }
 
   it should "define name for actor with combination of its id" in {

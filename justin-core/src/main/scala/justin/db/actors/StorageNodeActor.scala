@@ -32,7 +32,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
 }
 
 object StorageNodeActor {
-  def role: String = "StorageNode"
+  def role: String = "storagenode"
   def name(nodeId: NodeId): String = s"id-${nodeId.id}"
   def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = Props(new StorageNodeActor(nodeId, storage, ring, n))
 }
