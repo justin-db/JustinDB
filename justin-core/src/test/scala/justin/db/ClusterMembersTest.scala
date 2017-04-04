@@ -76,4 +76,12 @@ class ClusterMembersTest extends FlatSpec with Matchers {
     clusterMembers.get(nodeId)     shouldBe defined
     clusterMembers.get(NodeId(99)) should not be defined
   }
+
+  it should "remove an element by its value" in {
+    val nodeId = NodeId(100)
+    val ref = StorageNodeActorRef(ActorRef.noSender)
+    val clusterMembers = ClusterMembers.empty.add(nodeId, ref)
+
+    clusterMembers.removeByRef(ref) shouldBe ClusterMembers.empty
+  }
 }

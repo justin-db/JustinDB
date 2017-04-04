@@ -14,11 +14,16 @@ case class ClusterMembers(private val members: Map[NodeId, StorageNodeActorRef])
 
   def get(nodeId: NodeId): Option[StorageNodeActorRef] = members.get(nodeId)
 
+  def removeByRef(ref: StorageNodeActorRef): ClusterMembers = {
+    val filteredMembers = members.filterNot { case (_, sRef) => sRef == ref }
+    ClusterMembers(filteredMembers)
+  }
+
   def size: Int = members.size
 
   override def toString: String = members.toString()
 }
 
 object ClusterMembers {
-  def empty: ClusterMembers = ClusterMembers(members = Map.empty[NodeId, StorageNodeActorRef])
+  def empty: ClusterMembers = ClusterMembers(Map.empty[NodeId, StorageNodeActorRef])
 }
