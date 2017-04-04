@@ -1,6 +1,6 @@
 package justin.db.actors
 
-import akka.actor.{Actor, Address, RootActorPath}
+import akka.actor.{Actor, Address, RootActorPath, Terminated}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, MemberStatus}
 import justin.consistent_hashing.{NodeId, Ring}
@@ -18,10 +18,12 @@ trait ClusterSubscriberActor { self: Actor =>
 
   def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
+      context.watch(sender())
       clusterMembers = clusterMembers.add(senderNodeId, StorageNodeActorRef(sender()))
       sender() ! RegisterNode(nodeId)
     case MemberUp(m)                => register(nodeId, ring, m.address)
     case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(m => register(nodeId, ring, m.address))
+    case Terminated(actorRef)       => clusterMembers = clusterMembers.removeByRef(StorageNodeActorRef(actorRef))
   }
 
   private def register(nodeId: NodeId, ring: Ring, address: Address) = {
