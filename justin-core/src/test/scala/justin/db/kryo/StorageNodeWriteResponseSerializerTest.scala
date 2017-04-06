@@ -5,7 +5,7 @@ import java.util.UUID
 
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
-import justin.db.actors.protocol.StorageNodeSuccessfulWrite
+import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
 import org.scalatest.{FlatSpec, Matchers}
 
 class StorageNodeWriteResponseSerializerTest extends FlatSpec with Matchers {
@@ -30,6 +30,28 @@ class StorageNodeWriteResponseSerializerTest extends FlatSpec with Matchers {
     val bis              = new ByteArrayInputStream(bos.toByteArray)
     val input            = new Input(bis)
     val deserializedData = kryo.readObject(input, classOf[StorageNodeSuccessfulWrite])
+
+    serializedData shouldBe deserializedData
+  }
+
+  it should "serialize/deserialize StorageNodeFailedWrite" in {
+    // kryo init
+    val kryo = new Kryo()
+    kryo.register(classOf[StorageNodeFailedWrite], StorageNodeWriteResponseSerializer)
+
+    // object
+    val serializedData = StorageNodeFailedWrite(UUID.randomUUID())
+
+    // serialization
+    val bos    = new ByteArrayOutputStream()
+    val output = new Output(bos)
+    val bytes  = kryo.writeObject(output, serializedData)
+    output.flush()
+
+    // deserialization
+    val bis              = new ByteArrayInputStream(bos.toByteArray)
+    val input            = new Input(bis)
+    val deserializedData = kryo.readObject(input, classOf[StorageNodeFailedWrite])
 
     serializedData shouldBe deserializedData
   }
