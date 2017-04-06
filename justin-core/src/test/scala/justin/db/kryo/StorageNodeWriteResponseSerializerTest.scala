@@ -7,7 +7,7 @@ import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
 import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeConflictedRead, StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
+import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
