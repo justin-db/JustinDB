@@ -84,4 +84,17 @@ class ClusterMembersTest extends FlatSpec with Matchers {
 
     clusterMembers.removeByRef(ref) shouldBe ClusterMembers.empty
   }
+
+  it should "stringify" in {
+    // given
+    val nodeId = NodeId(100)
+    val ref = StorageNodeActorRef(ActorRef.noSender)
+    val emptyClusterMembers = ClusterMembers(Map(nodeId -> ref))
+
+    // when
+    val stringified = emptyClusterMembers.toString
+
+    // then
+    stringified shouldBe Map(nodeId -> ref).toString()
+  }
 }
