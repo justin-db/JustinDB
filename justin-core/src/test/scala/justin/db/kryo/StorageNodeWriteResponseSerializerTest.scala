@@ -5,7 +5,10 @@ import java.util.UUID
 
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
-import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
+import justin.consistent_hashing.NodeId
+import justin.db.Data
+import justin.db.actors.protocol.{StorageNodeConflictedRead, StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
+import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class StorageNodeWriteResponseSerializerTest extends FlatSpec with Matchers {
@@ -56,4 +59,37 @@ class StorageNodeWriteResponseSerializerTest extends FlatSpec with Matchers {
     serializedData shouldBe deserializedData
   }
 
+  it should "serialize/deserialize StorageNodeConflictedWrite" in {
+    // kryo init
+    val kryo = new Kryo()
+    kryo.register(classOf[StorageNodeConflictedWrite], StorageNodeWriteResponseSerializer)
+
+    // object
+    val oldData = Data(
+      id        = UUID.randomUUID(),
+      value     = "some value 1",
+      vclock    = VectorClock[NodeId](Map(NodeId(1) -> Counter(3))),
+      timestamp = System.currentTimeMillis()
+    )
+    val newData = Data(
+      id        = UUID.randomUUID(),
+      value     = "some value 2",
+      vclock    = VectorClock[NodeId](Map(NodeId(1) -> Counter(1))),
+      timestamp = System.currentTimeMillis()
+    )
+    val serializedData = StorageNodeConflictedWrite(oldData, newData)
+
+    // serialization
+    val bos    = new ByteArrayOutputStream()
+    val output = new Output(bos)
+    val bytes  = kryo.writeObject(output, serializedData)
+    output.flush()
+
+    // deserialization
+    val bis              = new ByteArrayInputStream(bos.toByteArray)
+    val input            = new Input(bis)
+    val deserializedData = kryo.readObject(input, classOf[StorageNodeConflictedWrite])
+
+    serializedData shouldBe deserializedData
+  }
 }
