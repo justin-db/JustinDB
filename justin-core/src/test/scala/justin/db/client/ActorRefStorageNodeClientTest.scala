@@ -4,11 +4,12 @@ import java.util.UUID
 
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
-import justin.db.replica.W
+import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.actors.protocol._
 import justin.db.actors.StorageNodeActorRef
+import justin.db.actors.protocol._
 import justin.db.replica.{R, W}
+import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 
@@ -61,6 +62,31 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
 
     // then
     whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
+  }
+
+  it should "handle actor's \"ConflictedRead\" message for asked data" in {
+    // given
+    val id       = UUID.randomUUID()
+    val oldData = Data(
+      id        = id,
+      value     = "some value 1",
+      vclock    = VectorClock[NodeId](Map(NodeId(1) -> Counter(3))),
+      timestamp = System.currentTimeMillis()
+    )
+    val newData = Data(
+      id        = id,
+      value     = "some value 2",
+      vclock    = VectorClock[NodeId](Map(NodeId(1) -> Counter(1))),
+      timestamp = System.currentTimeMillis()
+    )
+    val actorRef = getTestActorRef(msgBack = StorageNodeConflictedRead(List(oldData, newData)))
+    val client   = new ActorRefStorageNodeClient(StorageNodeActorRef(actorRef))(system.dispatcher)
+
+    // when
+    val result = client.get(id, R(1))
+
+    // then
+    whenReady(result) { _ shouldBe GetValueResponse.Conflicts(List(oldData, newData)) }
   }
 
   it should "recover actor's reading behavior" in {
