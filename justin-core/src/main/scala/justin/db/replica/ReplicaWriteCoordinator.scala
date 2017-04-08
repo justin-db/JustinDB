@@ -17,7 +17,7 @@ class ReplicaWriteCoordinator(
 
   override def apply(cmd: StorageNodeWriteRequest, clusterMembers: ClusterMembers): Future[StorageNodeWriteResponse] = cmd match {
     case StorageNodeWriteDataLocal(data) => writeLocal(data)
-    case Internal.WriteReplica(w, data)     => coordinateReplicated(w, data, clusterMembers)
+    case Internal.WriteReplica(w, data)  => coordinateReplicated(w, data, clusterMembers)
   }
 
   private def writeLocal(data: Data) = localDataWriter.apply(data, new IsPrimaryOrReplica(nodeId, ring))
