@@ -16,7 +16,7 @@ class ReplicaReadCoordinator(
 )(implicit ec: ExecutionContext) extends ((StorageNodeReadRequest, ClusterMembers) => Future[StorageNodeReadResponse]) {
 
   override def apply(cmd: StorageNodeReadRequest, clusterMembers: ClusterMembers): Future[StorageNodeReadResponse] = cmd match {
-    case StorageNodeLocalRead(id)   => readLocalData(id)
+    case StorageNodeLocalRead(id)    => readLocalData(id)
     case Internal.ReadReplica(r, id) => coordinateReplicated(r, id, clusterMembers)
   }
 
@@ -32,7 +32,6 @@ class ReplicaReadCoordinator(
   private def onRight(r: R, id: UUID, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
     gatherReads(r, id, clusterMembers, preferenceList).map { reads =>
       val consensus = new ReplicaReadAgreement().reach(r)(reads)
-      triggerReadRepairIfConsequent(consensus) // Side effect
       consensus2ReadingResult(id)(consensus)
     }
   }
