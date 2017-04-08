@@ -1,6 +1,7 @@
 package justin.db.actors
 
 import akka.actor.{Actor, Props}
+import akka.routing.{DefaultResizer, RoundRobinPool}
 import justin.db.actors.protocol.{ReadData, WriteData}
 import justin.db.replica.{ReplicaReadCoordinator, ReplicaWriteCoordinator}
 
@@ -20,5 +21,18 @@ object ReplicaCoordinatorActor {
 
   def props(readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator): Props = {
     Props(new ReplicaCoordinatorActor(readCoordinator, writeCoordinator))
+  }
+}
+
+object RoundRobinCoordinatorRouter {
+  def routerName: String = "CoordinatorRouter"
+
+  private val pool = RoundRobinPool(
+    nrOfInstances = 5,
+    resizer = Some(DefaultResizer(lowerBound = 2, upperBound = 15))
+  )
+
+  def props(readCoordinator: ReplicaReadCoordinator, writeCoordinator: ReplicaWriteCoordinator): Props = {
+    pool.props(ReplicaCoordinatorActor.props(readCoordinator, writeCoordinator))
   }
 }
