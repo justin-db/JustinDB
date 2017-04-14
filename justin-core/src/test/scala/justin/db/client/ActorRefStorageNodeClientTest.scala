@@ -48,7 +48,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val result = client.get(id, R(1))
 
     // then
-    whenReady(result) { _ shouldBe GetValueResponse.NotFound }
+    whenReady(result) { _ shouldBe GetValueResponse.NotFound(id) }
   }
 
   it should "handle actor's \"FailedRead\" message for asked data" in {

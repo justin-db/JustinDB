@@ -45,7 +45,7 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
 
     Get(s"/get?id=$id&r=$r") ~> Route.seal(router.routes) ~> check {
       status                       shouldBe StatusCodes.NotFound
-      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(s"Not found value with id $id"))
+      responseAs[String].parseJson shouldBe JsObject("value" -> JsString(s"Couldn't found value with id $id"))
       header[VectorClockHeader]    shouldBe None
     }
   }
@@ -83,7 +83,7 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
   }
 
   private def notFound(value: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
-    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.NotFound)
+    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.NotFound(id))
   }
 
   private def badRequest(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {

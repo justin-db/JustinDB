@@ -17,7 +17,7 @@ sealed trait GetValueResponse
 object GetValueResponse {
   case class Found(data: Data)           extends GetValueResponse
   case class Conflicts(data: List[Data]) extends GetValueResponse
-  case object NotFound                   extends GetValueResponse
+  case class NotFound(id: UUID)          extends GetValueResponse
   case class Failure(error: String)      extends GetValueResponse
 }
 

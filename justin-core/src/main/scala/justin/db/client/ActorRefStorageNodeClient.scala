@@ -20,7 +20,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
     (storageNodeActor.storageNodeActor ? Internal.ReadReplica(r, id)).mapTo[StorageNodeReadResponse].map {
       case StorageNodeFoundRead(data)      => GetValueResponse.Found(data)
       case StorageNodeConflictedRead(data) => GetValueResponse.Conflicts(data)
-      case StorageNodeNotFoundRead(_)      => GetValueResponse.NotFound
+      case StorageNodeNotFoundRead(id)     => GetValueResponse.NotFound(id)
       case StorageNodeFailedRead(_)        => GetValueResponse.Failure(s"Couldn't read value with id ${id.toString}")
     } recover { case ex: Throwable         => GetValueResponse.Failure(s"Unsuccessful read of value with id ${id.toString}") }
   }
