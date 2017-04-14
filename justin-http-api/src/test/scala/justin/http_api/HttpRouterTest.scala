@@ -128,7 +128,7 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
   }
 
   private def successfulWrite(putValue: PutValue) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
-    override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success)
+    override def write(data: Data, w: W): Future[WriteValueResponse] = Future.successful(WriteValueResponse.Success(data.id))
   }
 
   private def unsuccessfulWrite(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {

@@ -23,7 +23,7 @@ object GetValueResponse {
 
 sealed trait WriteValueResponse
 object WriteValueResponse {
-  case object Success               extends WriteValueResponse
+  case class Success(id: UUID)      extends WriteValueResponse
   case object Conflict              extends WriteValueResponse
   case class Failure(error: String) extends WriteValueResponse
 }

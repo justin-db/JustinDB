@@ -116,7 +116,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val result = client.write(data, W(1))
 
     // then
-    whenReady(result) { _ shouldBe WriteValueResponse.Success }
+    whenReady(result) { _ shouldBe WriteValueResponse.Success(id) }
   }
 
   it should "handle actor's \"FailedWrite\" message for data saving" in {

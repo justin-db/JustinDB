@@ -27,7 +27,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
 
   override def write(data: Data, w: W): Future[WriteValueResponse] = {
     (storageNodeActor.storageNodeActor ? Internal.WriteReplica(w, data)).mapTo[StorageNodeWriteResponse].map {
-      case StorageNodeSuccessfulWrite(_)    => WriteValueResponse.Success
+      case StorageNodeSuccessfulWrite(id)   => WriteValueResponse.Success(id)
       case StorageNodeConflictedWrite(_, _) => WriteValueResponse.Conflict
       case StorageNodeFailedWrite(id)       => WriteValueResponse.Failure(s"Couldn't write value with id ${id.toString}")
     } recover { case ex: Throwable          => WriteValueResponse.Failure(s"Unsuccessful write of value with id ${data.id.toString}") }

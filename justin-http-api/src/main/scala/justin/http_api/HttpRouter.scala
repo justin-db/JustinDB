@@ -47,7 +47,7 @@ class HttpRouter(client: ActorRefStorageNodeClient)(implicit ec: ExecutionContex
     (post & path("put") & pathEndOrSingleSlash & entity(as[PutValue])) { putValue =>
       complete {
         client.write(Data(putValue.id, putValue.value, vClockHeader.vectorClock), W(putValue.w)).map[ToResponseMarshallable] {
-          case WriteValueResponse.Success      => NoContent
+          case WriteValueResponse.Success(id)  => NoContent
           case WriteValueResponse.Conflict     => MultipleChoices -> Result("Multiple Choices")
           case WriteValueResponse.Failure(err) => BadRequest      -> Result(err)
         }
