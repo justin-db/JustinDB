@@ -61,7 +61,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val result = client.get(id, R(1))
 
     // then
-    whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
+    whenReady(result) { _ shouldBe GetValueResponse.Failure(s"Couldn't read value with id ${id.toString}") }
   }
 
   it should "handle actor's \"ConflictedRead\" message for asked data" in {
@@ -99,7 +99,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val result = client.get(id, R(1))
 
     // then
-    whenReady(result) { _ shouldBe GetValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't read value with id ${id.toString}") }
+    whenReady(result) { _ shouldBe GetValueResponse.Failure(s"Unsuccessful read of value with id ${id.toString}") }
   }
 
   /**
@@ -130,7 +130,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val result = client.write(data, W(1))
 
     // then
-    whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't write data: $data") }
+    whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"Couldn't write value with id ${id.toString}") }
   }
 
   it should "recover actor's writing behavior" in {
@@ -144,7 +144,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     val result = client.write(data, W(1))
 
     // then
-    whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"[HttpStorageNodeClient] Couldn't write data: $data") }
+    whenReady(result) { _ shouldBe WriteValueResponse.Failure(s"Unsuccessful write of value with id ${id.toString}") }
   }
 
   it should "handle actor's \"ConflictedWrite\" message for data saving" in {
