@@ -7,7 +7,6 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
-import justin.db.replica.W
 import justin.db.Data
 import justin.db.actors.StorageNodeActorRef
 import justin.db.replica.{R, W}
@@ -78,6 +77,23 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
     }
   }
 
+  it should "get \"MultipleChoices\" http code for conflicted read result" in {
+    val id      = UUID.randomUUID()
+    val data1   = Data(id, "value-1")
+    val data2   = data1.copy(value = "value-2")
+    val r       = 1
+    val router  = new HttpRouter(mutlipleChoices(List(data1, data2)))
+
+    Get(s"/get?id=${id.toString}&r=$r") ~> Route.seal(router.routes) ~> check {
+      status                       shouldBe StatusCodes.MultipleChoices
+      header[VectorClockHeader]    shouldBe None
+      responseAs[String].parseJson shouldBe JsArray(
+        JsObject("id" -> JsString(id.toString), "value" -> JsString("value-1"), "vclock" -> JsString("W10=")),
+        JsObject("id" -> JsString(id.toString), "value" -> JsString("value-2"), "vclock" -> JsString("W10="))
+      )
+    }
+  }
+
   private def getFound(data: Data) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Found(data))
   }
@@ -88,6 +104,10 @@ class HttpRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {
 
   private def badRequest(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
     override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Failure(error))
+  }
+
+  private def mutlipleChoices(conflicts: List[Data]) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
+    override def get(id: UUID, r: R): Future[GetValueResponse] = Future.successful(GetValueResponse.Conflicts(conflicts))
   }
 
   private def internalServerError(error: String) = new ActorRefStorageNodeClient(StorageNodeActorRef(null)) {
