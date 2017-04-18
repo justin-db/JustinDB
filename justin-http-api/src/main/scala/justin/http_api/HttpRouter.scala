@@ -11,6 +11,8 @@ import akka.stream.Materializer
 import justin.db.Data
 import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
 import justin.db.replica.{R, W}
+import justin.db.storage.Base64
+import justin.db.versioning.NodeIdVectorClockBase64
 import justin.http_api.JustinDirectives._
 import justin.http_api.Unmarshallers.UUIDUnmarshaller
 import spray.json.DefaultJsonProtocol._
@@ -25,6 +27,9 @@ object HttpRouter {
   case class Result(value: String)
   implicit val valueFormat: RootJsonFormat[Result] = jsonFormat1(Result)
 
+  case class ConflictedData(id: String, value: String, vclock: Base64)
+  implicit val conflictedDataFormat: RootJsonFormat[ConflictedData] = jsonFormat3(ConflictedData)
+
   case class PutValue(id: UUID, value: String, w: Int)
   implicit val putValueFormat: RootJsonFormat[PutValue] = jsonFormat3(PutValue)
 }
@@ -32,12 +37,17 @@ object HttpRouter {
 class HttpRouter(client: ActorRefStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
   import HttpRouter._
 
+  private[this] def transformConflictedData(data: Data) = {
+    val vcBase64 = new NodeIdVectorClockBase64().encode(data.vclock).get
+    ConflictedData(data.id.toString, data.value, vcBase64)
+  }
+
   def routes: Route = withVectorClockHeader { vClockHeader =>
     {
       (get & path("get") & pathEndOrSingleSlash & parameters('id.as(UUIDUnmarshaller), 'r.as[Int])) { (uuid, r) =>
         onComplete(client.get(uuid, R(r))) {
           case Success(GetValueResponse.Found(data))     => respondWithHeader(VectorClockHeader(data.vclock)) { complete(OK -> Result(data.value)) }
-          case Success(GetValueResponse.Conflicts(data)) => complete(MultipleChoices -> Result(data.toString)) // TODO: better representation of multiple choices
+          case Success(GetValueResponse.Conflicts(data)) => complete(MultipleChoices -> data.map(transformConflictedData))
           case Success(GetValueResponse.NotFound(id))    => complete(NotFound -> Result(s"Couldn't found value with id ${id.toString}"))
           case Success(GetValueResponse.Failure(err))    => complete(BadRequest -> Result(err))
           case Failure(ex)                               => complete(InternalServerError -> Result(ex.getMessage))
