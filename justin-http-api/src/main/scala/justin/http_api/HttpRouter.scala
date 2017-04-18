@@ -10,11 +10,11 @@ import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import justin.db.Data
 import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValueResponse}
-import justin.db.replica.W
+import justin.db.replica.{R, W}
+import justin.http_api.JustinDirectives._
 import justin.http_api.Unmarshallers.UUIDUnmarshaller
 import spray.json.DefaultJsonProtocol._
-import JustinDirectives._
-import justin.db.replica.{R, W}
+import spray.json.RootJsonFormat
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
@@ -23,10 +23,10 @@ object HttpRouter {
   import Unmarshallers.UuidFormat
 
   case class Result(value: String)
-  implicit val valueFormat = jsonFormat1(Result)
+  implicit val valueFormat: RootJsonFormat[Result] = jsonFormat1(Result)
 
   case class PutValue(id: UUID, value: String, w: Int)
-  implicit val putValueFormat = jsonFormat3(PutValue)
+  implicit val putValueFormat: RootJsonFormat[PutValue] = jsonFormat3(PutValue)
 }
 
 class HttpRouter(client: ActorRefStorageNodeClient)(implicit ec: ExecutionContext, mat: Materializer) {
