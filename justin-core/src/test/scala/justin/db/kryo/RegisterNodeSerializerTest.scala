@@ -23,7 +23,7 @@ class RegisterNodeSerializerTest extends FlatSpec with Matchers {
     // serialization
     val bos    = new ByteArrayOutputStream()
     val output = new Output(bos)
-    val bytes  = kryo.writeObject(output, serializedData)
+    val _      = kryo.writeObject(output, serializedData)
     output.flush()
 
     // deserialization
