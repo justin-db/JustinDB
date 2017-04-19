@@ -1,8 +1,9 @@
-package justin.db.replica
+package justin.db.replica.read
 
 import java.util.UUID
 
 import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead, StorageNodeReadResponse}
+import justin.db.replica.IsPrimaryOrReplica
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
 

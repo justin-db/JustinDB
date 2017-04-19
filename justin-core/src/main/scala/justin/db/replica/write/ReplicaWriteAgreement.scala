@@ -1,7 +1,7 @@
-package justin.db.replica
+package justin.db.replica.write
 
-import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
 import justin.db.actors.protocol.{StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
+import justin.db.replica.W
 
 class ReplicaWriteAgreement {
 
@@ -10,14 +10,5 @@ class ReplicaWriteAgreement {
     writes =>
       val okWrites = writes.collect { case ok: StorageNodeSuccessfulWrite => ok }.size
       if(okWrites >= w.w) WriteAgreement.Ok else WriteAgreement.NotEnoughWrites
-  }
-}
-
-object ReplicaWriteAgreement {
-
-  sealed trait WriteAgreement
-  object WriteAgreement {
-    case object NotEnoughWrites extends WriteAgreement
-    case object Ok extends WriteAgreement
   }
 }

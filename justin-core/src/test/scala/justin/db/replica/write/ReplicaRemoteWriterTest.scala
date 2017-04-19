@@ -1,4 +1,4 @@
-package justin.db.replica
+package justin.db.replica.write
 
 import java.util.UUID
 

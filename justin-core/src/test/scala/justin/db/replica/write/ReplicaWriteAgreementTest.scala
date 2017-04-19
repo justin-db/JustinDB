@@ -1,9 +1,9 @@
-package justin.db.replica
+package justin.db.replica.write
 
 import java.util.UUID
 
 import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
-import justin.db.replica.ReplicaWriteAgreement.WriteAgreement
+import justin.db.replica.W
 import org.scalatest.{FlatSpec, Matchers}
 
 class ReplicaWriteAgreementTest extends FlatSpec with Matchers {

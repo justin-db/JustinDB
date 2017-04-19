@@ -1,10 +1,10 @@
-package justin.db.replica
+package justin.db.replica.write
 
 import java.util.UUID
 
 import justin.consistent_hashing.NodeId
 import justin.db.Data
-import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
+import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.vector_clocks.{Counter, VectorClock}
@@ -14,7 +14,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ReplicaStorageNodeLocalReadWriterTest extends FlatSpec with Matchers with ScalaFutures {
+class ReplicaLocalWriterTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Replica Local Writer"
 

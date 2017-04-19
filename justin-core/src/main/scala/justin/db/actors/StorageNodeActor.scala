@@ -7,6 +7,8 @@ import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.{ClusterMembers, _}
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.replica._
+import justin.db.replica.read.{ReplicaLocalReader, ReplicaReadCoordinator, ReplicaRemoteReader}
+import justin.db.replica.write.{ReplicaLocalWriter, ReplicaRemoteWriter, ReplicaWriteCoordinator}
 import justin.db.storage.PluggableStorageProtocol
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor {

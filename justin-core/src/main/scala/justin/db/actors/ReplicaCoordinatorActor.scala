@@ -3,7 +3,8 @@ package justin.db.actors
 import akka.actor.{Actor, Props}
 import akka.routing.{DefaultResizer, RoundRobinPool}
 import justin.db.actors.protocol.{ReadData, WriteData}
-import justin.db.replica.{ReplicaReadCoordinator, ReplicaWriteCoordinator}
+import justin.db.replica.read.ReplicaReadCoordinator
+import justin.db.replica.write.ReplicaWriteCoordinator
 
 import scala.concurrent.ExecutionContext
 

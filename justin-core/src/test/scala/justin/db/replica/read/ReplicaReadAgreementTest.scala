@@ -1,10 +1,10 @@
-package justin.db.replica
+package justin.db.replica.read
 
 import java.util.UUID
 
 import justin.db.Data
 import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead}
-import justin.db.replica.ReplicaReadAgreement.ReadAgreement
+import justin.db.replica.R
 import justin.db.versioning.VectorClockOps._
 import org.scalatest.{FlatSpec, Matchers}
 
