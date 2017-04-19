@@ -41,3 +41,12 @@ In case it's not obvious, Justin performs no authentication, authorization, or a
 
 ## System Requirements
 JustinDB works with Java 8 and newer.
+
+## Bunch of posts that describe JustinDB
+1. [JustinDB - Modern REACTIVE NoSQL database](http://speedcom.github.io/dsp2017/2017/03/14/justindb-modern-reactive-nosql-database.html)
+2. [JustinDB - Database Model](http://speedcom.github.io/dsp2017/2017/03/17/justindb-database-model.html)
+3. [JustinDB - Pluggable persistent and in-memory storage engines](http://speedcom.github.io/dsp2017/2017/03/24/justindb-support-for-pluggable-persistent-and-in-memory-storage-engines.html)
+4. [JustinDB - has got more than 700 commits!](http://speedcom.github.io/dsp2017/2017/04/03/justindb-more-than-seven-hundred-commits.html)
+5. [JustinDB - serialization that greatly improves performance](http://speedcom.github.io/dsp2017/2017/04/08/justindb-serilization-that-greatly-improves-performance.html)
+6. [JustinDB - replication and partitioning](http://speedcom.github.io/dsp2017/2017/04/13/justindb-replication-and-partitioning.html)
+7. [JustinDB - why Scala and Akka?](http://speedcom.github.io/dsp2017/2017/04/15/justindb-why-scala-and-akka.html)
