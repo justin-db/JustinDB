@@ -1,7 +1,7 @@
 import sbt._
 
 object Version {
-  val scala        = "2.12.1"
+  val scala        = "2.12.2"
   val scalaBinary  = scala.substring(0,4)
 
   val akka         = "2.4.17"
