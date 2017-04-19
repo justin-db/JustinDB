@@ -1,4 +1,4 @@
-package justin.db
+package justin.db.cluster
 
 import justin.consistent_hashing.NodeId
 import justin.db.actors.StorageNodeActorRef

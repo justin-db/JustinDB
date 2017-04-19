@@ -1,4 +1,4 @@
-package justin.db
+package justin.db.cluster
 
 import akka.actor.ActorRef
 import justin.consistent_hashing.NodeId

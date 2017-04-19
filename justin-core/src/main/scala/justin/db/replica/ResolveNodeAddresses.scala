@@ -1,8 +1,8 @@
 package justin.db.replica
 
 import justin.consistent_hashing.NodeId
-import justin.db.ClusterMembers
 import justin.db.actors.StorageNodeActorRef
+import justin.db.cluster.ClusterMembers
 
 case class ResolvedNodeAddresses(local: Boolean, remotes: List[StorageNodeActorRef])
 

@@ -5,6 +5,7 @@ import java.util.UUID
 import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db._
 import justin.db.actors.protocol._
+import justin.db.cluster.ClusterMembers
 import justin.db.replica._
 
 import scala.concurrent.{ExecutionContext, Future}
