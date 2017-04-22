@@ -50,3 +50,4 @@ JustinDB works with Java 8 and newer.
 5. [JustinDB - serialization that greatly improves performance](http://speedcom.github.io/dsp2017/2017/04/08/justindb-serilization-that-greatly-improves-performance.html)
 6. [JustinDB - replication and partitioning](http://speedcom.github.io/dsp2017/2017/04/13/justindb-replication-and-partitioning.html)
 7. [JustinDB - why Scala and Akka?](http://speedcom.github.io/dsp2017/2017/04/15/justindb-why-scala-and-akka.html)
+8. [JustinDB - data versioning (part 1)](http://speedcom.github.io/dsp2017/2017/04/21/justindb-data-versioning.html)
