@@ -62,7 +62,7 @@ object Dependencies {
 
   private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit, akkaKryo)
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit, akkaStream)
-  private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit, akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
+  private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
 

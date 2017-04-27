@@ -1,6 +1,6 @@
 resolvers += Classpaths.typesafeResolver
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-multi-jvm"         % "0.3.8")
+addSbtPlugin("com.typesafe.sbt" % "sbt-multi-jvm"         % "0.3.11")
 
 addSbtPlugin("org.scoverage"    % "sbt-scoverage"         % "1.5.0")
 
