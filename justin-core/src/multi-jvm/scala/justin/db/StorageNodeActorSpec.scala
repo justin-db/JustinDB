@@ -9,7 +9,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._
 
-object MultiStorageNodeActorConfig extends MultiNodeConfig {
+object StorageNodeActorConfig extends MultiNodeConfig {
   val seed: RoleName  = role("StorageNode-seed")
   val node1: RoleName = role("StorageNode-1")
   val node2: RoleName = role("StorageNode-2")
@@ -21,21 +21,21 @@ object MultiStorageNodeActorConfig extends MultiNodeConfig {
   ))
 }
 
-class MultiStorageNodeActorSpecMultiJvmNode1 extends MultiStorageNodeActorSpec
-class MultiStorageNodeActorSpecMultiJvmNode2 extends MultiStorageNodeActorSpec
-class MultiStorageNodeActorSpecMultiJvmNode3 extends MultiStorageNodeActorSpec
+class StorageNodeActorSpecMultiJvmNode1 extends StorageNodeActorSpec
+class StorageNodeActorSpecMultiJvmNode2 extends StorageNodeActorSpec
+class StorageNodeActorSpecMultiJvmNode3 extends StorageNodeActorSpec
 
-class MultiStorageNodeActorSpec extends MultiNodeSpec(MultiStorageNodeActorConfig)
+class StorageNodeActorSpec extends MultiNodeSpec(StorageNodeActorConfig)
   with ScalaTestMultiNodeSpec
   with ImplicitSender {
 
-  import MultiStorageNodeActorConfig._
+  import StorageNodeActorConfig._
 
   override def initialParticipants: Int = roles.size
 
-  val seedStorageNodeAddress = node(seed).address
-  val storageNode1Address    = node(node1).address
-  val storageNode2Address    = node(node2).address
+  private[this] val seedStorageNodeAddress = node(seed).address
+  private[this] val storageNode1Address    = node(node1).address
+  private[this] val storageNode2Address    = node(node2).address
 
   muteDeadLetters(classOf[Any])(system)
 
