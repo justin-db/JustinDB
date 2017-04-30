@@ -1,6 +1,3 @@
-import com.typesafe.sbt.SbtMultiJvm
-import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
-
 name           := "JustinDB"
 version        := "0.2"
 maintainer     := "Mateusz Maciaszek"
@@ -42,24 +39,13 @@ lazy val root = (project in file("."))
   .dependsOn(core, httpApi, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
 
 lazy val core = (project in file("justin-core"))
-  .settings(SbtMultiJvm.multiJvmSettings: _*)
+  .enablePlugins(SbtMultiJvm)
+  .configs(MultiJvm)
   .settings(
     name := "justin-core",
     scalaVersion := Version.scala,
-    scalacOptions in Compile ++= Seq("-encoding", "UTF-8", "-target:jvm-1.8", "-deprecation", "-feature", "-unchecked", "-Xlog-reflective-calls", "-Xlint"),
-    javacOptions in Compile ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked", "-Xlint:deprecation"),
-    libraryDependencies ++= Dependencies.core,
-    javaOptions in run ++= Seq("-Xms128m", "-Xmx1024m", "-Djava.library.path=./target/native"),
-    Keys.fork in run := true,
-    compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
-    parallelExecution in Test := false,
-    executeTests in Test <<= (executeTests in Test, executeTests in MultiJvm) map {
-      case (testResults, multiNodeResults)  =>
-        val overall = if (testResults.overall.id < multiNodeResults.overall.id) multiNodeResults.overall else testResults.overall
-        Tests.Output(overall, testResults.events ++ multiNodeResults.events, testResults.summaries ++ multiNodeResults.summaries)
-    }
+    libraryDependencies ++= Dependencies.core
   )
-  .configs (MultiJvm)
   .aggregate(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
   .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
 
