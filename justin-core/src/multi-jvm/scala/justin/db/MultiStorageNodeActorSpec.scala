@@ -26,7 +26,7 @@ class MultiStorageNodeActorSpecMultiJvmNode2 extends MultiStorageNodeActorSpec
 class MultiStorageNodeActorSpecMultiJvmNode3 extends MultiStorageNodeActorSpec
 
 class MultiStorageNodeActorSpec extends MultiNodeSpec(MultiStorageNodeActorConfig)
-  with STMultiNodeSpec
+  with ScalaTestMultiNodeSpec
   with ImplicitSender {
 
   import MultiStorageNodeActorConfig._
