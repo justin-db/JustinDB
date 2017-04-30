@@ -21,6 +21,8 @@ object StorageNodeActorConfig extends MultiNodeConfig {
 
     akka.netty.tcp.hostname = "127.0.0.1"
 
+    akka.cluster.roles = [storagenode]
+
     # don't use sigar for tests, native lib not in path
     akka.cluster.metrics.collector-class = akka.cluster.JmxMetricsCollector"""
   ))
