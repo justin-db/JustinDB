@@ -31,14 +31,23 @@ object Main extends App with ServiceConfig {
 
   val storage = JustinDriver.load(`storage-backend`)
 
-  logger.info("JustinDB version: " + BuildInfo.version)
-  logger.info("Build Info: ")
-  logger.info(BuildInfo.toString)
+  logger.info(
+    """
+      |   ___              _    _        ______ ______
+      |  |_  |            | |  (_)       |  _  \| ___ \
+      |    | | _   _  ___ | |_  _  _ __  | | | || |_/ /
+      |    | || | | |/ __|| __|| || '_ \ | | | || ___ \
+      |/\__/ /| |_| |\__ \| |_ | || | | || |/ / | |_/ /
+      |\____/  \__,_||___/ \__||_||_| |_||___/  \____/
+      |
+    """.stripMargin)
+
+  logger.info("Build Info: " + BuildInfo.toString)
   logger.info("Properties: ")
-  logger.info("-- Storage: " + storage.getClass.getSimpleName)
-  logger.info("-- NodeId: " + `node-id`)
-  logger.info("-- Cluster size: " + `ring-cluster-size`)
-  logger.info("-- Partitions number: " + `ring-partitions`)
+  logger.info("-- Storage: "            + storage.getClass.getSimpleName)
+  logger.info("-- NodeId: "             + `node-id`)
+  logger.info("-- Cluster size: "       + `ring-cluster-size`)
+  logger.info("-- Partitions number: "  + `ring-partitions`)
   logger.info("-- Replication factor: " + `replication-n`)
 
   Cluster(system).registerOnMemberUp {
