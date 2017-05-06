@@ -51,3 +51,4 @@ JustinDB works with Java 8 and newer.
 6. [JustinDB - replication and partitioning](http://speedcom.github.io/dsp2017/2017/04/13/justindb-replication-and-partitioning.html)
 7. [JustinDB - why Scala and Akka?](http://speedcom.github.io/dsp2017/2017/04/15/justindb-why-scala-and-akka.html)
 8. [JustinDB - data versioning (part 1)](http://speedcom.github.io/dsp2017/2017/04/21/justindb-data-versioning.html)
+9. [JustinDB - HTTP API](http://speedcom.github.io/dsp2017/2017/04/30/justindb-http-api.html)
