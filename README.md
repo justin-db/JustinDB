@@ -55,3 +55,4 @@ JustinDB works with Java 8 and newer.
 10. [JustinDB - The Ring](http://speedcom.github.io/dsp2017/2017/05/06/justindb-ring.html)
 11. [JustinDB - Preference list](http://speedcom.github.io/dsp2017/2017/05/07/justindb-preference-list.html)
 12. [JustinDB - solving data entropy: Read Repair](http://speedcom.github.io/dsp2017/2017/05/13/justindb-read-repair.html)
+13. [JustinDB - solving data entropy: Active-Anti Entropy](http://speedcom.github.io/dsp2017/2017/05/14/justindb-active-anti-entropy.html)
