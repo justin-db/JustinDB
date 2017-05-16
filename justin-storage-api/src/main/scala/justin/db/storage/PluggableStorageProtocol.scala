@@ -14,7 +14,9 @@ trait PutStorageProtocol {
   def put(cmd: StoragePutData)(resolveOriginality: UUID => DataOriginality)(implicit ec: ExecutionContext): Future[Ack]
 }
 
-trait PluggableStorageProtocol extends GetStorageProtocol with PutStorageProtocol
+trait PluggableStorageProtocol extends GetStorageProtocol with PutStorageProtocol {
+  def name: String = this.getClass.getSimpleName
+}
 
 object PluggableStorageProtocol {
   

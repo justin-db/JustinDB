@@ -91,5 +91,9 @@ class InMemStorageTest extends FlatSpec with Matchers {
     result2 shouldBe StorageGetData.Single(data2.data)
   }
 
+  it should "get \"InMemStorage\" name" in {
+    new InMemStorage().name shouldBe "InMemStorage"
+  }
+
   private def prepareData(id: UUID, value: String) = JustinData(id, value, "", 1L)
 }

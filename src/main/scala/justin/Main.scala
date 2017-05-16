@@ -44,7 +44,7 @@ object Main extends App with ServiceConfig {
 
   logger.info("Build Info: " + BuildInfo.toString)
   logger.info("Properties: ")
-  logger.info("-- Storage: "            + storage.getClass.getSimpleName)
+  logger.info("-- Storage: "            + storage.name)
   logger.info("-- NodeId: "             + `node-id`)
   logger.info("-- Cluster size: "       + `ring-cluster-size`)
   logger.info("-- Partitions number: "  + `ring-partitions`)
