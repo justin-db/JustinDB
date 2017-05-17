@@ -7,7 +7,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import buildinfo.BuildInfo
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.ConfigFactory
 import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
@@ -16,20 +16,22 @@ import justin.db.replica.N
 import justin.db.storage.JustinDriver
 import justin.http_api._
 
+import scala.language.reflectiveCalls
+
 // $COVERAGE-OFF$
-object Main extends App with ServiceConfig {
+object Main extends App {
 
-  override protected val config: Config = ConfigFactory
+  val justinConfig = JustinConfig(ConfigFactory
     .parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
-    .withFallback(ConfigFactory.load())
+    .withFallback(ConfigFactory.load()))
 
-  implicit val system       = ActorSystem("justin-db-cluster-system", config)
+  implicit val system       = ActorSystem(justinConfig.system, justinConfig.config)
   implicit val executor     = system.dispatcher
   implicit val materializer = ActorMaterializer()
 
   val logger = Logging(system, getClass)
 
-  val storage = JustinDriver.load(`storage-backend`)
+  val storage = JustinDriver.load(justinConfig.`storage-type`)
 
   logger.info(
     """
@@ -45,22 +47,22 @@ object Main extends App with ServiceConfig {
   logger.info("Build Info: " + BuildInfo.toString)
   logger.info("Properties: ")
   logger.info("-- Storage: "            + storage.name)
-  logger.info("-- NodeId: "             + `node-id`)
-  logger.info("-- Cluster size: "       + `ring-cluster-size`)
-  logger.info("-- Partitions number: "  + `ring-partitions`)
-  logger.info("-- Replication factor: " + `replication-n`)
+  logger.info("-- NodeId: "             + justinConfig.`node-id`)
+  logger.info("-- Cluster size: "       + justinConfig.ring.`members-count`)
+  logger.info("-- Partitions number: "  + justinConfig.ring.partitions)
+  logger.info("-- Replication factor: " + justinConfig.replication.N)
 
   Cluster(system).registerOnMemberUp {
     logger.info("Cluster is ready!")
 
     // STORAGE ACTOR
     val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
-      val nodeId      = NodeId(`node-id`)
-      val ring        = Ring(`ring-cluster-size`, `ring-partitions`)
-      val replication = N(`replication-n`)
+      val nodeId = NodeId(justinConfig.`node-id`)
+      val ring   = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
+      val n      = N(justinConfig.replication.N)
 
       system.actorOf(
-        props = StorageNodeActor.props(nodeId, storage, ring, replication),
+        props = StorageNodeActor.props(nodeId, storage, ring, n),
         name  = StorageNodeActor.name(nodeId)
       )
     })
@@ -78,7 +80,7 @@ object Main extends App with ServiceConfig {
     }
 
     Http()
-      .bindAndHandle(routes, `http-interface`, `http-port`)
+      .bindAndHandle(routes, justinConfig.http.interface, justinConfig.http.port)
       .map { binding => logger.info(s"HTTP server started at ${binding.localAddress}") }
       .recover { case ex => logger.error(ex, "Could not start HTTP server") }
   }

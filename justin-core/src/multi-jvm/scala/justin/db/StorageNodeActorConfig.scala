@@ -23,7 +23,7 @@ case class StorageNodeActorConfig(clusterName: String) extends MultiNodeConfig {
 
     akka.cluster.roles = [storagenode]
     akka.cluster.role.storagenode.min-nr-of-members = 3
-    akka.cluster.seed-nodes = [ "akka.tcp://$clusterName@localhost:2551", "akka.tcp://$clusterName@localhost:2552" ]
+    akka.cluster.seed-nodes = [ "akka.tcp://$clusterName@localhost:25551", "akka.tcp://$clusterName@localhost:25552" ]
 
     # don't use sigar for tests, native lib not in path
     akka.cluster.metrics.collector-class = akka.cluster.JmxMetricsCollector"""
@@ -32,13 +32,13 @@ case class StorageNodeActorConfig(clusterName: String) extends MultiNodeConfig {
   nodeConfig(seed)(
     ConfigFactory.parseString(
       """
-        akka.remote.netty.tcp.port=2551
+        akka.remote.netty.tcp.port=25551
       """.stripMargin)
   )
   nodeConfig(node1)(
     ConfigFactory.parseString(
       """
-        akka.remote.netty.tcp.port=2552
+        akka.remote.netty.tcp.port=25552
       """.stripMargin)
   )
   nodeConfig(node2)(

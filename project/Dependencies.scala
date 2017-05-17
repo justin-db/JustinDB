@@ -15,6 +15,8 @@ object Version {
   val crjdt        = "0.0.7"
   val logback      = "1.2.3"
   val scalaLogging = "3.5.0"
+  val configAnnotation = "0.3.6"
+  val macroParadise    = "2.1.0"
 }
 
 object Library {
@@ -42,10 +44,12 @@ object Library {
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
 
   // other
-  val kamonSigar           = "io.kamon"                   % "sigar-loader"              % Version.sigarLoader
+  val kamonSigar           = "io.kamon"                    % "sigar-loader"             % Version.sigarLoader
   val scopt                = "com.github.scopt"           %% "scopt"                    % Version.scopt
   val logback              = "ch.qos.logback"              % "logback-classic"          % Version.logback
   val scalaLogging         = "com.typesafe.scala-logging" %% "scala-logging"            % Version.scalaLogging
+  val configAnnotation     = "com.wacai"                  %% "config-annotation"        % Version.configAnnotation
+  val macroParadise        = "org.scalamacros"            % "paradise"                  % Version.macroParadise
 
   // crjdt
   val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
