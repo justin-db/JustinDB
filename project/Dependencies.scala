@@ -79,4 +79,6 @@ object Dependencies {
   val crdts = genericTest ++ Seq(crjdtCirce, crjdtCirce)
 
   val consistenHashing = genericTest
+
+  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ crdts ++ consistenHashing
 }

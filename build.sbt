@@ -26,9 +26,11 @@ initialize := {
 
 // PROJECT DEFINITIONS
 lazy val root = (project in file("."))
-  .enablePlugins(JavaAppPackaging)
   .enablePlugins(BuildInfoPlugin)
   .settings(
+    mainClass in assembly := Some("justin.Main"),
+    test in assembly := {},
+    libraryDependencies ++= Dependencies.root,
     scalaVersion := Version.scala,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit, git.gitCurrentBranch),
     buildInfoOptions += BuildInfoOption.ToJson
