@@ -25,7 +25,7 @@ object Main extends App {
     .parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
     .withFallback(ConfigFactory.load()))
 
-  implicit val system       = ActorSystem("justin-db-cluster-system", justinConfig.config)
+  implicit val system       = ActorSystem(justinConfig.system, justinConfig.config)
   implicit val executor     = system.dispatcher
   implicit val materializer = ActorMaterializer()
 

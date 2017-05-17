@@ -6,6 +6,8 @@ import com.wacai.config.annotation._
 @conf
 trait justin extends Configurable {
 
+  val system: String = "justin"
+
   val `node-id`: Int = 0
 
   val ring = new {
@@ -26,7 +28,7 @@ trait justin extends Configurable {
 
   val `netty-tcp-hostname`: String = "localhost"
   val `netty-tcp-port`: Int        = 2551
-  val `cluster-seed-nodes`         = List("akka.tcp://justin-db-cluster-system@localhost:2551", "akka.tcp://justin-db-cluster-system@localhost:2552")
+  val `cluster-seed-nodes`         = List(s"akka.tcp://justin@localhost:2551", s"akka.tcp://justin@localhost:2552")
 }
 
 class JustinConfig(val config: Config) extends justin
