@@ -1,5 +1,5 @@
 name           := "JustinDB"
-version        := "0.2"
+version        := "0.3"
 maintainer     := "Mateusz Maciaszek"
 packageSummary := "JustinDB"
 
