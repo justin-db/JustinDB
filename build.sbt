@@ -24,6 +24,14 @@ initialize := {
   assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
 }
 
+lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
+  Seq(
+    scalacOptions += "-Xmacro-settings:conf.output.dir=" + baseDirectory.value.getAbsolutePath + "/src/main/resources",
+    addCompilerPlugin(Library.macroParadise cross CrossVersion.full),
+    libraryDependencies += Library.configAnnotation
+  )
+}
+
 // PROJECT DEFINITIONS
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
@@ -37,6 +45,7 @@ lazy val root = (project in file("."))
   )
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
+  .settings(configAnnotationSettings)
   .aggregate(core, httpApi, storageInMem, storagePersistent)
   .dependsOn(core, httpApi, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
 
