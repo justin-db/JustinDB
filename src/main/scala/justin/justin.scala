@@ -3,6 +3,7 @@ package justin
 import com.typesafe.config.Config
 import com.wacai.config.annotation._
 
+// $COVERAGE-OFF$
 @conf
 trait justin extends Configurable {
 
@@ -36,3 +37,4 @@ class JustinConfig(val config: Config) extends justin
 object JustinConfig {
   def apply(config: Config): JustinConfig = new JustinConfig(config)
 }
+// $COVERAGE-ON$
