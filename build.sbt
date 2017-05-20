@@ -34,7 +34,8 @@ lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
 
 // PROJECT DEFINITIONS
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(BuildInfoPlugin, SbtMultiJvm)
+  .configs(MultiJvm)
   .settings(
     mainClass in assembly := Some("justin.Main"),
     test in assembly := {},
