@@ -29,7 +29,6 @@ trait justin extends Configurable {
 
   val `netty-tcp-hostname`: String = "localhost"
   val `netty-tcp-port`: Int        = 2551
-  val `cluster-seed-nodes`         = List("akka.tcp://justin@localhost:2551", "akka.tcp://justin@localhost:2552")
 }
 
 class JustinConfig(val config: Config) extends justin

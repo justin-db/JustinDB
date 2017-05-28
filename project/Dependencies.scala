@@ -15,6 +15,7 @@ object Version {
   val crjdt        = "0.0.7"
   val logback      = "1.2.3"
   val scalaLogging = "3.5.0"
+  val constructR   = "0.17.0"
   val configAnnotation = "0.3.6"
   val macroParadise    = "2.1.0"
 }
@@ -57,6 +58,9 @@ object Library {
 
   // server side events
   val akkaSse              = "de.heikoseeberger" %% "akka-sse"                          % Version.akkaSse
+
+  val constructR           = "de.heikoseeberger" %% "constructr"                        % Version.constructR
+  val constructRetcd       = "de.heikoseeberger" %% "constructr-coordination-etcd"      % Version.constructR
 }
 
 object Dependencies {
@@ -67,6 +71,8 @@ object Dependencies {
   private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit, akkaKryo)
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit, akkaStream)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
+
+  private val constructr = Seq(constructR, constructRetcd)
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
 
@@ -84,5 +90,5 @@ object Dependencies {
 
   val consistenHashing = genericTest
 
-  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ crdts ++ consistenHashing
+  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ crdts ++ consistenHashing ++ constructr
 }
