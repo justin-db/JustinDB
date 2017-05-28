@@ -51,6 +51,7 @@ object Main extends App {
   logger.info("-- Cluster size: "       + justinConfig.ring.`members-count`)
   logger.info("-- Partitions number: "  + justinConfig.ring.partitions)
   logger.info("-- Replication factor: " + justinConfig.replication.N)
+  logger.info("-- ConstructR coordination host: " + justinConfig.config.getString("constructr.coordination.host"))
 
   Cluster(system).registerOnMemberUp {
     logger.info("Cluster is ready!")

@@ -1,5 +1,7 @@
+import com.typesafe.sbt.packager.docker._
+
 name           := "JustinDB"
-version        := "0.3"
+version        := "0.1"
 maintainer     := "Mateusz Maciaszek"
 packageSummary := "JustinDB"
 
@@ -16,6 +18,13 @@ scalacOptions := Seq(
   "utf8",
   "-language:implicitConversions"
 )
+
+daemonUser.in(Docker) := "root"
+maintainer.in(Docker) := "Mateusz Maciaszek"
+dockerBaseImage       := "java:8"
+dockerExposedPorts    := Vector(2552, 8000)
+dockerRepository      := Some("justindb")
+dockerCommands        += Cmd("RUN", "echo 'cat /opt/docker/motd' >> /etc/bash.bashrc")
 
 // Force building with Java 8
 initialize := {
@@ -34,10 +43,11 @@ lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
 
 // PROJECT DEFINITIONS
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin, SbtMultiJvm)
+  .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaAppPackaging, DockerPlugin)
   .configs(MultiJvm)
   .settings(
     mainClass in assembly := Some("justin.Main"),
+    assemblyJarName in assembly := "justindb.jar",
     test in assembly := {},
     libraryDependencies ++= Dependencies.root,
     scalaVersion := Version.scala,
