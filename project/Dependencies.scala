@@ -77,9 +77,7 @@ object Dependencies {
   val storageInMem = genericTest
   val storagePersistent = genericTest
 
-  val merkleTrees = genericTest
-
   val vectorClocks = genericTest
 
-  val root = core ++ httpApi ++ storageApi ++ merkleTrees ++ vectorClocks ++ constructr
+  val root = core ++ httpApi ++ storageApi ++ vectorClocks ++ constructr
 }

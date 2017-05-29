@@ -68,8 +68,8 @@ lazy val core = (project in file("justin-core"))
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.core
   )
-  .aggregate(merkleTrees, vectorClocks, storageAPi)
-  .dependsOn(merkleTrees, vectorClocks, storageAPi)
+  .aggregate(vectorClocks, storageAPi)
+  .dependsOn(vectorClocks, storageAPi)
 
 lazy val httpApi = (project in file("justin-http-api"))
   .settings(
@@ -98,12 +98,6 @@ lazy val storagePersistent = (project in file("justin-storage-persistent")).sett
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storagePersistent
 ).dependsOn(storageAPi)
-
-lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
-  name := "justin-merkle-trees",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.merkleTrees
-)
 
 lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
   name := "justin-vector-clocks",
