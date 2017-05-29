@@ -68,8 +68,8 @@ lazy val core = (project in file("justin-core"))
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.core
   )
-  .aggregate(vectorClocks, storageAPi)
-  .dependsOn(vectorClocks, storageAPi)
+  .aggregate(storageAPi)
+  .dependsOn(storageAPi)
 
 lazy val httpApi = (project in file("justin-http-api"))
   .settings(
@@ -98,12 +98,6 @@ lazy val storagePersistent = (project in file("justin-storage-persistent")).sett
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storagePersistent
 ).dependsOn(storageAPi)
-
-lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
-  name := "justin-vector-clocks",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.vectorClocks
-)
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
