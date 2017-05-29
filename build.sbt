@@ -75,7 +75,7 @@ lazy val httpApi = (project in file("justin-http-api"))
   .settings(
     name := "justin-http-api",
     scalaVersion := Version.scala,
-    libraryDependencies ++= Dependencies.httpClient,
+    libraryDependencies ++= Dependencies.httpApi,
     fork in Test := true,
     javaOptions in Test += "-Dconfig.resource=test.conf"
   )

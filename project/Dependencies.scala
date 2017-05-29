@@ -71,7 +71,7 @@ object Dependencies {
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
 
-  val httpClient = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt) ++ Seq(akkaSse)
+  val httpApi = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(scopt) ++ Seq(akkaSse)
 
   val storageApi = genericTest
   val storageInMem = genericTest
@@ -81,5 +81,5 @@ object Dependencies {
 
   val vectorClocks = genericTest
 
-  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ constructr
+  val root = core ++ httpApi ++ storageApi ++ merkleTrees ++ vectorClocks ++ constructr
 }
