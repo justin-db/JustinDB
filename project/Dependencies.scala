@@ -81,7 +81,5 @@ object Dependencies {
 
   val vectorClocks = genericTest
 
-  val consistenHashing = genericTest
-
-  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ consistenHashing ++ constructr
+  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ constructr
 }
