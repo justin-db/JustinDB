@@ -12,7 +12,6 @@ object Version {
   val scalacheck   = "1.13.5"
   val sigarLoader  = "1.6.6"
   val scopt        = "3.5.0"
-  val crjdt        = "0.0.7"
   val logback      = "1.2.3"
   val scalaLogging = "3.5.0"
   val constructR   = "0.17.0"
@@ -52,10 +51,6 @@ object Library {
   val configAnnotation     = "com.wacai"                  %% "config-annotation"        % Version.configAnnotation
   val macroParadise        = "org.scalamacros"            % "paradise"                  % Version.macroParadise
 
-  // crjdt
-  val crjdtCore            = "eu.timepit"        %% "crjdt-core"                        % Version.crjdt
-  val crjdtCirce           = "eu.timepit"        %% "crjdt-circe"                       % Version.crjdt
-
   // server side events
   val akkaSse              = "de.heikoseeberger" %% "akka-sse"                          % Version.akkaSse
 
@@ -86,9 +81,7 @@ object Dependencies {
 
   val vectorClocks = genericTest
 
-  val crdts = genericTest ++ Seq(crjdtCirce, crjdtCirce)
-
   val consistenHashing = genericTest
 
-  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ crdts ++ consistenHashing ++ constructr
+  val root = core ++ httpClient ++ storageApi ++ merkleTrees ++ vectorClocks ++ consistenHashing ++ constructr
 }
