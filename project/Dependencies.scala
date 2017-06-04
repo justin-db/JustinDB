@@ -4,7 +4,7 @@ object Version {
   val scala        = "2.12.2"
   val scalaBinary  = scala.substring(0,4)
 
-  val akka         = "2.4.17"
+  val akka         = "2.5.2"
   val akkaKryo     = "0.5.2"
   val akkaHttp     = "10.0.5"
   val akkaSse      = "2.0.0"
