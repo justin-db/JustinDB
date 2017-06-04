@@ -19,9 +19,3 @@ project/plugins/project/
 # Idea-IDE
 .idea
 .idea_modules
-
-# Elm
-# elm-package generated files
-elm-stuff
-# elm-repl generated files
-repl-temp-*

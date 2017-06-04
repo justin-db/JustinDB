@@ -68,14 +68,14 @@ lazy val core = (project in file("justin-core"))
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.core
   )
-  .aggregate(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
-  .dependsOn(merkleTrees, vectorClocks, consistentHashing, crdts, storageAPi)
+  .aggregate(storageAPi)
+  .dependsOn(storageAPi)
 
 lazy val httpApi = (project in file("justin-http-api"))
   .settings(
     name := "justin-http-api",
     scalaVersion := Version.scala,
-    libraryDependencies ++= Dependencies.httpClient,
+    libraryDependencies ++= Dependencies.httpApi,
     fork in Test := true,
     javaOptions in Test += "-Dconfig.resource=test.conf"
   )
@@ -98,30 +98,6 @@ lazy val storagePersistent = (project in file("justin-storage-persistent")).sett
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storagePersistent
 ).dependsOn(storageAPi)
-
-lazy val merkleTrees = (project in file("justin-merkle-trees")).settings(
-  name := "justin-merkle-trees",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.merkleTrees
-)
-
-lazy val vectorClocks = (project in file("justin-vector-clocks")).settings(
-  name := "justin-vector-clocks",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.vectorClocks
-)
-
-lazy val crdts = (project in file("justin-crdts")).settings(
-  name := "justin-crdts",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.crdts
-)
-
-lazy val consistentHashing = (project in file("justin-consistent-hashing")).settings(
-  name := "justin-consistent-hashing",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.consistenHashing
-)
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
