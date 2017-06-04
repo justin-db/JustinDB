@@ -17,7 +17,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
   implicit val timeout = Timeout(5.seconds) // TODO: tune this value
 
   override def get(id: UUID, r: R): Future[GetValueResponse] = {
-    (storageNodeActor.storageNodeActor ? Internal.ReadReplica(r, id)).mapTo[StorageNodeReadResponse].map {
+    (storageNodeActor.ref ? Internal.ReadReplica(r, id)).mapTo[StorageNodeReadResponse].map {
       case StorageNodeFoundRead(data)      => GetValueResponse.Found(data)
       case StorageNodeConflictedRead(data) => GetValueResponse.Conflicts(data)
       case StorageNodeNotFoundRead(id)     => GetValueResponse.NotFound(id)
@@ -26,7 +26,7 @@ class ActorRefStorageNodeClient(private val storageNodeActor: StorageNodeActorRe
   }
 
   override def write(data: Data, w: W): Future[WriteValueResponse] = {
-    (storageNodeActor.storageNodeActor ? Internal.WriteReplica(w, data)).mapTo[StorageNodeWriteResponse].map {
+    (storageNodeActor.ref ? Internal.WriteReplica(w, data)).mapTo[StorageNodeWriteResponse].map {
       case StorageNodeSuccessfulWrite(id)   => WriteValueResponse.Success(id)
       case StorageNodeConflictedWrite(_, _) => WriteValueResponse.Conflict
       case StorageNodeFailedWrite(id)       => WriteValueResponse.Failure(s"Couldn't write value with id ${id.toString}")

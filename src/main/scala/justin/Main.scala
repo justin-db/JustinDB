@@ -73,7 +73,7 @@ object Main extends App {
     }
 
     // CLUSTER CLIENT RECEPTIONIST
-    ClusterClientReceptionist(system).registerService(storageNodeActorRef.storageNodeActor)
+    ClusterClientReceptionist(system).registerService(storageNodeActorRef.ref)
 
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))

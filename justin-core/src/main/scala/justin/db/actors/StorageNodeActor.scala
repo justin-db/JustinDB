@@ -68,4 +68,4 @@ object StorageNodeActor {
   def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = Props(new StorageNodeActor(nodeId, storage, ring, n))
 }
 
-case class StorageNodeActorRef(storageNodeActor: ActorRef) extends AnyVal
+case class StorageNodeActorRef(ref: ActorRef) extends AnyVal
