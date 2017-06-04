@@ -2,6 +2,7 @@ package justin
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
+import akka.cluster.client.ClusterClientReceptionist
 import akka.cluster.http.management.ClusterHttpManagementRoutes
 import akka.event.Logging
 import akka.http.scaladsl.Http
@@ -60,7 +61,7 @@ object Main extends App {
     logger.info("Cluster is ready!")
 
     // STORAGE ACTOR
-    val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
+    val storageNodeActorRef = StorageNodeActorRef {
       val nodeId = NodeId(justinConfig.`node-id`)
       val ring   = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
       val n      = N(justinConfig.replication.N)
@@ -69,18 +70,21 @@ object Main extends App {
         props = StorageNodeActor.props(nodeId, storage, ring, n),
         name  = StorageNodeActor.name(nodeId)
       )
-    })
+    }
+
+    // CLUSTER CLIENT RECEPTIONIST
+    ClusterClientReceptionist(system).registerService(storageNodeActorRef.storageNodeActor)
 
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
     // HTTP API
     val routes = logRequestResult(system.name) {
-        new HttpRouter(storageNodeActorRef).routes ~
-        new HealthCheckRouter().routes ~
-        new BuildInfoRouter().routes(BuildInfo.toJson) ~
-        new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
-        new ServerSideEvents().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
+      new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
+      new HealthCheckRouter().routes ~
+      new BuildInfoRouter().routes(BuildInfo.toJson) ~
+      new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
+      new ServerSideEvents().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
     }
 
     Http()
