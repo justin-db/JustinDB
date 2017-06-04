@@ -84,7 +84,8 @@ object Main extends App {
       new HealthCheckRouter().routes ~
       new BuildInfoRouter().routes(BuildInfo.toJson) ~
       new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
-      new ServerSideEvents().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
+      new ServerSideEvents().routes ~
+      new ClusterClientRouter().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
     }
 
     Http()
