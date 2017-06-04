@@ -101,3 +101,4 @@ lazy val storagePersistent = (project in file("justin-storage-persistent")).sett
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
+addCommandAlias("testAll", ";test:test;multi-jvm:test")
