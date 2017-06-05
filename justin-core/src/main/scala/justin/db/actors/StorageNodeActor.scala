@@ -2,6 +2,7 @@ package justin.db.actors
 
 import akka.actor.{Actor, ActorRef, Props, RootActorPath, Terminated}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
+import akka.cluster.client.ClusterClientReceptionist
 import akka.cluster.{Cluster, Member, MemberStatus}
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.cluster.ClusterMembers
@@ -13,8 +14,10 @@ import justin.db.storage.PluggableStorageProtocol
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor {
 
-  private implicit val ec = context.dispatcher
+  // CLUSTER CLIENT RECEPTIONIST
+  ClusterClientReceptionist(context.system).registerService(self)
 
+  private implicit val ec = context.dispatcher
   private val cluster = Cluster(context.system)
 
   private var clusterMembers   = ClusterMembers.empty

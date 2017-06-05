@@ -73,9 +73,6 @@ object Main extends App {
       )
     }
 
-    // CLUSTER CLIENT RECEPTIONIST
-    ClusterClientReceptionist(system).registerService(storageNodeActorRef.ref)
-
     class ClusterClientStorage extends Actor with ActorLogging {
 
       private var clusterClient: Option[ActorRef] = None
