@@ -1,8 +1,8 @@
 package justin
 
-import akka.actor.ActorSystem
+import akka.actor.{Actor, ActorLogging, ActorPath, ActorRef, ActorSystem, Props}
+import akka.cluster.client.{ClusterClient, ClusterClientReceptionist, ClusterClientSettings}
 import akka.cluster.Cluster
-import akka.cluster.client.ClusterClientReceptionist
 import akka.cluster.http.management.ClusterHttpManagementRoutes
 import akka.event.Logging
 import akka.http.scaladsl.Http
@@ -16,6 +16,7 @@ import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
 import justin.db.storage.JustinDriver
+import justin.http_api.ClusterClientRouter.InitialContacts
 import justin.httpapi._
 
 import scala.language.reflectiveCalls
@@ -75,6 +76,31 @@ object Main extends App {
     // CLUSTER CLIENT RECEPTIONIST
     ClusterClientReceptionist(system).registerService(storageNodeActorRef.ref)
 
+    class ClusterClientStorage extends Actor with ActorLogging {
+
+      private var clusterClient: Option[ActorRef] = None
+
+      def receive = {
+        case initialContacts: InitialContacts =>
+          println("got contacts: " + initialContacts)
+          val contacts = initialContacts.contacts.map(ActorPath.fromString).toSet
+          println("actor paths: " + contacts)
+          val settings = ClusterClientSettings.apply(system = system).withInitialContacts(contacts)
+          clusterClient = Some(system.actorOf(ClusterClient.props(settings), "client"))
+          println("clusterClient: " + clusterClient)
+        case t: String =>
+          println("sedning msg: " + t)
+          println("clusterClient: " + clusterClient)
+          clusterClient.foreach { ref =>
+            println("sending via cluster client")
+            ref ! ClusterClient.Send("/user/id-0", t, localAffinity = false)
+          }
+        case e =>
+          println("nieoczekiwana wiadomosc: " + e)
+      }
+    }
+    val clusterClientStorage = system.actorOf(Props[ClusterClientStorage], "clusterClientStorage")
+
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
@@ -85,7 +111,7 @@ object Main extends App {
       new BuildInfoRouter().routes(BuildInfo.toJson) ~
       new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
       new ServerSideEvents().routes ~
-      new ClusterClientRouter().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
+      new ClusterClientRouter(clusterClientStorage).routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
     }
 
     Http()
