@@ -1,13 +1,14 @@
 package justin.db.actors
 
-import akka.actor.{Actor, ActorRef, Props, RootActorPath, Terminated}
+import akka.actor.{Actor, ActorPath, ActorRef, Props, RootActorPath, Terminated}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import akka.cluster.client.ClusterClientReceptionist
+import akka.cluster.client.{ClusterClient, ClusterClientReceptionist, ClusterClientSettings}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.cluster.ClusterMembers
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica._
+import justin.db.replica.multidatacenter.MultiDataCenterClusterClient
 import justin.db.replica.read.{ReplicaLocalReader, ReplicaReadCoordinator, ReplicaRemoteReader}
 import justin.db.replica.write.{ReplicaLocalWriter, ReplicaRemoteWriter, ReplicaWriteCoordinator}
 import justin.db.storage.PluggableStorageProtocol
@@ -32,15 +33,40 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   override def preStart(): Unit = cluster.subscribe(this.self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(this.self)
 
-  def receive: Receive = receiveDataPF orElse receiveClusterDataPF(nodeId, ring) orElse notHandledPF
-
-  private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadRequest   => coordinatorRouter ! ReadData(sender(), clusterMembers, readData)
-    case writeData: StorageNodeWriteRequest => coordinatorRouter ! WriteData(sender(), clusterMembers, writeData)
+  def receive: Receive = {
+    receiveDataPF orElse
+      multiDataCenterPF orElse
+      receiveClusterDataPF(nodeId, ring) orElse
+      notHandledPF
   }
 
-  private def notHandledPF: Receive = {
-    case t => println("[StorageNodeActor] not handled msg: " + t)
+  private def receiveDataPF: Receive = {
+    case readData: StorageNodeReadRequest   =>
+      coordinatorRouter ! ReadData(sender(), clusterMembers, readData)
+    case writeData: StorageNodeWriteRequest =>
+      println("writing data: " + writeData)
+      coordinatorRouter ! WriteData(sender(), clusterMembers, writeData)
+      println("multiDataCenterClusterClientOpt: " + multiDataCenterClusterClientOpt)
+      multiDataCenterClusterClientOpt.foreach { ref =>
+        println("SENING MULTI DC BECAUSE ITS ENABLED: " + writeData)
+        ref ! WriteCopy(writeData)
+      }
+  }
+
+  private var multiDataCenterClusterClientOpt: Option[ActorRef] = None
+
+  private def multiDataCenterPF: Receive = {
+    case mdc: MultiDataCenterContacts =>
+      val contacts = mdc.contacts.map(ActorPath.fromString).toSet
+      println("actor paths: " + contacts)
+      val settings = ClusterClientSettings.apply(system = context.system).withInitialContacts(contacts)
+      val clusterClientRef = context.system.actorOf(ClusterClient.props(settings), "client")
+      println("clusterClientRef: " + clusterClientRef)
+      multiDataCenterClusterClientOpt = Option(context.system.actorOf(MultiDataCenterClusterClient.props(clusterClientRef, StorageNodeActor.name(nodeId))))
+      println("multiDataCenterClusterClientOpt: " + multiDataCenterClusterClientOpt)
+    case wcp: WriteCopy =>
+      println("write copy: " + wcp)
+      coordinatorRouter ! WriteData(sender(), clusterMembers, wcp.writeData)
   }
 
   private def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
@@ -62,6 +88,10 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
         nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
       } yield nodeRef ! RegisterNode(nodeId)
     }
+  }
+
+  private def notHandledPF: Receive = {
+    case t => println("[StorageNodeActor] not handled msg: " + t)
   }
 }
 
