@@ -41,32 +41,25 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   }
 
   private def receiveDataPF: Receive = {
-    case readData: StorageNodeReadRequest   =>
-      coordinatorRouter ! ReadData(sender(), clusterMembers, readData)
-    case writeData: StorageNodeWriteRequest =>
-      println("writing data: " + writeData)
-      coordinatorRouter ! WriteData(sender(), clusterMembers, writeData)
-      println("multiDataCenterClusterClientOpt: " + multiDataCenterClusterClientOpt)
-      multiDataCenterClusterClientOpt.foreach { ref =>
-        println("SENING MULTI DC BECAUSE ITS ENABLED: " + writeData)
-        ref ! WriteCopy(writeData)
-      }
+    case readReq: StorageNodeReadRequest              =>
+      coordinatorRouter ! ReadData(sender(), clusterMembers, readReq)
+    case writeLocalDataReq: StorageNodeWriteDataLocal =>
+      coordinatorRouter ! WriteData(sender(), clusterMembers, writeLocalDataReq)
+    case writeClientReplicaReq: Internal.WriteReplica =>
+      coordinatorRouter ! WriteData(sender(), clusterMembers, writeClientReplicaReq)
+      multiDataCenterClusterClientOpt.foreach(_ ! WriteCopy(writeClientReplicaReq))
   }
 
   private var multiDataCenterClusterClientOpt: Option[ActorRef] = None
 
   private def multiDataCenterPF: Receive = {
-    case mdc: MultiDataCenterContacts =>
-      val contacts = mdc.contacts.map(ActorPath.fromString).toSet
-      println("actor paths: " + contacts)
+    case MultiDataCenterContacts(initialContacts) =>
+      val contacts = initialContacts.map(ActorPath.fromString).toSet
       val settings = ClusterClientSettings.apply(system = context.system).withInitialContacts(contacts)
       val clusterClientRef = context.system.actorOf(ClusterClient.props(settings), "client")
-      println("clusterClientRef: " + clusterClientRef)
       multiDataCenterClusterClientOpt = Option(context.system.actorOf(MultiDataCenterClusterClient.props(clusterClientRef, StorageNodeActor.name(nodeId))))
-      println("multiDataCenterClusterClientOpt: " + multiDataCenterClusterClientOpt)
-    case wcp: WriteCopy =>
-      println("write copy: " + wcp)
-      coordinatorRouter ! WriteData(sender(), clusterMembers, wcp.writeData)
+    case WriteCopy(writeReq) =>
+      coordinatorRouter ! WriteData(sender(), clusterMembers, writeReq)
   }
 
   private def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
