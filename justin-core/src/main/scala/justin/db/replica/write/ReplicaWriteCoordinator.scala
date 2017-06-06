@@ -28,8 +28,10 @@ class ReplicaWriteCoordinator(
     PreferenceList(ringPartitionId, n, ring).fold(onLeft(data.id), onRight(w, data, clusterMembers))
   }
 
+  // TODO: rename to "onFailure"
   private def onLeft(id: UUID)(err: PreferenceList.Error) = Future.successful(StorageNodeFailedWrite(id))
 
+  // TODO: rename to "onSuccess"
   private def onRight(w: W, data: Data, clusterMembers: ClusterMembers)(preferenceList: PreferenceList) = {
     val updatedData = Data.updateVclock(data, preferenceList)
     makeWrites(w, updatedData, clusterMembers, preferenceList)
