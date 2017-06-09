@@ -4,18 +4,19 @@ object Version {
   val scala        = "2.12.2"
   val scalaBinary  = scala.substring(0,4)
 
-  val akka         = "2.5.2"
-  val akkaKryo     = "0.5.2"
-  val akkaHttp     = "10.0.5"
-  val akkaSse      = "2.0.0"
-  val scalatest    = "3.0.3"
-  val scalacheck   = "1.13.5"
-  val sigarLoader  = "1.6.6"
-  val logback      = "1.2.3"
-  val scalaLogging = "3.5.0"
-  val constructR   = "0.17.0"
-  val configAnnotation = "0.3.6"
-  val macroParadise    = "2.1.0"
+  val akka               = "2.5.2"
+  val akkaKryo           = "0.5.2"
+  val akkaHttp           = "10.0.5"
+  val akkaSse            = "2.0.0"
+  val akkaClusterManager = "0.3"
+  val scalatest          = "3.0.3"
+  val scalacheck         = "1.13.5"
+  val sigarLoader        = "1.6.6"
+  val logback            = "1.2.3"
+  val scalaLogging       = "3.5.0"
+  val constructR         = "0.17.0"
+  val configAnnotation   = "0.3.6"
+  val macroParadise      = "2.1.0"
 }
 
 object Library {
@@ -31,6 +32,7 @@ object Library {
   val akkaHttpSprayJson    = "com.typesafe.akka"     %% "akka-http-spray-json"          % Version.akkaHttp
   val akkaHttpTestkit      = "com.typesafe.akka"     %% "akka-http-testkit"             % Version.akkaHttp
   val akkaKryo             = "com.github.romix.akka" %% "akka-kryo-serialization"       % Version.akkaKryo
+  val akkaClusterManager   = "com.lightbend.akka"    %% "akka-management-cluster-http"  % Version.akkaClusterManager
   val kamonSigar           = "io.kamon"               % "sigar-loader"                  % Version.sigarLoader
 
   // test
@@ -62,7 +64,7 @@ object Dependencies {
 
   private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit, akkaKryo, akkaStream)
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit)
-  private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar)
+  private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar, akkaClusterManager)
 
   private val constructr = Seq(constructR, constructRetcd)
 

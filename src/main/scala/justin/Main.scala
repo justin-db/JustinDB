@@ -2,6 +2,7 @@ package justin
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
+import akka.cluster.http.management.ClusterHttpManagementRoutes
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
@@ -53,7 +54,9 @@ object Main extends App {
   logger.info("-- Replication factor: " + justinConfig.replication.N)
   logger.info("-- ConstructR coordination host: " + justinConfig.config.getString("constructr.coordination.host"))
 
-  Cluster(system).registerOnMemberUp {
+  val cluster = Cluster(system)
+
+  cluster.registerOnMemberUp {
     logger.info("Cluster is ready!")
 
     // STORAGE ACTOR
@@ -77,7 +80,7 @@ object Main extends App {
         new HealthCheckRouter().routes ~
         new BuildInfoRouter().routes(BuildInfo.toJson) ~
         new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
-        new ServerSideEvents().routes
+        new ServerSideEvents().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
     }
 
     Http()
