@@ -47,7 +47,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeLocalDataReq)
     case writeClientReplicaReq: Internal.WriteReplica =>
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeClientReplicaReq)
-      multiDataCenterClusterClientOpt.foreach(_ ! WriteCopy(writeClientReplicaReq))
+      multiDataCenterClusterClientOpt.foreach(_ ! DataCenterReplica(writeClientReplicaReq))
   }
 
   private var multiDataCenterClusterClientOpt: Option[ActorRef] = None
@@ -58,7 +58,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
       val settings = ClusterClientSettings.apply(system = context.system).withInitialContacts(contacts)
       val clusterClientRef = context.system.actorOf(ClusterClient.props(settings), "client")
       multiDataCenterClusterClientOpt = Option(context.system.actorOf(MultiDataCenterClusterClient.props(clusterClientRef, StorageNodeActor.name(nodeId))))
-    case WriteCopy(writeReq) =>
+    case DataCenterReplica(writeReq) =>
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeReq)
   }
 
