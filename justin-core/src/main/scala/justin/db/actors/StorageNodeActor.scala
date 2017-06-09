@@ -53,12 +53,11 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   private var multiDataCenterClusterClientOpt: Option[ActorRef] = None
 
   private def multiDataCenterPF: Receive = {
-    case MultiDataCenterContacts(initialContacts) =>
-      val contacts = initialContacts.map(ActorPath.fromString).toSet
+    case MultiDataCenterContacts(contacts) =>
       val settings = ClusterClientSettings.apply(system = context.system).withInitialContacts(contacts)
       val clusterClientRef = context.system.actorOf(ClusterClient.props(settings), "client")
       multiDataCenterClusterClientOpt = Option(context.system.actorOf(MultiDataCenterClusterClient.props(clusterClientRef, StorageNodeActor.name(nodeId))))
-    case DataCenterReplica(writeReq) =>
+    case DataCenterReplica(writeReq)       =>
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeReq)
   }
 

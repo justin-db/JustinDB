@@ -17,6 +17,7 @@ import justin.db.client.ActorRefStorageNodeClient
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
+import justin.db.replica.multidatacenter.InitialContactsValidator
 import justin.db.storage.JustinDriver
 import justin.httpapi._
 
@@ -74,6 +75,7 @@ object Main extends App {
         name  = StorageNodeActor.name(nodeId)
       )
     }
+    val initialContactsValidator = new InitialContactsValidator(storageNodeActorRef)
 
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
@@ -85,7 +87,7 @@ object Main extends App {
       new BuildInfoRouter().routes(BuildInfo.toJson) ~
       new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
       new ServerSideEvents().routes ~
-      new ClusterClientRouter(storageNodeActorRef).routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
+      new ClusterClientRouter(initialContactsValidator).routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
     }
 
     Http()
