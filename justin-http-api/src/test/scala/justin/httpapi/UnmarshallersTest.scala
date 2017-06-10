@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import java.util.UUID
 

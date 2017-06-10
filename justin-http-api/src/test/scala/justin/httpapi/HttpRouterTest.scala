@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import java.util.UUID
 
@@ -10,7 +10,7 @@ import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValue
 import justin.db.Data
 import justin.db.actors.StorageNodeActorRef
 import justin.db.replica.{R, W}
-import justin.http_api.HttpRouter.PutValue
+import justin.httpapi.HttpRouter.PutValue
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json.{JsString, _}
 

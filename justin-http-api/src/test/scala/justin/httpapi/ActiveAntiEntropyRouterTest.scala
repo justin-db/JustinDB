@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import akka.actor.Actor
 import akka.http.scaladsl.model.StatusCodes
@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.testkit.TestActorRef
 import justin.db.entropy.{ActiveAntiEntropyActorRef, ActiveAntiEntropyProtocol}
-import justin.http_api.ActiveAntiEntropyRouterTest.StubActiveAntiEntropyActor
+import justin.httpapi.ActiveAntiEntropyRouterTest.StubActiveAntiEntropyActor
 import org.scalatest.{FlatSpec, Matchers}
 
 class ActiveAntiEntropyRouterTest extends FlatSpec with Matchers with ScalatestRouteTest {

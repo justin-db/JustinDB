@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import java.util.UUID
 
@@ -13,8 +13,8 @@ import justin.db.client.{ActorRefStorageNodeClient, GetValueResponse, WriteValue
 import justin.db.replica.{R, W}
 import justin.db.storage.Base64
 import justin.db.versioning.NodeIdVectorClockBase64
-import justin.http_api.JustinDirectives._
-import justin.http_api.Unmarshallers.UUIDUnmarshaller
+import justin.httpapi.JustinDirectives._
+import justin.httpapi.Unmarshallers.UUIDUnmarshaller
 import spray.json.DefaultJsonProtocol._
 import spray.json.RootJsonFormat
 

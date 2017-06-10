@@ -15,7 +15,7 @@ import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
 import justin.db.storage.JustinDriver
-import justin.http_api._
+import justin.httpapi._
 
 import scala.language.reflectiveCalls
 

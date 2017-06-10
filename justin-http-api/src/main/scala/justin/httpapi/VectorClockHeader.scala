@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import akka.http.scaladsl.model.headers.{ModeledCustomHeader, ModeledCustomHeaderCompanion}
 import justin.db.consistenthashing.NodeId

@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import justin.db.consistenthashing.NodeId
 import justin.db.vectorclocks.{Counter, VectorClock}

@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
