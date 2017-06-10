@@ -1,4 +1,4 @@
-package justin.crdts.sets
+package justin.db.crdts.sets
 
 import org.scalatest.{FlatSpec, Matchers}
 
