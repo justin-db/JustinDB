@@ -1,4 +1,4 @@
-package justin.merkle_trees
+package justin.db.merkletrees
 
 import org.scalatest.{FlatSpec, Matchers}
 

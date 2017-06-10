@@ -1,4 +1,4 @@
-package justin.merkle_trees
+package justin.db.merkletrees
 
 trait MerkleDigest[T] {
   def digest(t: T): Digest
