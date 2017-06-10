@@ -4,7 +4,7 @@ import java.util.UUID
 
 import justin.db.consistenthashing.NodeId
 import justin.db.replica.PreferenceList
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class DataTest extends FlatSpec with Matchers {

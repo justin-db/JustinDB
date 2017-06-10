@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.io.{Input, Output}
 import justin.db.Data
 import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite}
 import justin.db.consistenthashing.NodeId
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class StorageNodeWriteResponseSerializerTest extends FlatSpec with Matchers {

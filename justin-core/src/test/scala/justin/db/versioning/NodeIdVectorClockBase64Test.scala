@@ -3,7 +3,7 @@ package justin.db.versioning
 import java.nio.charset.StandardCharsets
 
 import justin.db.consistenthashing.NodeId
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class NodeIdVectorClockBase64Test extends FlatSpec with Matchers {

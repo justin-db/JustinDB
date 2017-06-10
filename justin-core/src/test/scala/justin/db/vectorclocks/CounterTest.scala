@@ -1,4 +1,4 @@
-package justin.vector_clocks
+package justin.db.vectorclocks
 
 import org.scalatest.{FlatSpec, Matchers}
 

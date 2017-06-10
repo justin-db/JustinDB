@@ -7,7 +7,7 @@ import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
 import justin.db.Data
 import justin.db.consistenthashing.NodeId
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class DataSerializerTest extends FlatSpec with Matchers {

@@ -1,4 +1,4 @@
-package justin.vector_clocks
+package justin.db.vectorclocks
 
 case class Counter(value: Int) extends AnyVal {
   def addOne: Counter = this.copy(value = value + 1)

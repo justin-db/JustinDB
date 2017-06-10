@@ -1,7 +1,7 @@
 package justin.db
 
 import justin.db.consistenthashing.NodeId
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 
 import scala.language.implicitConversions
 

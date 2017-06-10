@@ -3,7 +3,7 @@ package justin.http_api
 import akka.http.scaladsl.server.directives._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import justin.db.consistenthashing.NodeId
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class JustinDirectivesTest extends FlatSpec with Matchers with ScalatestRouteTest

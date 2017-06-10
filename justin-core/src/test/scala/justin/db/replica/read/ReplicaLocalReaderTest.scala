@@ -7,7 +7,7 @@ import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, S
 import justin.db.consistenthashing.NodeId
 import justin.db.storage.GetStorageProtocol
 import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
-import justin.vector_clocks.VectorClock
+import justin.db.vectorclocks.VectorClock
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 

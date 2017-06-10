@@ -1,7 +1,7 @@
 package justin.http_api
 
 import justin.db.consistenthashing.NodeId
-import justin.vector_clocks.{Counter, VectorClock}
+import justin.db.vectorclocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 
 class VectorClockHeaderTest extends FlatSpec with Matchers {

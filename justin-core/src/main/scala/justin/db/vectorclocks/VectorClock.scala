@@ -1,4 +1,4 @@
-package justin.vector_clocks
+package justin.db.vectorclocks
 
 case class VectorClock[Id](private val clock: Map[Id, Counter]) {
   def get(id: Id): Option[Counter] = clock.get(id)
