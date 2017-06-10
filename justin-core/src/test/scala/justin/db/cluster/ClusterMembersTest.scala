@@ -1,8 +1,8 @@
 package justin.db.cluster
 
 import akka.actor.ActorRef
-import justin.consistent_hashing.NodeId
 import justin.db.actors.StorageNodeActorRef
+import justin.db.consistenthashing.NodeId
 import org.scalatest.{FlatSpec, Matchers}
 
 class ClusterMembersTest extends FlatSpec with Matchers {

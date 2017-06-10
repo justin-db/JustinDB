@@ -5,9 +5,9 @@ import java.util.UUID
 
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
-import justin.consistent_hashing.NodeId
 import justin.db.Data
 import justin.db.actors.protocol.{StorageNodeConflictedRead, StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead}
+import justin.db.consistenthashing.NodeId
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 

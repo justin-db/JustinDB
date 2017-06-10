@@ -3,9 +3,9 @@ package justin.db.actors
 import akka.actor.{Actor, ActorRef, Props, RootActorPath, Terminated}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, Member, MemberStatus}
-import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.cluster.ClusterMembers
+import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica._
 import justin.db.replica.read.{ReplicaLocalReader, ReplicaReadCoordinator, ReplicaRemoteReader}
 import justin.db.replica.write.{ReplicaLocalWriter, ReplicaRemoteWriter, ReplicaWriteCoordinator}

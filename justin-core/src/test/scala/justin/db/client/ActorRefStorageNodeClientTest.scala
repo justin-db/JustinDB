@@ -4,10 +4,10 @@ import java.util.UUID
 
 import akka.actor.{Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit}
-import justin.consistent_hashing.NodeId
 import justin.db.Data
 import justin.db.actors.StorageNodeActorRef
 import justin.db.actors.protocol._
+import justin.db.consistenthashing.NodeId
 import justin.db.replica.{R, W}
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.concurrent.ScalaFutures

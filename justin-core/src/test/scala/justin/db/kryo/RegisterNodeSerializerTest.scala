@@ -4,8 +4,8 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
-import justin.consistent_hashing.NodeId
 import justin.db.actors.protocol.RegisterNode
+import justin.db.consistenthashing.NodeId
 import org.scalatest.{FlatSpec, Matchers}
 
 class RegisterNodeSerializerTest extends FlatSpec with Matchers {

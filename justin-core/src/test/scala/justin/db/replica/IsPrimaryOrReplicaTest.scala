@@ -2,7 +2,7 @@ package justin.db.replica
 
 import java.util.UUID
 
-import justin.consistent_hashing.{NodeId, Ring}
+import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.storage.PluggableStorageProtocol.DataOriginality
 import org.scalatest.{FlatSpec, Matchers}
 

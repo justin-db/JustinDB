@@ -2,7 +2,7 @@ package justin.db.versioning
 
 import java.nio.charset.StandardCharsets
 
-import justin.consistent_hashing.NodeId
+import justin.db.consistenthashing.NodeId
 import justin.vector_clocks.{Counter, VectorClock}
 import org.scalatest.{FlatSpec, Matchers}
 

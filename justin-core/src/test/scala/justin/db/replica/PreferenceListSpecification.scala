@@ -1,6 +1,6 @@
 package justin.db.replica
 
-import justin.consistent_hashing.Ring
+import justin.db.consistenthashing.Ring
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Properties}
 

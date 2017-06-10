@@ -1,6 +1,6 @@
 package justin.db.replica
 
-import justin.consistent_hashing.{NodeId, Ring}
+import justin.db.consistenthashing.{NodeId, Ring}
 import org.scalatest.{FlatSpec, Matchers}
 
 class PreferenceListTest extends FlatSpec with Matchers {

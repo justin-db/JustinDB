@@ -1,7 +1,7 @@
 package justin.db.cluster
 
-import justin.consistent_hashing.NodeId
 import justin.db.actors.StorageNodeActorRef
+import justin.db.consistenthashing.NodeId
 
 case class ClusterMembers(private val members: Map[NodeId, StorageNodeActorRef]) {
 

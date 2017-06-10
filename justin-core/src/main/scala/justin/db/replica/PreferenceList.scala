@@ -1,7 +1,7 @@
 package justin.db.replica
 
-import justin.consistent_hashing.Ring.RingPartitionId
-import justin.consistent_hashing.{NodeId, Ring}
+import justin.db.consistenthashing.{NodeId, Ring}
+import justin.db.consistenthashing.Ring.RingPartitionId
 
 case class PreferenceList(primaryNodeId: NodeId, replicasNodeId: List[NodeId]) {
   def size: Int = all.size

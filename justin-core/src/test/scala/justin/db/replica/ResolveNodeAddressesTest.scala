@@ -1,9 +1,9 @@
 package justin.db.replica
 
 import akka.actor.ActorRef
-import justin.consistent_hashing.NodeId
 import justin.db.actors.StorageNodeActorRef
 import justin.db.cluster.ClusterMembers
+import justin.db.consistenthashing.NodeId
 import org.scalatest.{FlatSpec, Matchers}
 
 class ResolveNodeAddressesTest extends FlatSpec with Matchers {

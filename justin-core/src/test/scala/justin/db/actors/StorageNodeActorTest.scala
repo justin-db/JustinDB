@@ -3,8 +3,8 @@ package justin.db.actors
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
-import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.actors.protocol.RegisterNode
+import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica.N
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
