@@ -1,5 +1,5 @@
 package justin.db.actors.protocol
 
-import justin.consistent_hashing.NodeId
+import justin.db.consistenthashing.NodeId
 
 case class RegisterNode(nodeId: NodeId)

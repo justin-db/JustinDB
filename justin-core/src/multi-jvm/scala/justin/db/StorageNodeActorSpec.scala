@@ -2,9 +2,9 @@ package justin.db
 
 import akka.remote.testkit.MultiNodeSpec
 import akka.testkit.ImplicitSender
-import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
+import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica.N
 
 import scala.concurrent.ExecutionContext.Implicits.global

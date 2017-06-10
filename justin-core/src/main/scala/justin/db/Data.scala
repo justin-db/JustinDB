@@ -4,8 +4,8 @@ import java.util.UUID
 
 import justin.db.replica.PreferenceList
 import justin.db.storage.JustinData
+import justin.db.vectorclocks.VectorClock
 import justin.db.versioning.{NodeIdVectorClock, NodeIdVectorClockBase64}
-import justin.vector_clocks.VectorClock
 
 import scala.language.implicitConversions
 

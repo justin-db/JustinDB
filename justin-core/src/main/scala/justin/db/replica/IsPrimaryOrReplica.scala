@@ -2,7 +2,7 @@ package justin.db.replica
 
 import java.util.UUID
 
-import justin.consistent_hashing.{NodeId, Ring, UUID2RingPartitionId}
+import justin.db.consistenthashing.{NodeId, Ring, UUID2RingPartitionId}
 import justin.db.storage.PluggableStorageProtocol.DataOriginality
 
 class IsPrimaryOrReplica(nodeId: NodeId, ring: Ring) extends (UUID => DataOriginality) {

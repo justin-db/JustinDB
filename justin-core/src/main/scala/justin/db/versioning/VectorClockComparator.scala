@@ -1,7 +1,7 @@
 package justin.db.versioning
 
+import justin.db.vectorclocks.VectorClock
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
-import justin.vector_clocks.VectorClock
 
 class VectorClockComparator[Id] extends ((VectorClock[Id], VectorClock[Id]) => VectorClockRelation) {
 

@@ -9,13 +9,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import buildinfo.BuildInfo
 import com.typesafe.config.ConfigFactory
-import justin.consistent_hashing.{NodeId, Ring}
 import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
+import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
 import justin.db.storage.JustinDriver
-import justin.http_api._
+import justin.httpapi._
 
 import scala.language.reflectiveCalls
 

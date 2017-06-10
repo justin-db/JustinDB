@@ -1,8 +1,7 @@
 package justin.db.replica.read
 
-import justin.consistent_hashing.NodeId
-import justin.db.Data
 import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead, StorageNodeReadResponse}
+import justin.db.consistenthashing.NodeId
 import justin.db.replica.R
 import justin.db.versioning.VectorClockComparator
 import justin.db.versioning.VectorClockComparator.VectorClockRelation

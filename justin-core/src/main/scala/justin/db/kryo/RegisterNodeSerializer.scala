@@ -2,8 +2,8 @@ package justin.db.kryo
 
 import com.esotericsoftware.kryo.io.{Input, Output}
 import com.esotericsoftware.kryo.{Kryo, Serializer}
-import justin.consistent_hashing.NodeId
 import justin.db.actors.protocol.RegisterNode
+import justin.db.consistenthashing.NodeId
 
 object RegisterNodeSerializer extends Serializer[RegisterNode] {
   override def write(kryo: Kryo, output: Output, registerNode: RegisterNode): Unit = {
