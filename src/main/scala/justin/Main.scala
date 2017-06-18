@@ -16,8 +16,7 @@ import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
 import justin.db.replica.multidatacenter.InitialContactsValidator
 import justin.db.storage.JustinDriver
-import justin.http_api.ClusterClientRouter
-import justin.httpapi._
+import justin.httpapi.{ClusterClientRouter, _}
 
 import scala.language.reflectiveCalls
 

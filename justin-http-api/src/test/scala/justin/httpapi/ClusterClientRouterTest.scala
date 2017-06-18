@@ -1,4 +1,4 @@
-package justin.http_api
+package justin.httpapi
 
 import akka.actor.Actor
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
