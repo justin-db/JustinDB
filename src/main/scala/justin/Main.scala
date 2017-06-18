@@ -2,9 +2,6 @@ package justin
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
-import akka.actor.{Actor, ActorLogging, ActorPath, ActorRef, ActorSystem, Props}
-import akka.cluster.client.{ClusterClient, ClusterClientReceptionist, ClusterClientSettings}
-import akka.cluster.Cluster
 import akka.cluster.http.management.ClusterHttpManagementRoutes
 import akka.event.Logging
 import akka.http.scaladsl.Http
@@ -19,6 +16,7 @@ import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
 import justin.db.replica.multidatacenter.InitialContactsValidator
 import justin.db.storage.JustinDriver
+import justin.http_api.ClusterClientRouter
 import justin.httpapi._
 
 import scala.language.reflectiveCalls
