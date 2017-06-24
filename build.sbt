@@ -24,6 +24,7 @@ maintainer.in(Docker) := "Mateusz Maciaszek"
 dockerBaseImage       := "java:8"
 dockerExposedPorts    := Vector(2552, 8000)
 dockerRepository      := Some("justindb")
+dockerCommands        += Cmd("RUN", s"ln -s /opt/docker/cli /bin/cli")
 dockerCommands        += Cmd("RUN", "echo 'cat /opt/docker/motd' >> /etc/bash.bashrc")
 
 // Force building with Java 8

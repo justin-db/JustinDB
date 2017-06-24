@@ -6,9 +6,9 @@
 /\__/ /| |_| |\__ \| |_ | || | | || |/ / | |_/ /
 \____/  \__,_||___/ \__||_||_| |_||___/  \____/
 
-
+Cli:
+	cli help
 More documentation available at:
-    * https://github.com/speedcom/JustinDB
-    * http://speedcom.github.io/
-
+    https://github.com/speedcom/JustinDB
+    http://speedcom.github.io/
 
