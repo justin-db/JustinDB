@@ -18,7 +18,7 @@ class ReplicaRemoteWriter(implicit ec: ExecutionContext) {
   }
 
   private def putLocalValue(node: StorageNodeActorRef, data: Data): Future[StorageNodeWriteResponse] = {
-    (node.storageNodeActor ? StorageNodeWriteDataLocal(data))
+    (node.ref ? StorageNodeWriteDataLocal(data))
       .mapTo[StorageNodeWriteResponse]
       .recover { case _ => StorageNodeFailedWrite(data.id) }
   }

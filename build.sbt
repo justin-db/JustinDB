@@ -69,8 +69,8 @@ lazy val core = (project in file("justin-core"))
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.core
   )
-  .aggregate(storageAPi)
-  .dependsOn(storageAPi)
+  .aggregate(storageApi)
+  .dependsOn(storageApi)
 
 lazy val httpApi = (project in file("justin-http-api"))
   .settings(
@@ -82,7 +82,7 @@ lazy val httpApi = (project in file("justin-http-api"))
   )
   .dependsOn(core)
 
-lazy val storageAPi = (project in file("justin-storage-api")).settings(
+lazy val storageApi = (project in file("justin-storage-api")).settings(
   name := "justin-storage-api",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storageApi
@@ -92,13 +92,13 @@ lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
   name := "justin-storage-in-mem",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storageInMem
-).dependsOn(storageAPi)
+).dependsOn(storageApi)
 
 lazy val storagePersistent = (project in file("justin-storage-persistent")).settings(
   name := "justin-storage-persistent",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storagePersistent
-).dependsOn(storageAPi)
+).dependsOn(storageApi)
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")

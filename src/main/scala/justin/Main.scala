@@ -14,8 +14,9 @@ import justin.db.client.ActorRefStorageNodeClient
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
+import justin.db.replica.multidatacenter.InitialContactsValidator
 import justin.db.storage.JustinDriver
-import justin.httpapi._
+import justin.httpapi.{ClusterClientRouter, _}
 
 import scala.language.reflectiveCalls
 
@@ -43,7 +44,8 @@ object Main extends App {
       |/\__/ /| |_| |\__ \| |_ | || | | || |/ / | |_/ /
       |\____/  \__,_||___/ \__||_||_| |_||___/  \____/
       |
-    """.stripMargin)
+    """.stripMargin
+  )
 
   logger.info("Build Info: " + BuildInfo.toString)
   logger.info("Properties: ")
@@ -60,7 +62,7 @@ object Main extends App {
     logger.info("Cluster is ready!")
 
     // STORAGE ACTOR
-    val storageNodeActorRef = new ActorRefStorageNodeClient(StorageNodeActorRef {
+    val storageNodeActorRef = StorageNodeActorRef {
       val nodeId = NodeId(justinConfig.`node-id`)
       val ring   = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
       val n      = N(justinConfig.replication.N)
@@ -69,18 +71,20 @@ object Main extends App {
         props = StorageNodeActor.props(nodeId, storage, ring, n),
         name  = StorageNodeActor.name(nodeId)
       )
-    })
+    }
+    val initialContactsValidator = new InitialContactsValidator(storageNodeActorRef)
 
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
     // HTTP API
     val routes = logRequestResult(system.name) {
-        new HttpRouter(storageNodeActorRef).routes ~
-        new HealthCheckRouter().routes ~
-        new BuildInfoRouter().routes(BuildInfo.toJson) ~
-        new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
-        new ServerSideEvents().routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
+      new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
+      new HealthCheckRouter().routes ~
+      new BuildInfoRouter().routes(BuildInfo.toJson) ~
+      new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
+      new ServerSideEvents().routes ~
+      new ClusterClientRouter(initialContactsValidator).routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
     }
 
     Http()
