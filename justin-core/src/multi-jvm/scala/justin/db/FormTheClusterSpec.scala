@@ -10,11 +10,11 @@ import justin.db.replica.N
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-class StorageNodeActorSpecMultiJvmNode1 extends StorageNodeActorSpec
-class StorageNodeActorSpecMultiJvmNode2 extends StorageNodeActorSpec
-class StorageNodeActorSpecMultiJvmNode3 extends StorageNodeActorSpec
+class StorageNodeActorSpecMultiJvmNode1 extends FormTheClusterSpec
+class StorageNodeActorSpecMultiJvmNode2 extends FormTheClusterSpec
+class StorageNodeActorSpecMultiJvmNode3 extends FormTheClusterSpec
 
-class StorageNodeActorSpec extends MultiNodeSpec(StorageNodeActorConfig("StorageNodeActorSpec"))
+class FormTheClusterSpec extends MultiNodeSpec(StorageNodeActorConfig("StorageNodeActorSpec"))
   with ScalaTestMultiNodeSpec
   with ImplicitSender {
 
