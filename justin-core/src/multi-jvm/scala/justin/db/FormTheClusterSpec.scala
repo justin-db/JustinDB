@@ -13,21 +13,17 @@ import scala.concurrent.duration._
 class StorageNodeActorSpecMultiJvmNode1 extends FormTheClusterSpec
 class StorageNodeActorSpecMultiJvmNode2 extends FormTheClusterSpec
 class StorageNodeActorSpecMultiJvmNode3 extends FormTheClusterSpec
+class StorageNodeActorSpecMultiJvmNode4 extends FormTheClusterSpec
+class StorageNodeActorSpecMultiJvmNode5 extends FormTheClusterSpec
 
-class FormTheClusterSpec extends MultiNodeSpec(StorageNodeActorConfig("StorageNodeActorSpec"))
+class FormTheClusterSpec extends MultiNodeSpec(StorageNodeActorConfig("FormTheClusterSpec"))
   with ScalaTestMultiNodeSpec
   with ImplicitSender {
 
-  private val config = StorageNodeActorConfig("StorageNodeActorSpec")
+  private val config = StorageNodeActorConfig("FormTheClusterSpec")
   import config._
 
   override def initialParticipants: Int = roles.size
-
-  private[this] val seedStorageNodeAddress = node(seed).address
-  private[this] val storageNode1Address    = node(node1).address
-  private[this] val storageNode2Address    = node(node2).address
-
-  muteDeadLetters(classOf[Any])(system)
 
   "Storage Node Actors" must {
 
@@ -36,17 +32,24 @@ class FormTheClusterSpec extends MultiNodeSpec(StorageNodeActorConfig("StorageNo
     }
 
     "form the cluster" in within(10.seconds) {
-      runOn(seed) {
-        val storageNodeActor1 = storageNodeActorRef(NodeId(0))
-        enterBarrier("deployed")
-      }
       runOn(node1) {
-        val storageNodeActor2 = storageNodeActorRef(NodeId(1))
+        val _ = storageNodeActorRef(NodeId(0))
         enterBarrier("deployed")
-
       }
       runOn(node2) {
-        val storageNodeActor3 = storageNodeActorRef(NodeId(2))
+        val _ = storageNodeActorRef(NodeId(1))
+        enterBarrier("deployed")
+      }
+      runOn(node3) {
+        val _ = storageNodeActorRef(NodeId(2))
+        enterBarrier("deployed")
+      }
+      runOn(node4) {
+        val _ = storageNodeActorRef(NodeId(3))
+        enterBarrier("deployed")
+      }
+      runOn(node5) {
+        val _ = storageNodeActorRef(NodeId(4))
         enterBarrier("deployed")
       }
 
@@ -56,7 +59,7 @@ class FormTheClusterSpec extends MultiNodeSpec(StorageNodeActorConfig("StorageNo
 
   private def storageNodeActorRef(nodeId: NodeId) = new ActorRefStorageNodeClient(StorageNodeActorRef {
     system.actorOf(
-      props = StorageNodeActor.props(nodeId, null, Ring.apply(nodesSize = 3, partitionsSize =  21), N(3)),
+      props = StorageNodeActor.props(nodeId, null, Ring.apply(nodesSize = nodes.size, partitionsSize =  nodes.size * 15), N(3)), // TODO: storage can't be null
       name  = StorageNodeActor.name(nodeId)
     )
   })
