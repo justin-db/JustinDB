@@ -9,6 +9,9 @@
 ![Project Status](https://img.shields.io/badge/status-beta-yellow.svg)
 [![Gitter](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/justin-db/Lobby)
 
+[![Watch on GitHub](https://img.shields.io/github/watchers/justin-db/JustinDB.svg?style=social)](https://github.com/justin-db/JustinDB/watchers)
+[![Star on GitHub](https://img.shields.io/github/stars/justin-db/JustinDB.svg?style=social)](https://github.com/justin-db/JustinDB/stargazers)
+
 **Distributed Key-Value Storage built on top of Scala/Akka**
 
 JustinDB KV is an eventually consistent key-value database that favours write availability.
