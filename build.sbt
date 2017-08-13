@@ -94,11 +94,12 @@ lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
   libraryDependencies ++= Dependencies.storageInMem
 ).dependsOn(storageApi)
 
+lazy val logDB = RootProject(uri("git://github.com/justin-db/LogDB.git#0.0.1"))
 lazy val storagePersistent = (project in file("justin-storage-persistent")).settings(
   name := "justin-storage-persistent",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storagePersistent
-).dependsOn(storageApi)
+).dependsOn(storageApi, logDB)
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
