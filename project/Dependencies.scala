@@ -1,22 +1,22 @@
 import sbt._
 
 object Version {
-  val scala        = "2.12.2"
+  val scala        = "2.12.3"
   val scalaBinary  = scala.substring(0,4)
 
-  val akka               = "2.5.2"
+  val akka               = "2.5.4"
   val akkaKryo           = "0.5.2"
-  val akkaHttp           = "10.0.5"
+  val akkaHttp           = "10.0.9"
   val akkaSse            = "2.0.0"
   val akkaClusterManager = "0.3"
   val scalatest          = "3.0.3"
   val scalacheck         = "1.13.5"
   val sigarLoader        = "1.6.6"
   val logback            = "1.2.3"
-  val scalaLogging       = "3.5.0"
+  val scalaLogging       = "3.7.2"
   val constructR         = "0.17.0"
-  val configAnnotation   = "0.3.6"
-  val macroParadise      = "2.1.0"
+  val configAnnotation   = "0.3.7"
+  val macroParadise      = "2.1.1"
 }
 
 object Library {
