@@ -18,6 +18,22 @@ JustinDB KV is an eventually consistent key-value database that favours write av
 It’s a faithful implementation of Amazon’s Dynamo, with advanced features such as vector clocks for conflict resolution.
 JustinDB is also fault-tolerant. Servers can go up or down at any moment with no single point of failure.
 
+```
+➜  JustinDB git:(master) ✗ docker exec -it justindb /bin/bash
+   ___              _    _        ______ ______
+  |_  |            | |  (_)       |  _  \| ___ \
+    | | _   _  ___ | |_  _  _ __  | | | || |_/ /
+    | || | | |/ __|| __|| || '_ \ | | | || ___ \
+/\__/ /| |_| |\__ \| |_ | || | | || |/ / | |_/ /
+\____/  \__,_||___/ \__||_||_| |_||___/  \____/
+
+Cli:
+    cli help
+More documentation available at:
+    https://github.com/speedcom/JustinDB
+    http://speedcom.github.io/
+```
+
 ## Summary of techniques
 
 | Problem | Technique  | Advantage  |
