@@ -10,12 +10,16 @@ import justin.db.actors.protocol._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
+import scala.concurrent.duration._
+
 class ReplicaRemoteReaderTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike
   with Matchers
   with ScalaFutures {
 
   behavior of "Replica Remote Reader"
+
+  override implicit def patienceConfig: PatienceConfig = PatienceConfig(10.seconds, 50.millis)
 
   it should "get info back that one of the value could be found and second one is obsolete" in {
     // given

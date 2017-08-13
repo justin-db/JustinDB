@@ -10,12 +10,16 @@ import justin.db.actors.protocol.{StorageNodeFailedWrite, StorageNodeSuccessfulW
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpecLike, Matchers}
 
+import scala.concurrent.duration._
+
 class ReplicaRemoteWriterTest extends TestKit(ActorSystem("test-system"))
   with FlatSpecLike
   with Matchers
   with ScalaFutures {
 
   behavior of "Replica Remote Writer"
+
+  override implicit def patienceConfig: PatienceConfig = PatienceConfig(10.seconds, 50.millis)
 
   it should "get info back that one of the saving is successful and second one has failed" in {
     // given
