@@ -12,11 +12,14 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReplicaLocalReaderTest extends FlatSpec with Matchers with ScalaFutures {
 
   behavior of "Replica Local Reader"
+
+  override implicit def patienceConfig: PatienceConfig = PatienceConfig(10.seconds, 50.millis)
 
   it should "found data for existing key" in {
     // given
