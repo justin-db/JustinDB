@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PersistentStorage extends PluggableStorageProtocol {
   println("PERSISTENT STORAGE LOADED")
 
-  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = ???
+  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = ???
 
-  override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = ???
+  override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
 }

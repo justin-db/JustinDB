@@ -10,14 +10,14 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * NOT THREAD-SAFE!
   */
-class InMemStorage extends PluggableStorageProtocol {
+class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
   println("IN-MEMORY STORAGE LOADED")
 
   private type MMap           = mutable.Map[RingPartitionId, Map[UUID, JustinData]]
   private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
   private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
 
-  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = Future.successful {
+  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful {
     def get(mmap: MMap, partitionId: RingPartitionId) = {
       mmap.get(partitionId).fold[StorageGetData](StorageGetData.None) { _.get(id) match {
         case Some(data) => StorageGetData.Single(data)
@@ -31,7 +31,7 @@ class InMemStorage extends PluggableStorageProtocol {
     }
   }
 
-  override def put(putData: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = {
+  override def put(putData: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
     def update(mmap: MMap, partitionId: RingPartitionId, data: JustinData) = {
       mmap.get(partitionId) match {
         case Some(partitionMap) => mmap + (partitionId -> (partitionMap ++ Map(data.id -> data)))

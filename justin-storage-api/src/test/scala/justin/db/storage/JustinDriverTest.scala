@@ -17,6 +17,6 @@ class JustinDriverTest extends FlatSpec with Matchers {
 }
 
 private class PluggableStorageProtocolImpl extends PluggableStorageProtocol {
-  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[StorageGetData] = ???
-  override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality)(implicit ec: ExecutionContext): Future[Ack] = ???
+  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = ???
+  override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
 }
