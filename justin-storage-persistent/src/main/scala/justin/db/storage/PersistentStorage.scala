@@ -9,7 +9,6 @@ import logdb.LogDB
 import scala.concurrent.Future
 
 class PersistentStorage extends PluggableStorageProtocol {
-  println("PERSISTENT-STORAGE LOADED")
 
   private[this] val logDB = {
     val journalPath: String = "/opt/docker/justindb/journal" // TODO: make it configurable

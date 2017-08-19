@@ -11,7 +11,6 @@ import scala.concurrent.{ExecutionContext, Future}
   * NOT THREAD-SAFE!
   */
 class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
-  println("IN-MEMORY STORAGE LOADED")
 
   private type MMap           = mutable.Map[RingPartitionId, Map[UUID, JustinData]]
   private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
