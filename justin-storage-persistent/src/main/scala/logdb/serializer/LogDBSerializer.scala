@@ -12,20 +12,13 @@ trait LogDBSerializer[K, V] {
   protected def readValue(serialized: Array[Byte]): V
 
   final def serialize(key: K, value: V): Array[Byte] = {
-    def serializeLength(key: Int) = {
-      val out = new ByteArrayOutputStream()
-      val out2 = new DataOutputStream(out)
-      out2.writeInt(key)
-      out.toByteArray
-    }
+    val keyBytes: Array[Byte] = writeKey(key)
+    val valueBytes: Array[Byte] = writeValue(value)
 
-    val serializedKey: Array[Byte] = writeKey(key)
-    val serializedValue: Array[Byte] = writeValue(value)
+    val keySizeBytes: Array[Byte] = int2bytes(keyBytes.length)
+    val valueSizeBytes: Array[Byte] = int2bytes(valueBytes.length)
 
-    val serializedSizeKey: Array[Byte]   = serializeLength(serializedKey.length)
-    val serializedSizeValue: Array[Byte] = serializeLength(serializedValue.length)
-
-    serializedSizeKey ++ serializedSizeValue ++ serializedKey ++ serializedValue
+    keySizeBytes ++ valueSizeBytes ++ keyBytes ++ valueBytes
   }
 
   final def deserialize(raf: RandomAccessFile): (K, V) = {
