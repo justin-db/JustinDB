@@ -21,6 +21,7 @@ trait justin extends Configurable {
   }
 
   val `storage-type`: String = "justin.db.storage.InMemStorage"
+  val `storage-journal-path`: String = "/var/justindb/journal"
 
   val http = new {
     val interface: String = "0.0.0.0"
