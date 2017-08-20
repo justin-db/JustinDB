@@ -8,12 +8,11 @@ import logdb.LogDB
 
 import scala.concurrent.Future
 
-class PersistentStorage(journalPath: String) extends PluggableStorageProtocol {
+class PersistentStorage(journalFile: File) extends PluggableStorageProtocol {
 
   private[this] val logDB = {
-    val file: File = new File(journalPath)
-    file.createNewFile()
-    new LogDB(file)(new JustinLogDBSerializer)
+    journalFile.createNewFile()
+    new LogDB(journalFile)(new JustinLogDBSerializer)
   }
 
   override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful {
