@@ -5,12 +5,12 @@ import java.util.UUID
 import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * NOT THREAD-SAFE!
   */
-class InMemStorage(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
+class InMemStorage extends PluggableStorageProtocol {
 
   private type MMap           = mutable.Map[RingPartitionId, Map[UUID, JustinData]]
   private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
