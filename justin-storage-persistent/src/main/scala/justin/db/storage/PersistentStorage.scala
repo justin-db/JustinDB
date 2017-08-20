@@ -8,10 +8,9 @@ import logdb.LogDB
 
 import scala.concurrent.Future
 
-class PersistentStorage extends PluggableStorageProtocol {
+class PersistentStorage(journalPath: String) extends PluggableStorageProtocol {
 
   private[this] val logDB = {
-    val journalPath: String = "/opt/docker/justindb/journal" // TODO: make it configurable
     val file: File = new File(journalPath)
     file.createNewFile()
     new LogDB(file)(new JustinLogDBSerializer)
