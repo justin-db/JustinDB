@@ -1,5 +1,7 @@
 package justin
 
+import java.io.File
+
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
 import akka.cluster.http.management.ClusterHttpManagementRoutes
@@ -33,7 +35,8 @@ object Main extends App {
 
   val logger = Logging(system, getClass)
 
-  val storage = JustinDriver.load(justinConfig.`storage-type`)
+  val eventualJournalFile: File = new File(justinConfig.`storage-journal-path`)
+  val storage = JustinDriver.load(justinConfig.`storage-type`)(eventualJournalFile)
 
   logger.info(
     """
