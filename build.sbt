@@ -58,8 +58,8 @@ lazy val root = (project in file("."))
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
   .settings(configAnnotationSettings)
-  .aggregate(core, httpApi, storageInMem, storagePersistent)
-  .dependsOn(core, httpApi, storageInMem, storagePersistent) // TODO: storageInMem/storagePersistent should be provided
+  .aggregate(core, httpApi, storageInMem, storageLogDBExperimental)
+  .dependsOn(core, httpApi, storageInMem, storageLogDBExperimental)
 
 lazy val core = (project in file("justin-core"))
   .enablePlugins(SbtMultiJvm)
@@ -94,10 +94,10 @@ lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
   libraryDependencies ++= Dependencies.storageInMem
 ).dependsOn(storageApi)
 
-lazy val storagePersistent = (project in file("justin-storage-persistent")).settings(
-  name := "justin-storage-persistent",
+lazy val storageLogDBExperimental = (project in file("justin-storage-logdb-experimental")).settings(
+  name := "justin-storage-logdb-experimental",
   scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storagePersistent
+  libraryDependencies ++= Dependencies.storageLogDBExperimental
 ).dependsOn(storageApi)
 
 // ALIASES
