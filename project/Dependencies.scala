@@ -74,7 +74,7 @@ object Dependencies {
 
   val storageApi = genericTest
   val storageInMem = genericTest
-  val storagePersistent = genericTest
+  val storageLogDBExperimental = genericTest
 
   val root = core ++ httpApi ++ storageApi ++ constructr
 }
