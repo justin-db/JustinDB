@@ -100,6 +100,12 @@ lazy val storageLogDBExperimental = (project in file("justin-storage-logdb-exper
   libraryDependencies ++= Dependencies.storageLogDBExperimental
 ).dependsOn(storageApi)
 
+lazy val storageRocksDB = (project in file("justin-storage-rocksdb")).settings(
+  name := "justin-storage-rocksdb",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.storageRocksDB
+).dependsOn(storageApi)
+
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 addCommandAlias("testAll", ";test:test;multi-jvm:test")
