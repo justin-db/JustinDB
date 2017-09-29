@@ -3,7 +3,7 @@ package justin.db.storage
 import java.io.File
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{DataOriginality, StorageGetData}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -35,7 +35,7 @@ class PersistentStorageTest extends FlatSpec with Matchers with ScalaFutures {
 
     {
       val persistentStorage = new PersistentStorage(journalFile)
-      justinData.foreach(d => persistentStorage.put(StoragePutData(d))(_ => DataOriginality.Primary(1)))
+      justinData.foreach(data => persistentStorage.put(data)(_ => DataOriginality.Primary(1)))
     }
 
     val persistentStorage = new PersistentStorage(journalFile) // second instance (data is durably saved so we should be able to read them afterward)

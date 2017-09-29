@@ -2,13 +2,12 @@ package justin.db.storage
 
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData}
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
-import language.postfixOps
+import scala.language.postfixOps
 
 class InMemStorageTest extends FlatSpec with Matchers {
 
@@ -16,7 +15,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
 
   it should "store single data" in {
     // given
-    val data         = StoragePutData(prepareData(UUID.randomUUID(), "some-data"))
+    val data         = prepareData(UUID.randomUUID(), "some-data")
     val inMemStorage = new InMemStorage
     val resolver     = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
 
@@ -29,16 +28,16 @@ class InMemStorageTest extends FlatSpec with Matchers {
 
   it should "get single data for appropriate identifier" in {
     // given
-    val data         = StoragePutData(prepareData(UUID.randomUUID(), "some-data"))
+    val data         = prepareData(UUID.randomUUID(), "some-data")
     val inMemStorage = new InMemStorage
     val resolver     = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
     Await.result(inMemStorage.put(data)(resolver), atMost = 5 seconds)
 
     // when
-    val result = Await.result(inMemStorage.get(data.data.id)(resolver), atMost = 5 seconds)
+    val result = Await.result(inMemStorage.get(data.id)(resolver), atMost = 5 seconds)
 
     // then
-    result shouldBe StorageGetData.Single(data.data)
+    result shouldBe StorageGetData.Single(data)
   }
 
   it should "get none data for not existing id in memory" in {
@@ -46,7 +45,7 @@ class InMemStorageTest extends FlatSpec with Matchers {
     val noExistingId = UUID.randomUUID()
     val inMemStorage = new InMemStorage
     val resolver     = (id: UUID) => DataOriginality.Primary(ringPartitionId = 1)
-    val otherData    = StoragePutData(prepareData(id = UUID.randomUUID(), "some-data"))
+    val otherData    = prepareData(id = UUID.randomUUID(), "some-data")
     Await.result(inMemStorage.put(otherData)(resolver), atMost = 5 seconds)
 
     // when
@@ -74,8 +73,8 @@ class InMemStorageTest extends FlatSpec with Matchers {
     // given
     val id1          = UUID.randomUUID()
     val id2          = UUID.randomUUID()
-    val data1        = StoragePutData(prepareData(id1, "some-data"))
-    val data2        = StoragePutData(prepareData(id2, "some-data"))
+    val data1        = prepareData(id1, "some-data")
+    val data2        = prepareData(id2, "some-data")
     val resolver     = (id: UUID) => DataOriginality.Replica(ringPartitionId = 1)
     val inMemStorage = new InMemStorage
 
@@ -87,8 +86,8 @@ class InMemStorageTest extends FlatSpec with Matchers {
     val result2 = Await.result(inMemStorage.get(id2)(resolver), atMost = 5 seconds)
 
     // then
-    result1 shouldBe StorageGetData.Single(data1.data)
-    result2 shouldBe StorageGetData.Single(data2.data)
+    result1 shouldBe StorageGetData.Single(data1)
+    result2 shouldBe StorageGetData.Single(data2)
   }
 
   it should "get \"InMemStorage\" name" in {
