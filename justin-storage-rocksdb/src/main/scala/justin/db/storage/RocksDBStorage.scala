@@ -8,13 +8,13 @@ import com.esotericsoftware.kryo.{Kryo, Serializer}
 import justin.db.storage.PluggableStorageProtocol.{Ack, StorageGetData}
 import org.rocksdb.{FlushOptions, Options, RocksDB}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 // TODO:
 // Current version store every single data under one file (totally doesn't care about data originality).
 // Data should be eventually splitted by ring partitionId.
 // This might be an issue during possible data movements between nodes.
-final class RocksDBStorage(dir: File)(implicit ec: ExecutionContext) extends PluggableStorageProtocol {
+final class RocksDBStorage(dir: File) extends PluggableStorageProtocol {
   import RocksDBStorage._
 
   {
