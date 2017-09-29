@@ -5,10 +5,11 @@ object Version {
   val scalaBinary  = scala.substring(0,4)
 
   val akka               = "2.5.4"
-  val akkaKryo           = "0.5.2"
   val akkaHttp           = "10.0.9"
   val akkaSse            = "2.0.0"
   val akkaClusterManager = "0.3"
+  val akkaKryo           = "0.5.2"
+  val kryo               = "4.0.0"
   val scalatest          = "3.0.3"
   val scalacheck         = "1.13.5"
   val sigarLoader        = "1.6.6"
@@ -58,7 +59,8 @@ object Library {
   val constructRetcd       = "de.heikoseeberger" %% "constructr-coordination-etcd"      % Version.constructR
 
   // storage
-  val rocksdb              = "org.rocksdb"        % "rocksdbjni"                        % Version.rocksDB
+  val rocksdb              = "org.rocksdb"           % "rocksdbjni"                     % Version.rocksDB
+  val kryo                 = "com.esotericsoftware"  % "kryo"                           % Version.kryo % "provided"
 }
 
 object Dependencies {
@@ -79,7 +81,7 @@ object Dependencies {
   val storageApi = genericTest
   val storageInMem = genericTest
   val storageLogDBExperimental = genericTest
-  val storageRocksDB = Seq(rocksdb, rocksdb % "test") ++ genericTest
+  val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
 
   val root = core ++ httpApi ++ storageApi ++ constructr
 }
