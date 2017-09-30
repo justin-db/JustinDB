@@ -2,7 +2,7 @@ package justin.db.storage
 
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData}
 
 import scala.collection.mutable
 import scala.concurrent.Future
@@ -30,7 +30,7 @@ class InMemStorage extends PluggableStorageProtocol {
     }
   }
 
-  override def put(putData: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
+  override def put(data: JustinData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
     def update(mmap: MMap, partitionId: RingPartitionId, data: JustinData) = {
       mmap.get(partitionId) match {
         case Some(partitionMap) => mmap + (partitionId -> (partitionMap ++ Map(data.id -> data)))
@@ -38,9 +38,9 @@ class InMemStorage extends PluggableStorageProtocol {
       }
     }
 
-    resolveOriginality(putData.data.id) match {
-      case DataOriginality.Primary(partitionId) => primaries = update(primaries, partitionId, putData.data)
-      case DataOriginality.Replica(partitionId) => replicas  = update(replicas, partitionId, putData.data)
+    resolveOriginality(data.id) match {
+      case DataOriginality.Primary(partitionId) => primaries = update(primaries, partitionId, data)
+      case DataOriginality.Replica(partitionId) => replicas  = update(replicas, partitionId, data)
     }
 
     Ack.future

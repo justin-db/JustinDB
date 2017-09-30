@@ -5,10 +5,11 @@ object Version {
   val scalaBinary  = scala.substring(0,4)
 
   val akka               = "2.5.4"
-  val akkaKryo           = "0.5.2"
   val akkaHttp           = "10.0.9"
   val akkaSse            = "2.0.0"
   val akkaClusterManager = "0.3"
+  val akkaKryo           = "0.5.2"
+  val kryo               = "4.0.0"
   val scalatest          = "3.0.3"
   val scalacheck         = "1.13.5"
   val sigarLoader        = "1.6.6"
@@ -17,6 +18,7 @@ object Version {
   val constructR         = "0.17.0"
   val configAnnotation   = "0.3.7"
   val macroParadise      = "2.1.1"
+  val rocksDB            = "5.5.1"
 }
 
 object Library {
@@ -35,7 +37,7 @@ object Library {
   val akkaClusterManager   = "com.lightbend.akka"    %% "akka-management-cluster-http"  % Version.akkaClusterManager
   val kamonSigar           = "io.kamon"               % "sigar-loader"                  % Version.sigarLoader
 
-  // test
+  // generic test
   val scalactic            = "org.scalactic"     %% "scalactic"                         % Version.scalatest
   val scalatest            = "org.scalatest"     %% "scalatest"                         % Version.scalatest
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
@@ -55,6 +57,10 @@ object Library {
   // service discovery
   val constructR           = "de.heikoseeberger" %% "constructr"                        % Version.constructR
   val constructRetcd       = "de.heikoseeberger" %% "constructr-coordination-etcd"      % Version.constructR
+
+  // storage
+  val rocksdb              = "org.rocksdb"           % "rocksdbjni"                     % Version.rocksDB
+  val kryo                 = "com.esotericsoftware"  % "kryo"                           % Version.kryo % "provided"
 }
 
 object Dependencies {
@@ -75,6 +81,7 @@ object Dependencies {
   val storageApi = genericTest
   val storageInMem = genericTest
   val storageLogDBExperimental = genericTest
+  val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
 
   val root = core ++ httpApi ++ storageApi ++ constructr
 }

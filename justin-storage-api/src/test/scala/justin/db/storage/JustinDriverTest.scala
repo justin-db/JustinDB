@@ -3,7 +3,7 @@ package justin.db.storage
 import java.io.File
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData}
 import justin.db.storage.drivers.{PersistentStorage, PluggableStorageProtocolImpl}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -25,12 +25,12 @@ class JustinDriverTest extends FlatSpec with Matchers {
 package drivers {
   class PluggableStorageProtocolImpl extends PluggableStorageProtocol {
     override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = ???
-    override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
+    override def put(data: JustinData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
   }
 
   class PersistentStorage(journalFile: File) extends PluggableStorageProtocol {
 
     override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = ???
-    override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
+    override def put(data: JustinData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = ???
   }
 }

@@ -2,7 +2,7 @@ package justin.db.storage
 
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData}
 
 import scala.concurrent.Future
 
@@ -11,7 +11,7 @@ trait GetStorageProtocol {
 }
 
 trait PutStorageProtocol {
-  def put(cmd: StoragePutData)(resolveOriginality: UUID => DataOriginality): Future[Ack]
+  def put(data: JustinData)(resolveOriginality: UUID => DataOriginality): Future[Ack]
 }
 
 trait PluggableStorageProtocol extends GetStorageProtocol with PutStorageProtocol {
@@ -25,8 +25,6 @@ object PluggableStorageProtocol {
     case class Single(data: JustinData) extends StorageGetData
     case object None                    extends StorageGetData
   }
-
-  case class StoragePutData(data: JustinData) extends AnyVal
 
   sealed trait Ack
   case object Ack extends Ack {

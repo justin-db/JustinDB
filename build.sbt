@@ -58,8 +58,8 @@ lazy val root = (project in file("."))
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
   .settings(configAnnotationSettings)
-  .aggregate(core, httpApi, storageInMem, storageLogDBExperimental)
-  .dependsOn(core, httpApi, storageInMem, storageLogDBExperimental)
+  .aggregate(core, httpApi, storageInMem, storageLogDBExperimental, storageRocksDB)
+  .dependsOn(core, httpApi, storageInMem, storageLogDBExperimental, storageRocksDB)
 
 lazy val core = (project in file("justin-core"))
   .enablePlugins(SbtMultiJvm)
@@ -98,6 +98,12 @@ lazy val storageLogDBExperimental = (project in file("justin-storage-logdb-exper
   name := "justin-storage-logdb-experimental",
   scalaVersion := Version.scala,
   libraryDependencies ++= Dependencies.storageLogDBExperimental
+).dependsOn(storageApi)
+
+lazy val storageRocksDB = (project in file("justin-storage-rocksdb")).settings(
+  name := "justin-storage-rocksdb",
+  scalaVersion := Version.scala,
+  libraryDependencies ++= Dependencies.storageRocksDB
 ).dependsOn(storageApi)
 
 // ALIASES

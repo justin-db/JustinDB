@@ -3,7 +3,7 @@ package justin.db.replica.write
 import justin.db.Data
 import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedWrite, StorageNodeSuccessfulWrite, StorageNodeWriteResponse}
 import justin.db.replica.IsPrimaryOrReplica
-import justin.db.storage.PluggableStorageProtocol.{StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.StorageGetData
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
 import justin.db.versioning.VectorClockComparator
 import justin.db.versioning.VectorClockComparator.VectorClockRelation
@@ -28,6 +28,6 @@ class ReplicaLocalWriter(storage: GetStorageProtocol with PutStorageProtocol)(im
   }
 
   private def putSingleSuccessfulWrite(newData: Data, resolveDataOriginality: IsPrimaryOrReplica) = {
-    storage.put(StoragePutData(newData))(resolveDataOriginality).map(_ => StorageNodeSuccessfulWrite(newData.id))
+    storage.put(newData)(resolveDataOriginality).map(_ => StorageNodeSuccessfulWrite(newData.id))
   }
 }

@@ -3,7 +3,7 @@ package justin.db.storage
 import java.io.File
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData, StoragePutData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData}
 import logdb.LogDB
 
 import scala.concurrent.Future
@@ -21,8 +21,8 @@ class PersistentStorage(journalFile: File) extends PluggableStorageProtocol {
       .getOrElse(StorageGetData.None)
   }
 
-  override def put(cmd: StoragePutData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
-    logDB.save(cmd.data.id, cmd.data)
+  override def put(data: JustinData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
+    logDB.save(data.id, data)
     Ack.future
   }
 }
