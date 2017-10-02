@@ -4,7 +4,7 @@ import java.io.File
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
-import akka.cluster.http.management.ClusterHttpManagementRoutes
+import akka.cluster.http.management.ClusterHttpManagement
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
@@ -80,6 +80,11 @@ object Main extends App {
     // ENTROPY ACTOR
     val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
+    // AKKA-MANAGEMENT
+    ClusterHttpManagement(cluster).start().foreach { _ =>
+      logger.info("Cluster HTTP-Management is ready!")
+    }
+
     // HTTP API
     val routes = logRequestResult(system.name) {
       new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
@@ -87,7 +92,7 @@ object Main extends App {
       new BuildInfoRouter().routes(BuildInfo.toJson) ~
       new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
       new ServerSideEvents().routes ~
-      new ClusterClientRouter(initialContactsValidator).routes ~ ClusterHttpManagementRoutes.apply(cluster, pathPrefixName = "cluster")
+      new ClusterClientRouter(initialContactsValidator).routes
     }
 
     Http()
