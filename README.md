@@ -31,7 +31,7 @@ Cli:
     cli help
 More documentation available at:
     https://github.com/speedcom/JustinDB
-    http://speedcom.github.io/
+    https://speedcom.github.io/
 ```
 
 ## Summary of techniques
