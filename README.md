@@ -42,7 +42,6 @@ More documentation available at:
 |Membership and failure detection  |Gossip-based membership protocol and failure detection|Preserves symmetry and avoids having a centralized registry for storing membership and node liveness information|
 |High Availability for writes      |Vector clocks with reconciliation during reads        |Version size is decoupled from update rites|
 |Recovering from permanent failures|Anti-entropy using Merkle trees                       |Synchronizes divergent replicas in the background|
-|Conflicts resolution              |CRDTs                                                 |Automatic conflict resolution during reads
 
 ### Why akka
 Its a toolkit and runtime for building highly concurrent applications which comes
