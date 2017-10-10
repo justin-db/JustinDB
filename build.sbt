@@ -62,7 +62,6 @@ lazy val root = (project in file("."))
   .dependsOn(core, httpApi, storageInMem, storageLogDBExperimental, storageRocksDB)
 
 lazy val core = (project in file("justin-core"))
-  .enablePlugins(SbtMultiJvm)
   .configs(MultiJvm)
   .settings(
     name := "justin-core",
