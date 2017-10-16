@@ -1,5 +1,6 @@
 package justin.db
 
+import akka.cluster.Cluster
 import akka.remote.testkit.MultiNodeSpec
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.Suite
@@ -24,5 +25,11 @@ object MultiNodeClusterSpec {
 }
 
 trait MultiNodeClusterSpec extends Suite with ScalaTestMultiNodeSpec { self: MultiNodeSpec ⇒
+
+  /**
+    * Get the cluster node to use.
+    */
+  def cluster: Cluster = Cluster(system)
+
   def initialParticipants = roles.size
 }
