@@ -3,10 +3,9 @@ package justin.db
 import java.util.Base64
 
 import akka.actor.{Actor, Address, AddressFromURIString, Props}
-import akka.cluster.{Cluster, ClusterEvent}
+import akka.cluster.{Cluster, ClusterEvent, MemberStatus}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.model.StatusCodes.{NotFound, OK}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.pattern.ask
 import akka.remote.testkit.{MultiNodeConfig, MultiNodeSpec}
@@ -22,12 +21,11 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 final class DiscoverMultiNodeConfig extends MultiNodeConfig {
-
-  val first = role("first")
+  val first  = role("first")
   val second = role("second")
-  val third = role("third")
+  val third  = role("third")
   val fourth = role("fourth")
-  val fifth = role("fifth")
+  val fifth  = role("fifth")
 
   val coordinationPort: Int = 2379
   val delete = "/v2/keys/constructr?recursive=true"
@@ -67,11 +65,11 @@ final class DiscoverMultiNodeConfig extends MultiNodeConfig {
   }
 }
 
-class MultiNodeEtcdConstructrSpecMultiJvmNode1 extends DiscoverConstructrNodesSpec
-class MultiNodeEtcdConstructrSpecMultiJvmNode2 extends DiscoverConstructrNodesSpec
-class MultiNodeEtcdConstructrSpecMultiJvmNode3 extends DiscoverConstructrNodesSpec
-class MultiNodeEtcdConstructrSpecMultiJvmNode4 extends DiscoverConstructrNodesSpec
-class MultiNodeEtcdConstructrSpecMultiJvmNode5 extends DiscoverConstructrNodesSpec
+final class MultiNodeEtcdConstructrSpecMultiJvmNode1 extends DiscoverConstructrNodesSpec
+final class MultiNodeEtcdConstructrSpecMultiJvmNode2 extends DiscoverConstructrNodesSpec
+final class MultiNodeEtcdConstructrSpecMultiJvmNode3 extends DiscoverConstructrNodesSpec
+final class MultiNodeEtcdConstructrSpecMultiJvmNode4 extends DiscoverConstructrNodesSpec
+final class MultiNodeEtcdConstructrSpecMultiJvmNode5 extends DiscoverConstructrNodesSpec
 
 abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
   extends MultiNodeSpec(config)
@@ -84,19 +82,6 @@ abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
   def this() = this(new DiscoverMultiNodeConfig())
 
   "Constructr should manage an Akka cluster" in {
-    runOn(roles.head) {
-      within(20.seconds.dilated) {
-        awaitAssert {
-          val coordinationStatus =
-            Await.result(
-              Http().singleRequest(Delete(s"http://127.0.0.1:${config.coordinationPort}${config.delete}")).map(_.status),
-              5.seconds.dilated // As this is the first request fired via `singleRequest`, creating the pool takes some time (probably)
-            )
-          coordinationStatus should (be(OK) or be(NotFound))
-        }
-      }
-    }
-
     enterBarrier("coordination-started")
 
     ConstructrExtension(system)
@@ -114,7 +99,6 @@ abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
       }
     }))
 
-
     within(20.seconds.dilated) {
       awaitAssert {
         implicit val timeout = Timeout(1.second.dilated)
@@ -127,17 +111,22 @@ abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
 
     within(5.seconds.dilated) {
       awaitAssert {
-        val constructrNodes =
-          Await.result(
-            Http().singleRequest(Get(s"http://127.0.0.1:${config.coordinationPort}${config.get}")).flatMap(Unmarshal(_).to[String].map(config.toNodes)),
-            1.second.dilated
-          )
+        val constructrNodes = Await.result(
+          Http().singleRequest(Get(s"http://127.0.0.1:${config.coordinationPort}${config.get}")).flatMap(Unmarshal(_).to[String].map(config.toNodes)),
+          1.second.dilated
+        )
         val ports = constructrNodes.flatMap(_.port)
         ports shouldBe Range(2551, 2551 + roles.size).toSet
       }
     }
 
-    enterBarrier("done")
+    within(10.seconds.dilated) {
+      awaitAssert {
+        cluster.state.members.forall(_.status == MemberStatus.Up)
+      }
+    }
+
+    enterBarrier("nodes-up")
   }
 
   override def initialParticipants: Int = roles.size
