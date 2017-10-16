@@ -67,12 +67,14 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
       context.watch(senderRef)
       clusterMembers = clusterMembers.add(senderNodeId, StorageNodeActorRef(senderRef))
       senderRef ! RegisterNode(nodeId)
-    case MemberUp(member)           => register(nodeId, ring, member)
-    case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(member => register(nodeId, ring, member))
-    case Terminated(actorRef)       => clusterMembers = clusterMembers.removeByRef(StorageNodeActorRef(actorRef))
+    case MemberUp(member)           => println("[StorageNodeActor] member up: " + member); register(nodeId, ring, member)
+    case state: CurrentClusterState => println("[StorageNodeActor] state: " + state); state.members.filter(_.status == MemberStatus.Up).foreach(member => register(nodeId, ring, member))
+    case Terminated(actorRef)       => println("[StorageNodeActor] terminated: " + actorRef); clusterMembers = clusterMembers.removeByRef(StorageNodeActorRef(actorRef))
   }
 
   private def register(nodeId: NodeId, ring: Ring, member: Member) = {
+    println("[StorageNodeActor] register " + nodeId)
+    println("[StorageNodeActor] new member: " + member)
     if (member.hasRole(StorageNodeActor.role)) {
       for {
         siblingNodeId <- ring.nodesId.filterNot(_ == nodeId)
@@ -83,7 +85,10 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   }
 
   private def notHandledPF: Receive = {
-    case t => println("[StorageNodeActor] not handled msg: " + t)
+    case t => {
+      println("[StorageNodeActor] not handled msg: " + t)
+      println("[StorageNodeActor] cluster members: " + clusterMembers.toString)
+    }
   }
 }
 

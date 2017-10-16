@@ -9,7 +9,10 @@ case class ClusterMembers(private val members: Map[NodeId, StorageNodeActorRef])
   def notContains(nodeId: NodeId): Boolean = !contains(nodeId)
 
   def add(nodeId: NodeId, ref: StorageNodeActorRef): ClusterMembers = {
-    ClusterMembers(this.members + (nodeId -> ref))
+    println("add nodeId: " + nodeId + ", from ref: " + ref.ref)
+    val a = ClusterMembers(this.members + (nodeId -> ref))
+    println("--> members: " + a.toString)
+    a
   }
 
   def get(nodeId: NodeId): Option[StorageNodeActorRef] = members.get(nodeId)
