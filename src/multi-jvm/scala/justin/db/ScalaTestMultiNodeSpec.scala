@@ -8,6 +8,6 @@ trait ScalaTestMultiNodeSpec extends MultiNodeSpecCallbacks
   with Matchers
   with BeforeAndAfterAll {
 
-  override def beforeAll() = multiNodeSpecBeforeAll()
-  override def afterAll()  = multiNodeSpecAfterAll()
+  override def beforeAll(): Unit = multiNodeSpecBeforeAll()
+  override def afterAll(): Unit = multiNodeSpecAfterAll()
 }
