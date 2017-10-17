@@ -3,13 +3,9 @@ package justin.db
 import java.util.Base64
 
 import akka.actor.{Actor, Address, AddressFromURIString, Props}
-import akka.cluster.{Cluster, ClusterEvent, MemberStatus}
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.cluster.{ClusterEvent, MemberStatus}
 import akka.pattern.ask
 import akka.remote.testkit.{MultiNodeConfig, MultiNodeSpec}
-import akka.stream.ActorMaterializer
 import akka.testkit.TestDuration
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
@@ -27,10 +23,6 @@ final class DiscoverMultiNodeConfig extends MultiNodeConfig {
   val fourth = role("fourth")
   val fifth  = role("fifth")
 
-  val coordinationPort: Int = 2379
-  val delete = "/v2/keys/constructr?recursive=true"
-  val get = "/v2/keys/constructr/DiscoverConstructrNodesSpec/nodes"
-
   commonConfig(MultiNodeClusterSpec.clusterConfig)
 
   for ((roleName, idx) <- List(first, second, third, fourth, fifth).zipWithIndex) {
@@ -40,7 +32,7 @@ final class DiscoverMultiNodeConfig extends MultiNodeConfig {
         akka.remote.netty.tcp.hostname = "127.0.0.1"
         akka.remote.netty.tcp.port     = $port
         constructr.coordination.host   = "127.0.0.1"
-        constructr.coordination.port   = $coordinationPort
+        constructr.coordination.port   = 2379
         """
       )
     )
@@ -74,10 +66,6 @@ final class MultiNodeEtcdConstructrSpecMultiJvmNode5 extends DiscoverConstructrN
 abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
   extends MultiNodeSpec(config)
   with MultiNodeClusterSpec {
-  import RequestBuilding._
-  import system.dispatcher
-
-  implicit val mat = ActorMaterializer()
 
   def this() = this(new DiscoverMultiNodeConfig())
 
@@ -90,12 +78,12 @@ abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
       import ClusterEvent._
 
       var isMember = false
-      Cluster(context.system).subscribe(self, InitialStateAsEvents, classOf[MemberJoined], classOf[MemberUp])
+      cluster.subscribe(self, InitialStateAsEvents, classOf[MemberJoined], classOf[MemberUp])
 
       override def receive: Receive = {
         case "isMember" => sender() ! isMember
-        case MemberJoined(member) if member.address == Cluster(context.system).selfAddress => isMember = true
-        case MemberUp(member) if member.address == Cluster(context.system).selfAddress => isMember = true
+        case MemberJoined(member) if member.address == cluster.selfAddress => isMember = true
+        case MemberUp(member) if member.address == cluster.selfAddress => isMember = true
       }
     }))
 
@@ -109,20 +97,10 @@ abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
 
     enterBarrier("cluster-formed")
 
-    within(5.seconds.dilated) {
-      awaitAssert {
-        val constructrNodes = Await.result(
-          Http().singleRequest(Get(s"http://127.0.0.1:${config.coordinationPort}${config.get}")).flatMap(Unmarshal(_).to[String].map(config.toNodes)),
-          1.second.dilated
-        )
-        val ports = constructrNodes.flatMap(_.port)
-        ports shouldBe Range(2551, 2551 + roles.size).toSet
-      }
-    }
-
     within(10.seconds.dilated) {
       awaitAssert {
-        cluster.state.members.forall(_.status == MemberStatus.Up)
+        cluster.state.members.size shouldBe initialParticipants
+        cluster.state.members.forall(_.status == MemberStatus.Up) shouldBe true
       }
     }
 
