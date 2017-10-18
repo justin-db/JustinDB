@@ -75,8 +75,8 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   private def register(nodeId: NodeId, ring: Ring, member: Member) = {
     if (member.hasRole(StorageNodeActor.role)) {
       for {
-        siblingNodeId <- ring.nodesId.filterNot(_ == nodeId)
-        nodeName       = StorageNodeActor.name(siblingNodeId)
+        ringRodeId    <- ring.nodesId
+        nodeName       = StorageNodeActor.name(ringRodeId)
         nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
       } yield nodeRef ! RegisterNode(nodeId)
     }
