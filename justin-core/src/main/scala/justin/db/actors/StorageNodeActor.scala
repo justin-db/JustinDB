@@ -62,6 +62,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   }
 
   private def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
+    case "members" => sender() ! clusterMembers
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       val senderRef = sender()
       context.watch(senderRef)
