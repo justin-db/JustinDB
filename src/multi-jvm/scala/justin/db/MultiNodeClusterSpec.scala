@@ -24,6 +24,7 @@ object MultiNodeClusterSpec {
     akka.remote.log-remote-lifecycle-events = off
     akka.test.single-expect-default = 5 s
     akka.remote.netty.tcp.hostname = "127.0.0.1"
+    akka.cluster.roles = [storagenode]
     constructr.coordination.host = "127.0.0.1"
     constructr.coordination.port = 2379
     """
@@ -73,7 +74,5 @@ trait MultiNodeClusterSpec extends Suite with ScalaTestMultiNodeSpec { self: Mul
         cluster.state.members.forall(_.status == MemberStatus.Up) shouldBe true
       }
     }
-
-    enterBarrier("nodes-up")
   }
 }

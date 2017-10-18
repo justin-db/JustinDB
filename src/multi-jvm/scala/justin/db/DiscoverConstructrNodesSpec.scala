@@ -26,5 +26,6 @@ abstract class DiscoverConstructrNodesSpec(config: DiscoverMultiNodeConfig)
 
   "ConstructR should manage an Akka cluster" in {
     awaitConstructRClusterUp()
+    enterBarrier("akka-cluster-up")
   }
 }
