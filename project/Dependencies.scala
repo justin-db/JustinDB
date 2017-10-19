@@ -5,12 +5,12 @@ object Version {
   val scalaBinary  = scala.substring(0,4)
 
   val akka               = "2.5.4"
-  val akkaHttp           = "10.0.9"
+  val akkaHttp           = "10.0.10"
   val akkaSse            = "2.0.0"
-  val akkaClusterManager = "0.4"
+  val akkaClusterManager = "0.5"
   val akkaKryo           = "0.5.2"
   val kryo               = "4.0.0"
-  val scalatest          = "3.0.3"
+  val scalatest          = "3.0.4"
   val scalacheck         = "1.13.5"
   val sigarLoader        = "1.6.6"
   val logback            = "1.2.3"
