@@ -1,14 +1,15 @@
 package justin.db
 
 import akka.actor.{Actor, Props}
-import akka.pattern.ask
 import akka.cluster.{Cluster, ClusterEvent, MemberStatus}
+import akka.pattern.ask
 import akka.remote.testkit.MultiNodeSpec
+import akka.testkit.TestDuration
 import akka.util.Timeout
 import com.typesafe.config.{Config, ConfigFactory}
 import de.heikoseeberger.constructr.ConstructrExtension
 import org.scalatest.Suite
-import akka.testkit.TestDuration
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -31,7 +32,7 @@ object MultiNodeClusterSpec {
   )
 }
 
-trait MultiNodeClusterSpec extends Suite with ScalaTestMultiNodeSpec { self: MultiNodeSpec ⇒
+trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec { self: MultiNodeSpec ⇒
 
   /**
     * Get the cluster node to use.
