@@ -6,7 +6,6 @@ object Version {
 
   val akka               = "2.5.4"
   val akkaHttp           = "10.0.10"
-  val akkaSse            = "2.0.0"
   val akkaClusterManager = "0.5"
   val akkaKryo           = "0.5.2"
   val kryo               = "4.0.0"
@@ -51,9 +50,6 @@ object Library {
   val configAnnotation     = "com.wacai"         %% "config-annotation"                 % Version.configAnnotation
   val macroParadise        = "org.scalamacros"    % "paradise"                          % Version.macroParadise
 
-  // server side events
-  val akkaSse              = "de.heikoseeberger" %% "akka-sse"                          % Version.akkaSse
-
   // service discovery
   val constructR           = "de.heikoseeberger" %% "constructr"                        % Version.constructR
   val constructRetcd       = "de.heikoseeberger" %% "constructr-coordination-etcd"      % Version.constructR
@@ -76,7 +72,7 @@ object Dependencies {
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
 
-  val httpApi = akkaCommon ++ akkaHttpCommon ++ genericTest ++ Seq(akkaSse)
+  val httpApi = akkaCommon ++ akkaHttpCommon ++ genericTest
 
   val storageApi = genericTest
   val storageInMem = genericTest

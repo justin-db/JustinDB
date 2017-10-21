@@ -91,7 +91,6 @@ object Main extends App {
       new HealthCheckRouter().routes ~
       new BuildInfoRouter().routes(BuildInfo.toJson) ~
       new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes ~
-      new ServerSideEvents().routes ~
       new ClusterClientRouter(initialContactsValidator).routes
     }
 
