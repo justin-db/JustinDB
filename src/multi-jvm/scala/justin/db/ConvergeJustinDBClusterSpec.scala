@@ -16,7 +16,7 @@ import justin.db.cluster.ClusterMembers
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-final class ConvergeJustinDBClusterConfig extends MultiNodeConfig {
+final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtcd {
   val first  = role("first")
   val second = role("second")
   val third  = role("third")
@@ -86,6 +86,21 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
     }
   }
 
+  override protected def atStartup(): Unit = {
+    super.atStartup()
+    runOn(roles.head) {
+      startAllOrFail()
+    }
+  }
+
+
+  override protected def afterTermination(): Unit = {
+    super.afterTermination()
+    runOn(roles.head) {
+      stopAllQuietly()
+    }
+  }
+
   private[this] def awaitMembers(ref: ActorRef) = awaitAssert(
     a = {
       implicit val timeout = Timeout(1.second.dilated)
@@ -100,7 +115,7 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
       override def get(id: UUID)(resolveOriginality: (UUID) => PluggableStorageProtocol.DataOriginality): Future[PluggableStorageProtocol.StorageGetData] = ???
       override def put(data: JustinData)(resolveOriginality: (UUID) => PluggableStorageProtocol.DataOriginality): Future[PluggableStorageProtocol.Ack] = ???
     }
-    val ring = Ring(nodesSize = 5, partitionsSize = 100)
+    val ring = Ring(nodesSize = initialParticipants, partitionsSize = 100)
     val n = N(3)
     val nodeid = NodeId(nodeId)
 
