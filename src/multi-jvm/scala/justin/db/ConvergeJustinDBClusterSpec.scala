@@ -16,7 +16,7 @@ import justin.db.cluster.ClusterMembers
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtcd {
+final class ConvergeJustinDBClusterConfig extends MultiNodeConfig {
   val first  = role("first")
   val second = role("second")
   val third  = role("third")
@@ -83,21 +83,6 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
         awaitMembers(ref)
         enterBarrier("cluster-converged")
       }
-    }
-  }
-
-  override protected def atStartup(): Unit = {
-    super.atStartup()
-    runOn(roles.head) {
-      startAllOrFail()
-    }
-  }
-
-
-  override protected def afterTermination(): Unit = {
-    super.afterTermination()
-    runOn(roles.head) {
-      stopAllQuietly()
     }
   }
 

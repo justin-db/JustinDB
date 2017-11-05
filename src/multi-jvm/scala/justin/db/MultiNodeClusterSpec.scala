@@ -32,7 +32,7 @@ object MultiNodeClusterSpec {
   )
 }
 
-trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec { self: MultiNodeSpec ⇒
+trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with DockerEtcd { self: MultiNodeSpec ⇒
 
   /**
     * Get the cluster node to use.
@@ -74,6 +74,19 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec { self: MultiNodeS
         cluster.state.members.size shouldBe initialParticipants
         cluster.state.members.forall(_.status == MemberStatus.Up) shouldBe true
       }
+    }
+  }
+
+  override protected def atStartup(): Unit = {
+    runOn(roles.head) {
+      startAllOrFail()
+    }
+  }
+
+
+  override protected def afterTermination(): Unit = {
+    runOn(roles.head) {
+      stopAllQuietly()
     }
   }
 }
