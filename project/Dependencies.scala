@@ -18,7 +18,7 @@ object Version {
   val configAnnotation   = "0.3.7"
   val macroParadise      = "2.1.1"
   val rocksDB            = "5.5.1"
-  val dockerItScala      = "0.9.5"
+  val dockerItScala      = "0.9.6"
 }
 
 object Library {
