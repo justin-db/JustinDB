@@ -26,7 +26,7 @@ object MultiNodeClusterSpec {
     akka.test.single-expect-default = 5 s
     akka.remote.netty.tcp.hostname = "127.0.0.1"
     akka.cluster.roles = [storagenode]
-    constructr.coordination.host = "127.0.0.1"
+    constructr.coordination.host = "0.0.0.0"
     constructr.coordination.port = 2379
     """
   )
