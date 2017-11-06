@@ -26,13 +26,13 @@ object MultiNodeClusterSpec {
     akka.test.single-expect-default = 5 s
     akka.remote.netty.tcp.hostname = "127.0.0.1"
     akka.cluster.roles = [storagenode]
-    constructr.coordination.host = "127.0.0.1"
+    constructr.coordination.host = "0.0.0.0"
     constructr.coordination.port = 2379
     """
   )
 }
 
-trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec { self: MultiNodeSpec ⇒
+trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with DockerEtcd { self: MultiNodeSpec ⇒
 
   /**
     * Get the cluster node to use.
@@ -74,6 +74,19 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec { self: MultiNodeS
         cluster.state.members.size shouldBe initialParticipants
         cluster.state.members.forall(_.status == MemberStatus.Up) shouldBe true
       }
+    }
+  }
+
+  override protected def atStartup(): Unit = {
+    runOn(roles.head) {
+      startAllOrFail()
+    }
+  }
+
+
+  override protected def afterTermination(): Unit = {
+    runOn(roles.head) {
+      stopAllQuietly()
     }
   }
 }

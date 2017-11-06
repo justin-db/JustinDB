@@ -2,7 +2,7 @@ package justin.db
 
 import akka.remote.testkit.{MultiNodeConfig, MultiNodeSpec}
 
-final class DiscoverMultiNodeConfig extends MultiNodeConfig {
+final class DiscoverMultiNodeConfig extends MultiNodeConfig with DockerEtcd {
   val first  = role("first")
   val second = role("second")
   val third  = role("third")

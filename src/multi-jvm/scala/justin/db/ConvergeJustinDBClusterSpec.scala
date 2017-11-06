@@ -100,7 +100,7 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
       override def get(id: UUID)(resolveOriginality: (UUID) => PluggableStorageProtocol.DataOriginality): Future[PluggableStorageProtocol.StorageGetData] = ???
       override def put(data: JustinData)(resolveOriginality: (UUID) => PluggableStorageProtocol.DataOriginality): Future[PluggableStorageProtocol.Ack] = ???
     }
-    val ring = Ring(nodesSize = 5, partitionsSize = 100)
+    val ring = Ring(nodesSize = initialParticipants, partitionsSize = 100)
     val n = N(3)
     val nodeid = NodeId(nodeId)
 

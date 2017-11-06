@@ -18,6 +18,7 @@ object Version {
   val configAnnotation   = "0.3.7"
   val macroParadise      = "2.1.1"
   val rocksDB            = "5.5.1"
+  val dockerItScala      = "0.9.6"
 }
 
 object Library {
@@ -36,10 +37,12 @@ object Library {
   val akkaClusterManager   = "com.lightbend.akka"    %% "akka-management-cluster-http"  % Version.akkaClusterManager
   val kamonSigar           = "io.kamon"               % "sigar-loader"                  % Version.sigarLoader
 
-  // generic test
+  // test libraries
   val scalactic            = "org.scalactic"     %% "scalactic"                         % Version.scalatest
   val scalatest            = "org.scalatest"     %% "scalatest"                         % Version.scalatest
   val scalacheck           = "org.scalacheck"    %% "scalacheck"                        % Version.scalacheck
+  val dockerTestKit        = "com.whisk"         %% "docker-testkit-scalatest"          % Version.dockerItScala
+  val dockerTestKitImpl    = "com.whisk"         %% "docker-testkit-impl-docker-java"   % Version.dockerItScala
 
   // logging
   val akkaSfl4j            = "com.typesafe.akka"          %% "akka-slf4j"               % Version.akka
@@ -79,5 +82,5 @@ object Dependencies {
   val storageLogDBExperimental = genericTest
   val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
 
-  val root = core ++ httpApi ++ storageApi ++ constructr
+  val root = core ++ httpApi ++ storageApi ++ constructr ++ Seq(dockerTestKit, dockerTestKitImpl)
 }
