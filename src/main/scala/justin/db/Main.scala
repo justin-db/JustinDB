@@ -1,4 +1,4 @@
-package justin
+package justin.db
 
 import java.io.File
 
@@ -86,9 +86,9 @@ object Main extends App {
     // HTTP API
     val routes = logRequestResult(system.name) {
       new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
-      new HealthCheckRouter().routes ~
-      new BuildInfoRouter().routes(BuildInfo.toJson) ~
-      new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes
+        new HealthCheckRouter().routes ~
+        new BuildInfoRouter().routes(BuildInfo.toJson) ~
+        new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes
     }
 
     Http()

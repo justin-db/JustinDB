@@ -47,7 +47,7 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaAppPackaging, DockerPlugin)
   .configs(MultiJvm)
   .settings(
-    mainClass in assembly := Some("justin.Main"),
+    mainClass in assembly := Some("justin.db.Main"),
     assemblyJarName in assembly := "justindb.jar",
     test in assembly := {},
     libraryDependencies ++= Dependencies.root,

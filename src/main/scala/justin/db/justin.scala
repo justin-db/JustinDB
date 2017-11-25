@@ -1,4 +1,4 @@
-package justin
+package justin.db
 
 import com.typesafe.config.Config
 import com.wacai.config.annotation._
