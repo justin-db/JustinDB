@@ -12,7 +12,7 @@ trait justin extends Configurable {
   val `node-id`: Int = 0
 
   val ring = new {
-    val `members-count`: Int = 3
+    val `members-count`: Int = 1
     val partitions: Int = 21
   }
 
