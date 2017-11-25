@@ -33,6 +33,11 @@ trait justin extends Configurable {
 
   val `netty-tcp-bindhostname`: String = "localhost"
   val `netty-tcp-bindport`: Int        = 2551
+
+  val dc = new {
+    val `cross-data-center-connections`: Int = 1
+    val `self-data-center` = "dc1"
+  }
 }
 
 class JustinConfig(val config: Config) extends justin
