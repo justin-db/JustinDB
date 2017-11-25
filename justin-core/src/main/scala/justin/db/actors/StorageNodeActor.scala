@@ -1,22 +1,17 @@
 package justin.db.actors
 
-import akka.actor.{Actor, ActorPath, ActorRef, Props, RootActorPath, Terminated}
+import akka.actor.{Actor, ActorRef, Props, RootActorPath, Terminated}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
-import akka.cluster.client.{ClusterClient, ClusterClientReceptionist, ClusterClientSettings}
 import akka.cluster.{Cluster, Member, MemberStatus}
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.cluster.ClusterMembers
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica._
-import justin.db.replica.multidatacenter.MultiDataCenterClusterClient
 import justin.db.replica.read.{ReplicaLocalReader, ReplicaReadCoordinator, ReplicaRemoteReader}
 import justin.db.replica.write.{ReplicaLocalWriter, ReplicaRemoteWriter, ReplicaWriteCoordinator}
 import justin.db.storage.PluggableStorageProtocol
 
 class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor {
-
-  // CLUSTER CLIENT RECEPTIONIST
-  ClusterClientReceptionist(context.system).registerService(self)
 
   private implicit val ec = context.dispatcher
   private val cluster = Cluster(context.system)
@@ -35,7 +30,6 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
 
   def receive: Receive = {
     receiveDataPF orElse
-      multiDataCenterPF orElse
       receiveClusterDataPF(nodeId, ring) orElse
       notHandledPF
   }
@@ -47,18 +41,6 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeLocalDataReq)
     case writeClientReplicaReq: Internal.WriteReplica =>
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeClientReplicaReq)
-      multiDataCenterClusterClientOpt.foreach(_ ! DataCenterReplica(writeClientReplicaReq))
-  }
-
-  private var multiDataCenterClusterClientOpt: Option[ActorRef] = None
-
-  private def multiDataCenterPF: Receive = {
-    case MultiDataCenterContacts(contacts) =>
-      val settings = ClusterClientSettings.apply(system = context.system).withInitialContacts(contacts)
-      val clusterClientRef = context.system.actorOf(ClusterClient.props(settings), "client")
-      multiDataCenterClusterClientOpt = Option(context.system.actorOf(MultiDataCenterClusterClient.props(clusterClientRef, StorageNodeActor.name(nodeId))))
-    case DataCenterReplica(writeReq)       =>
-      coordinatorRouter ! WriteData(sender(), clusterMembers, writeReq)
   }
 
   private def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
