@@ -34,11 +34,11 @@ class StorageNodeActorTest extends TestKit(StorageNodeActorTest.actorSystem)
     StorageNodeActor.role shouldBe "storagenode"
   }
 
-  it should "define name for actor with combination of its id" in {
-    StorageNodeActor.name(NodeId(0))   shouldBe "id-0"
-    StorageNodeActor.name(NodeId(10))  shouldBe "id-10"
-    StorageNodeActor.name(NodeId(20))  shouldBe "id-20"
-    StorageNodeActor.name(NodeId(999)) shouldBe "id-999"
+  it should "compose its name based on datacenter it belongs to and given id" in {
+    StorageNodeActor.name(NodeId(0), datacenter = "dc1")   shouldBe "dc1-id-0"
+    StorageNodeActor.name(NodeId(10), datacenter = "dc2")  shouldBe "dc2-id-10"
+    StorageNodeActor.name(NodeId(20), datacenter = "dc1")  shouldBe "dc1-id-20"
+    StorageNodeActor.name(NodeId(999), datacenter = "dc1") shouldBe "dc1-id-999"
   }
 
   override def afterAll {

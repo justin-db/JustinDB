@@ -71,7 +71,7 @@ object Main extends App {
 
       system.actorOf(
         props = StorageNodeActor.props(nodeId, storage, ring, n),
-        name  = StorageNodeActor.name(nodeId)
+        name  = StorageNodeActor.name(nodeId, justinConfig.dc.`self-data-center`)
       )
     }
 

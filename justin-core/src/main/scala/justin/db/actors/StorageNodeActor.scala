@@ -59,7 +59,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
     if (member.hasRole(StorageNodeActor.role)) {
       for {
         ringNodeId    <- ring.nodesId
-        nodeName       = StorageNodeActor.name(ringNodeId)
+        nodeName       = StorageNodeActor.name(ringNodeId, member.dataCenter)
         nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
       } yield nodeRef ! RegisterNode(nodeId)
     }
@@ -72,7 +72,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
 
 object StorageNodeActor {
   def role: String = "storagenode"
-  def name(nodeId: NodeId): String = s"id-${nodeId.id}"
+  def name(nodeId: NodeId, datacenter: String): String = s"$datacenter-id-${nodeId.id}"
   def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = Props(new StorageNodeActor(nodeId, storage, ring, n))
 }
 

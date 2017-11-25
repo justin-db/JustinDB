@@ -106,7 +106,7 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
 
     system.actorOf(
       props = StorageNodeActor.props(nodeid, storage, ring, n),
-      name  = StorageNodeActor.name(nodeid)
+      name  = StorageNodeActor.name(nodeid, datacenter = "default")
     )
   }
 }
