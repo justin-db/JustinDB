@@ -28,10 +28,20 @@ final class JustinDB
 // $COVERAGE-OFF$
 object JustinDB extends StrictLogging {
 
+  private[this] def validConfiguration(justinDBConfig: JustinDBConfig) = {
+    require(justinDBConfig.`node-id` >= 0, s"node-id can't be smaller than 0")
+    require(justinDBConfig.replication.N > 0, "replication N factor can't be smaller or equal 0")
+    require(justinDBConfig.ring.`members-count` > 0, "members-counter can't be smaller or equal 0")
+    require(justinDBConfig.ring.partitions > 0, "ring partitions can't be smaller or equal 0")
+    require(justinDBConfig.ring.partitions >= justinDBConfig.ring.`members-count`, "number of ring partitions can't be smaller than number of members-count")
+    require(justinDBConfig.replication.N <= justinDBConfig.ring.`members-count`, "replication N factor can't be bigger than defined members-count number")
+  }
+
   def init: JustinDB = {
     val processOrchestrator = Promise[JustinDB]
 
     val justinConfig: JustinDBConfig = JustinDBConfig.init
+    validConfiguration(justinConfig)
 
     implicit val system: ActorSystem        = ActorSystem(justinConfig.system, justinConfig.config)
     implicit val executor: ExecutionContext = system.dispatcher
