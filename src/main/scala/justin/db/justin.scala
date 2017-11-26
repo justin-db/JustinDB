@@ -1,7 +1,8 @@
 package justin.db
 
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigFactory}
 import com.wacai.config.annotation._
+import justin.db.actors.StorageNodeActor
 
 // $COVERAGE-OFF$
 @conf
@@ -43,6 +44,9 @@ trait justin extends Configurable {
 class JustinDBConfig(val config: Config) extends justin
 
 object JustinDBConfig {
-  def apply(config: Config): JustinDBConfig = new JustinDBConfig(config)
+
+  def init: JustinDBConfig = new JustinDBConfig(ConfigFactory
+    .parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
+    .withFallback(ConfigFactory.load()))
 }
 // $COVERAGE-ON$
