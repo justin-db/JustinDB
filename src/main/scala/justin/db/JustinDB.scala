@@ -28,7 +28,7 @@ final class JustinDB
 // $COVERAGE-OFF$
 object JustinDB extends StrictLogging {
 
-  private[this] def validConfiguration(justinDBConfig: JustinDBConfig) = {
+  private[this] def validConfiguration(justinDBConfig: JustinDBConfig): Unit = {
     require(justinDBConfig.`node-id` >= 0, s"node-id can't be smaller than 0")
     require(justinDBConfig.replication.N > 0, "replication N factor can't be smaller or equal 0")
     require(justinDBConfig.ring.`members-count` > 0, "members-counter can't be smaller or equal 0")
