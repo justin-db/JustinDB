@@ -29,9 +29,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
   override def postStop(): Unit = cluster.unsubscribe(this.self)
 
   def receive: Receive = {
-    receiveDataPF orElse
-      receiveClusterDataPF(nodeId, ring) orElse
-      notHandledPF
+    receiveDataPF orElse receiveClusterDataPF orElse notHandledPF
   }
 
   private def receiveDataPF: Receive = {
@@ -43,7 +41,7 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeClientReplicaReq)
   }
 
-  private def receiveClusterDataPF(nodeId: NodeId, ring: Ring): Receive = {
+  private def receiveClusterDataPF: Receive = {
     case "members" => sender() ! clusterMembers
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       val senderRef = sender()
