@@ -18,7 +18,7 @@ trait justin extends Configurable {
   }
 
   val replication = new {
-    val N: Int = 3
+    val N: Int = 1
   }
 
   val `storage-type`: String = "justin.db.storage.InMemStorage"
@@ -48,5 +48,6 @@ object JustinDBConfig {
   def init: JustinDBConfig = new JustinDBConfig(ConfigFactory
     .parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
     .withFallback(ConfigFactory.load()))
+
 }
 // $COVERAGE-ON$
