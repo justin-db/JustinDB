@@ -24,7 +24,7 @@ import scala.language.reflectiveCalls
 // $COVERAGE-OFF$
 object Main extends App {
 
-  val justinConfig = JustinConfig(ConfigFactory
+  val justinConfig = JustinDBConfig(ConfigFactory
     .parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
     .withFallback(ConfigFactory.load()))
 

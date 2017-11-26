@@ -40,9 +40,9 @@ trait justin extends Configurable {
   }
 }
 
-class JustinConfig(val config: Config) extends justin
+class JustinDBConfig(val config: Config) extends justin
 
-object JustinConfig {
-  def apply(config: Config): JustinConfig = new JustinConfig(config)
+object JustinDBConfig {
+  def apply(config: Config): JustinDBConfig = new JustinDBConfig(config)
 }
 // $COVERAGE-ON$
