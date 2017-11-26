@@ -17,26 +17,28 @@ import scala.concurrent.ExecutionContext
 
 class StorageNodeActor(nodeId: NodeId, datacenter: Datacenter, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with StrictLogging {
 
-  private implicit val ec: ExecutionContext = context.dispatcher
-  private val cluster = Cluster(context.system)
+  private[this] implicit val ec: ExecutionContext = context.dispatcher
+  private[this] val cluster = Cluster(context.system)
 
-  private var clusterMembers   = ClusterMembers.empty
-  private val readCoordinator  = new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
-  private val writeCoordinator = new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
+  private[this] var clusterMembers   = ClusterMembers.empty
+  private[this] val readCoordinator  = new ReplicaReadCoordinator(nodeId, ring, n, new ReplicaLocalReader(storage), new ReplicaRemoteReader)
+  private[this] val writeCoordinator = new ReplicaWriteCoordinator(nodeId, ring, n, new ReplicaLocalWriter(storage), new ReplicaRemoteWriter)
 
-  private val coordinatorRouter = context.actorOf(
+  private[this] val coordinatorRouter = context.actorOf(
     props = RoundRobinCoordinatorRouter.props(readCoordinator, writeCoordinator),
     name  = RoundRobinCoordinatorRouter.routerName
   )
+
+  private[this] val name = self.path.name
 
   override def preStart(): Unit = cluster.subscribe(this.self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(this.self)
 
   def receive: Receive = {
-    receiveDataPF orElse receiveClusterDataPF orElse notHandledPF
+    receiveDataPF orElse receiveClusterDataPF orElse receiveRegisterNodePR orElse notHandledPF
   }
 
-  private def receiveDataPF: Receive = {
+  private[this] def receiveDataPF: Receive = {
     case readReq: StorageNodeReadRequest              =>
       coordinatorRouter ! ReadData(sender(), clusterMembers, readReq)
     case writeLocalDataReq: StorageNodeWriteDataLocal =>
@@ -45,30 +47,40 @@ class StorageNodeActor(nodeId: NodeId, datacenter: Datacenter, storage: Pluggabl
       coordinatorRouter ! WriteData(sender(), clusterMembers, writeClientReplicaReq)
   }
 
-  private def receiveClusterDataPF: Receive = {
-    case "members" => sender() ! clusterMembers
-    case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
-      val senderRef = sender()
-      context.watch(senderRef)
-      clusterMembers = clusterMembers.add(senderNodeId, StorageNodeActorRef(senderRef))
-      senderRef ! RegisterNode(nodeId)
+  private[this] def receiveClusterDataPF: Receive = {
+    case "members"                  => sender() ! clusterMembers
     case MemberUp(member)           => register(nodeId, ring, member)
     case state: CurrentClusterState => state.members.filter(_.status == MemberStatus.Up).foreach(member => register(nodeId, ring, member))
     case Terminated(actorRef)       => clusterMembers = clusterMembers.removeByRef(StorageNodeActorRef(actorRef))
   }
 
-  private def register(nodeId: NodeId, ring: Ring, member: Member) = {
-    if (member.hasRole(StorageNodeActor.role)) {
-      for {
-        ringNodeId    <- ring.nodesId
-        nodeName       = StorageNodeActor.name(ringNodeId, Datacenter(member.dataCenter))
-        nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
-      } yield nodeRef ! RegisterNode(nodeId)
-    }
+  private[this] def receiveRegisterNodePR: Receive = {
+    case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
+      val senderRef = sender()
+      context.watch(senderRef)
+      clusterMembers = clusterMembers.add(senderNodeId, StorageNodeActorRef(senderRef))
+      senderRef ! RegisterNode(nodeId)
+      logger.info(s"Actor[$name]: Successfully registered node [id-${senderNodeId.id}]")
+    case RegisterNode(senderNodeId) =>
+      logger.info(s"Actor[$name]: Node [id-${senderNodeId.id}] is already registered")
   }
 
-  private def notHandledPF: Receive = {
-    case t => logger.info("[StorageNodeActor] not handled msg: " + t)
+  private[this] def register(nodeId: NodeId, ring: Ring, member: Member) = {
+    (member.hasRole(StorageNodeActor.role), datacenter.name == member.dataCenter) match {
+      case (true, true) => register()
+      case (_,   false) => logger.info(s"Actor[$name]: $member doesn't belong to datacenter [${datacenter.name}]")
+      case (false,   _) => logger.info(s"Actor[$name]: $member doesn't have [${StorageNodeActor.role}] role (it has roles ${member.roles}")
+    }
+
+    def register() = for {
+      ringNodeId    <- ring.nodesId
+      nodeName       = StorageNodeActor.name(ringNodeId, Datacenter(member.dataCenter))
+      nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
+    } yield nodeRef ! RegisterNode(nodeId)
+  }
+
+  private[this] def notHandledPF: Receive = {
+    case t => logger.warn(s"Actor[$name]: Not handled message [$t]")
   }
 }
 
