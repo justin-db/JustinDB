@@ -6,6 +6,7 @@ import akka.cluster.{Cluster, Member, MemberStatus}
 import com.typesafe.scalalogging.StrictLogging
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.cluster.ClusterMembers
+import justin.db.cluster.datacenter.Datacenter
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica._
 import justin.db.replica.read.{ReplicaLocalReader, ReplicaReadCoordinator, ReplicaRemoteReader}
@@ -14,7 +15,7 @@ import justin.db.storage.PluggableStorageProtocol
 
 import scala.concurrent.ExecutionContext
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with StrictLogging {
+class StorageNodeActor(nodeId: NodeId, datacenter: Datacenter, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with StrictLogging {
 
   private implicit val ec: ExecutionContext = context.dispatcher
   private val cluster = Cluster(context.system)
@@ -59,21 +60,23 @@ class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: 
     if (member.hasRole(StorageNodeActor.role)) {
       for {
         ringNodeId    <- ring.nodesId
-        nodeName       = StorageNodeActor.name(ringNodeId, member.dataCenter)
+        nodeName       = StorageNodeActor.name(ringNodeId, Datacenter(member.dataCenter))
         nodeRef        = context.actorSelection(RootActorPath(member.address) / "user" / nodeName)
       } yield nodeRef ! RegisterNode(nodeId)
     }
   }
 
   private def notHandledPF: Receive = {
-    case t => println("[StorageNodeActor] not handled msg: " + t)
+    case t => logger.info("[StorageNodeActor] not handled msg: " + t)
   }
 }
 
 object StorageNodeActor {
   def role: String = "storagenode"
-  def name(nodeId: NodeId, datacenter: String): String = s"$datacenter-id-${nodeId.id}"
-  def props(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = Props(new StorageNodeActor(nodeId, storage, ring, n))
+  def name(nodeId: NodeId, datacenter: Datacenter): String = s"${datacenter.name}-id-${nodeId.id}"
+  def props(nodeId: NodeId, datacenter: Datacenter, storage: PluggableStorageProtocol, ring: Ring, n: N): Props = {
+    Props(new StorageNodeActor(nodeId, datacenter, storage, ring, n))
+  }
 }
 
 case class StorageNodeActorRef(ref: ActorRef) extends AnyVal

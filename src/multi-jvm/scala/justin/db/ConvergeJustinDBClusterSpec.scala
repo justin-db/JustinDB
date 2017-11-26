@@ -12,6 +12,7 @@ import justin.db.replica.N
 import justin.db.storage.{JustinData, PluggableStorageProtocol}
 import akka.testkit.TestDuration
 import justin.db.cluster.ClusterMembers
+import justin.db.cluster.datacenter.Datacenter
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -103,10 +104,11 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
     val ring = Ring(nodesSize = initialParticipants, partitionsSize = 100)
     val n = N(3)
     val nodeid = NodeId(nodeId)
+    val datacenter = Datacenter("default")
 
     system.actorOf(
-      props = StorageNodeActor.props(nodeid, storage, ring, n),
-      name  = StorageNodeActor.name(nodeid, datacenter = "default")
+      props = StorageNodeActor.props(nodeid, datacenter, storage, ring, n),
+      name  = StorageNodeActor.name(nodeid, datacenter)
     )
   }
 }

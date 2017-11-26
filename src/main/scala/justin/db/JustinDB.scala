@@ -12,6 +12,7 @@ import buildinfo.BuildInfo
 import com.typesafe.scalalogging.StrictLogging
 import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
+import justin.db.cluster.datacenter.Datacenter
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
@@ -44,16 +45,16 @@ object JustinDB extends StrictLogging {
     cluster.registerOnMemberUp {
       // STORAGE ACTOR
       val storageNodeActorRef = StorageNodeActorRef {
-        val nodeId = NodeId(justinConfig.`node-id`)
-        val ring   = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
-        val n      = N(justinConfig.replication.N)
+        val nodeId     = NodeId(justinConfig.`node-id`)
+        val ring       = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
+        val n          = N(justinConfig.replication.N)
+        val datacenter = Datacenter(justinConfig.dc.`self-data-center`)
 
         system.actorOf(
-          props = StorageNodeActor.props(nodeId, storage, ring, n),
-          name  = StorageNodeActor.name(nodeId, justinConfig.dc.`self-data-center`)
+          props = StorageNodeActor.props(nodeId, datacenter, storage, ring, n),
+          name  = StorageNodeActor.name(nodeId, datacenter)
         )
       }
-
       // ENTROPY ACTOR
       val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
@@ -69,7 +70,6 @@ object JustinDB extends StrictLogging {
           new BuildInfoRouter().routes(BuildInfo.toJson) ~
           new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes
       }
-
       Http()
         .bindAndHandle(routes, justinConfig.http.interface, justinConfig.http.port)
         .map { binding => logger.info(s"HTTP server started at ${binding.localAddress}"); processOrchestrator.trySuccess(new JustinDB) }
