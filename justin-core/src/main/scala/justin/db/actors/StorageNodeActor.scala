@@ -3,6 +3,7 @@ package justin.db.actors
 import akka.actor.{Actor, ActorRef, Props, RootActorPath, Terminated}
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.cluster.{Cluster, Member, MemberStatus}
+import com.typesafe.scalalogging.StrictLogging
 import justin.db.actors.protocol.{RegisterNode, _}
 import justin.db.cluster.ClusterMembers
 import justin.db.consistenthashing.{NodeId, Ring}
@@ -11,9 +12,11 @@ import justin.db.replica.read.{ReplicaLocalReader, ReplicaReadCoordinator, Repli
 import justin.db.replica.write.{ReplicaLocalWriter, ReplicaRemoteWriter, ReplicaWriteCoordinator}
 import justin.db.storage.PluggableStorageProtocol
 
-class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor {
+import scala.concurrent.ExecutionContext
 
-  private implicit val ec = context.dispatcher
+class StorageNodeActor(nodeId: NodeId, storage: PluggableStorageProtocol, ring: Ring, n: N) extends Actor with StrictLogging {
+
+  private implicit val ec: ExecutionContext = context.dispatcher
   private val cluster = Cluster(context.system)
 
   private var clusterMembers   = ClusterMembers.empty
