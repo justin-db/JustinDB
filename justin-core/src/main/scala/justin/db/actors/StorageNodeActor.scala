@@ -46,6 +46,7 @@ class StorageNodeActor(nodeId: NodeId, datacenter: Datacenter, storage: Pluggabl
   }
 
   private def receiveClusterDataPF: Receive = {
+    case "members" => sender() ! clusterMembers
     case RegisterNode(senderNodeId) if clusterMembers.notContains(senderNodeId) =>
       val senderRef = sender()
       context.watch(senderRef)
