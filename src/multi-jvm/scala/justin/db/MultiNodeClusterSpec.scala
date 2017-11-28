@@ -41,42 +41,6 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with DockerEtcd { 
 
   def initialParticipants: Int = roles.size
 
-  def awaitConstructRClusterUp(): Unit = {
-    enterBarrier("coordination-started")
-
-    ConstructrExtension(system)
-
-    val listener = system.actorOf(Props(new Actor {
-      import ClusterEvent._
-
-      var isMember = false
-      cluster.subscribe(self, InitialStateAsEvents, classOf[MemberJoined], classOf[MemberUp])
-
-      override def receive: Receive = {
-        case "isMember" => sender() ! isMember
-        case MemberJoined(member) if member.address == cluster.selfAddress => isMember = true
-        case MemberUp(member) if member.address == cluster.selfAddress => isMember = true
-      }
-    }))
-
-    within(20.seconds.dilated) {
-      awaitAssert {
-        implicit val timeout = Timeout(1.second.dilated)
-        val isMember         = Await.result((listener ? "isMember").mapTo[Boolean], 1.second.dilated)
-        isMember shouldBe true
-      }
-    }
-
-    enterBarrier("cluster-formed")
-
-    within(10.seconds.dilated) {
-      awaitAssert {
-        cluster.state.members.size shouldBe initialParticipants
-        cluster.state.members.forall(_.status == MemberStatus.Up) shouldBe true
-      }
-    }
-  }
-
   override protected def atStartup(): Unit = {
     runOn(roles.head) {
       startAllOrFail()
