@@ -49,10 +49,10 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
 
   def this() = this(new ConvergeJustinDBClusterConfig())
 
-  "ConstructR should manage an Akka cluster" in {
+  "ConstructR should form JustinDB cluster" in {
     val config = new JustinDBConfig(system.settings.config)
     val justinDB = JustinDB.init(config)
 
-    enterBarrier("akka-cluster-up")
+    enterBarrier("justindb-cluster-up")
   }
 }
