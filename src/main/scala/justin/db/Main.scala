@@ -18,7 +18,8 @@ object Main extends App with StrictLogging {
     """.stripMargin
   )
 
-  val justindb = JustinDB.init
+  val config = JustinDBConfig.init
+  val justindb = JustinDB.init(config)
 
   logger.info("Build Info: " + BuildInfo.toString)
 }

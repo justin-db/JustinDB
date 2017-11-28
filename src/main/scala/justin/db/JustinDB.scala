@@ -37,11 +37,10 @@ object JustinDB extends StrictLogging {
     require(justinDBConfig.replication.N <= justinDBConfig.ring.`members-count`, "replication N factor can't be bigger than defined members-count number")
   }
 
-  def init: JustinDB = {
-    val processOrchestrator = Promise[JustinDB]
-
-    val justinConfig: JustinDBConfig = JustinDBConfig.init
+  def init(justinConfig: JustinDBConfig): JustinDB = {
     validConfiguration(justinConfig)
+
+    val processOrchestrator = Promise[JustinDB]
 
     implicit val system: ActorSystem        = ActorSystem(justinConfig.system, justinConfig.config)
     implicit val executor: ExecutionContext = system.dispatcher
