@@ -1,34 +1,19 @@
 package justin.db
 
-import akka.actor.{Actor, Props}
-import akka.cluster.{Cluster, ClusterEvent, MemberStatus}
-import akka.pattern.ask
+import akka.cluster.Cluster
 import akka.remote.testkit.MultiNodeSpec
-import akka.testkit.TestDuration
-import akka.util.Timeout
 import com.typesafe.config.{Config, ConfigFactory}
-import de.heikoseeberger.constructr.ConstructrExtension
 import org.scalatest.Suite
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 
 object MultiNodeClusterSpec {
 
-  def clusterConfig: Config = ConfigFactory.parseString(s"""
-    akka.actor.provider = cluster
-    akka.actor.warn-about-java-serializer-usage = off
-    akka.loglevel = INFO
-    akka.log-dead-letters = off
-    akka.log-dead-letters-during-shutdown = off
-    akka.loggers = ["akka.testkit.TestEventListener"]
-    akka.remote.log-remote-lifecycle-events = off
-    akka.test.single-expect-default = 5 s
-    akka.remote.netty.tcp.hostname = "127.0.0.1"
-    akka.cluster.roles = [storagenode]
-    constructr.coordination.host = "0.0.0.0"
-    constructr.coordination.port = 2379
-    """
+  val commonBaseConfig: Config = ConfigFactory.parseString(
+    s"""
+       |akka.loglevel = INFO
+       |akka.log-dead-letters = off
+       |akka.log-dead-letters-during-shutdown = off
+       |akka.remote.log-remote-lifecycle-events = off
+    """.stripMargin
   )
 }
 

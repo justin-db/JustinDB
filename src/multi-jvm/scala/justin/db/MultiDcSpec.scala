@@ -9,14 +9,7 @@ final class MultiDcSpecConfig(crossDcConnections: Int = 1) extends MultiNodeConf
 
   private[this] val allRoles  = List(first, second)
   private[this] val clusterName = "MultiDcSpec"
-  private[this] val commonBaseConfig = ConfigFactory.parseString(
-    s"""
-       |akka.loglevel = INFO
-       |akka.log-dead-letters = off
-       |akka.log-dead-letters-during-shutdown = off
-       |akka.remote.log-remote-lifecycle-events = off
-    """.stripMargin
-  )
+
   private[this] def commonNodeConfig(id: Int) = ConfigFactory.parseString(
     s"""
        |justin.system = $clusterName
@@ -33,7 +26,7 @@ final class MultiDcSpecConfig(crossDcConnections: Int = 1) extends MultiNodeConf
     """.stripMargin
   )
 
-  commonConfig(commonBaseConfig.withFallback(JustinDBConfig.init.config))
+  commonConfig(MultiNodeClusterSpec.commonBaseConfig.withFallback(JustinDBConfig.init.config))
 
   allRoles.zipWithIndex.foreach { case (roleName, id) =>
     nodeConfig(roleName)(commonNodeConfig(id))
