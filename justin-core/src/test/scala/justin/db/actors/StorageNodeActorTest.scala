@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
 import justin.db.actors.protocol.RegisterNode
+import justin.db.cluster.datacenter.Datacenter
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.replica.N
 import org.scalatest.concurrent.ScalaFutures
@@ -34,18 +35,18 @@ class StorageNodeActorTest extends TestKit(StorageNodeActorTest.actorSystem)
     StorageNodeActor.role shouldBe "storagenode"
   }
 
-  it should "define name for actor with combination of its id" in {
-    StorageNodeActor.name(NodeId(0))   shouldBe "id-0"
-    StorageNodeActor.name(NodeId(10))  shouldBe "id-10"
-    StorageNodeActor.name(NodeId(20))  shouldBe "id-20"
-    StorageNodeActor.name(NodeId(999)) shouldBe "id-999"
+  it should "compose its name based on datacenter it belongs to and given id" in {
+    StorageNodeActor.name(NodeId(0), Datacenter("dc1"))   shouldBe "dc1-id-0"
+    StorageNodeActor.name(NodeId(10), Datacenter("dc2"))  shouldBe "dc2-id-10"
+    StorageNodeActor.name(NodeId(20), Datacenter("dc1"))  shouldBe "dc1-id-20"
+    StorageNodeActor.name(NodeId(999), Datacenter("dc1")) shouldBe "dc1-id-999"
   }
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
 
-  class TestActor(nodeId: NodeId, ring: Ring) extends StorageNodeActor(nodeId, null, ring, N(1))
+  class TestActor(nodeId: NodeId, ring: Ring) extends StorageNodeActor(nodeId, Datacenter("default"), null, ring, N(1))
 }
 
 object StorageNodeActorTest {

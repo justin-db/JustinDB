@@ -47,7 +47,7 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaAppPackaging, DockerPlugin)
   .configs(MultiJvm)
   .settings(
-    mainClass in assembly := Some("justin.Main"),
+    mainClass in assembly := Some("justin.db.Main"),
     assemblyJarName in assembly := "justindb.jar",
     test in assembly := {},
     libraryDependencies ++= Dependencies.root,
@@ -62,6 +62,7 @@ lazy val root = (project in file("."))
   .dependsOn(core, httpApi, storageInMem, storageLogDBExperimental, storageRocksDB)
 
 lazy val core = (project in file("justin-core"))
+  .disablePlugins(RevolverPlugin)
   .configs(MultiJvm)
   .settings(
     name := "justin-core",
@@ -72,6 +73,7 @@ lazy val core = (project in file("justin-core"))
   .dependsOn(storageApi)
 
 lazy val httpApi = (project in file("justin-http-api"))
+  .disablePlugins(RevolverPlugin)
   .settings(
     name := "justin-http-api",
     scalaVersion := Version.scala,
@@ -81,29 +83,40 @@ lazy val httpApi = (project in file("justin-http-api"))
   )
   .dependsOn(core)
 
-lazy val storageApi = (project in file("justin-storage-api")).settings(
-  name := "justin-storage-api",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storageApi
-)
+lazy val storageApi = (project in file("justin-storage-api"))
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    name := "justin-storage-api",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.storageApi
+  )
 
-lazy val storageInMem = (project in file("justin-storage-in-mem")).settings(
-  name := "justin-storage-in-mem",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storageInMem
-).dependsOn(storageApi)
+lazy val storageInMem = (project in file("justin-storage-in-mem"))
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    name := "justin-storage-in-mem",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.storageInMem
+  )
+  .dependsOn(storageApi)
 
-lazy val storageLogDBExperimental = (project in file("justin-storage-logdb-experimental")).settings(
-  name := "justin-storage-logdb-experimental",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storageLogDBExperimental
-).dependsOn(storageApi)
+lazy val storageLogDBExperimental = (project in file("justin-storage-logdb-experimental"))
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    name := "justin-storage-logdb-experimental",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.storageLogDBExperimental
+  )
+  .dependsOn(storageApi)
 
-lazy val storageRocksDB = (project in file("justin-storage-rocksdb")).settings(
-  name := "justin-storage-rocksdb",
-  scalaVersion := Version.scala,
-  libraryDependencies ++= Dependencies.storageRocksDB
-).dependsOn(storageApi)
+lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    name := "justin-storage-rocksdb",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.storageRocksDB
+  )
+  .dependsOn(storageApi)
 
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")

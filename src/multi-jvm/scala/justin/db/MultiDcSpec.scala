@@ -3,13 +3,12 @@ package justin.db
 import akka.remote.testkit.{MultiNodeConfig, MultiNodeSpec}
 import com.typesafe.config.ConfigFactory
 
-final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtcd {
+final class MultiDcSpecConfig(crossDcConnections: Int = 1) extends MultiNodeConfig {
   val first  = role("first")
   val second = role("second")
-  val third  = role("third")
 
-  private[this] val allRoles  = List(first, second, third)
-  private[this] val clusterName = "ConvergeJustinDBClusterSpec"
+  private[this] val allRoles  = List(first, second)
+  private[this] val clusterName = "MultiDcSpec"
 
   private[this] def commonNodeConfig(id: Int) = ConfigFactory.parseString(
     s"""
@@ -22,6 +21,8 @@ final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtc
        |akka.remote.netty.tcp.bind-hostname = "0.0.0.0"
        |akka.remote.netty.tcp.bind-port = 0
        |akka.cluster.http.management.port = ${19999 + id}
+       |akka.cluster.multi-data-center.cross-data-center-connections = $crossDcConnections
+       |akka.cluster.multi-data-center.self-data-center = "dc$id"
     """.stripMargin
   )
 
@@ -32,20 +33,21 @@ final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtc
   }
 }
 
-final class ConvergeJustinDBClusterSpecMultiJvmNode1 extends ConvergeJustinDBClusterSpec
-final class ConvergeJustinDBClusterSpecMultiJvmNode2 extends ConvergeJustinDBClusterSpec
-final class ConvergeJustinDBClusterSpecMultiJvmNode3 extends ConvergeJustinDBClusterSpec
+final class MultiDcMultiJvm1 extends MultiDcSpec
+final class MultiDcMultiJvm2 extends MultiDcSpec
 
-abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig)
+abstract class MultiDcSpec(config: MultiDcSpecConfig)
   extends MultiNodeSpec(config)
-  with MultiNodeClusterSpec {
+    with MultiNodeClusterSpec {
 
-  def this() = this(new ConvergeJustinDBClusterConfig())
+  def this() = this(new MultiDcSpecConfig())
 
-  "ConstructR should form JustinDB cluster" in {
-    val config = new JustinDBConfig(system.settings.config)
-    val justinDB = JustinDB.init(config)
+  "A cluster with multiple data centers" must {
+    "be able to form" in {
+      val config = new JustinDBConfig(system.settings.config)
+      val justinDB = JustinDB.init(config)
 
-    enterBarrier("justindb-cluster-up")
+      enterBarrier("justindb-cluster-up")
+    }
   }
 }

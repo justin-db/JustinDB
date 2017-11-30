@@ -1,7 +1,8 @@
-package justin
+package justin.db
 
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigFactory}
 import com.wacai.config.annotation._
+import justin.db.actors.StorageNodeActor
 
 // $COVERAGE-OFF$
 @conf
@@ -12,12 +13,12 @@ trait justin extends Configurable {
   val `node-id`: Int = 0
 
   val ring = new {
-    val `members-count`: Int = 3
+    val `members-count`: Int = 1
     val partitions: Int = 21
   }
 
   val replication = new {
-    val N: Int = 3
+    val N: Int = 1
   }
 
   val `storage-type`: String = "justin.db.storage.InMemStorage"
@@ -33,11 +34,20 @@ trait justin extends Configurable {
 
   val `netty-tcp-bindhostname`: String = "localhost"
   val `netty-tcp-bindport`: Int        = 2551
+
+  val dc = new {
+    val `cross-data-center-connections`: Int = 1
+    val `self-data-center` = "dc1"
+  }
 }
 
-class JustinConfig(val config: Config) extends justin
+class JustinDBConfig(val config: Config) extends justin
 
-object JustinConfig {
-  def apply(config: Config): JustinConfig = new JustinConfig(config)
+object JustinDBConfig {
+
+  def init: JustinDBConfig = new JustinDBConfig(ConfigFactory
+    .parseString(s"akka.cluster.roles = [${StorageNodeActor.role}]")
+    .withFallback(ConfigFactory.load()))
+
 }
 // $COVERAGE-ON$
