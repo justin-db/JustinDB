@@ -58,8 +58,8 @@ lazy val root = (project in file("."))
   .settings(versionWithGit)
   .settings(git.useGitDescribe := true)
   .settings(configAnnotationSettings)
-  .aggregate(core, httpApi, storageInMem, storageLogDBExperimental, storageRocksDB)
-  .dependsOn(core, httpApi, storageInMem, storageLogDBExperimental, storageRocksDB)
+  .aggregate(core, httpApi, storageInMem, storageRocksDB)
+  .dependsOn(core, httpApi, storageInMem, storageRocksDB)
 
 lazy val core = (project in file("justin-core"))
   .disablePlugins(RevolverPlugin)
@@ -97,15 +97,6 @@ lazy val storageInMem = (project in file("justin-storage-in-mem"))
     name := "justin-storage-in-mem",
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.storageInMem
-  )
-  .dependsOn(storageApi)
-
-lazy val storageLogDBExperimental = (project in file("justin-storage-logdb-experimental"))
-  .disablePlugins(RevolverPlugin)
-  .settings(
-    name := "justin-storage-logdb-experimental",
-    scalaVersion := Version.scala,
-    libraryDependencies ++= Dependencies.storageLogDBExperimental
   )
   .dependsOn(storageApi)
 
