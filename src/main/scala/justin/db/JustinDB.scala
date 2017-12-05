@@ -1,7 +1,5 @@
 package justin.db
 
-import java.io.File
-
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
 import akka.cluster.http.management.ClusterHttpManagement
@@ -16,7 +14,8 @@ import justin.db.cluster.datacenter.Datacenter
 import justin.db.consistenthashing.{NodeId, Ring}
 import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
-import justin.db.storage.{JustinDriver, PluggableStorageProtocol}
+import justin.db.storage.PluggableStorageProtocol
+import justin.db.storage.provider.StorageProvider
 import justin.httpapi.{ActiveAntiEntropyRouter, BuildInfoRouter, HealthCheckRouter, HttpRouter}
 
 import scala.concurrent.duration._
@@ -37,6 +36,12 @@ object JustinDB extends StrictLogging {
     require(justinDBConfig.replication.N <= justinDBConfig.ring.`members-count`, "replication N factor can't be bigger than defined members-count number")
   }
 
+  private[this] def initStorage(justinConfig: JustinDBConfig) = {
+    val provider = StorageProvider.apply(justinConfig.storage.provider)
+    logger.info("Storage provider: " + provider.name)
+    provider.init
+  }
+
   def init(justinConfig: JustinDBConfig): JustinDB = {
     validConfiguration(justinConfig)
 
@@ -46,8 +51,7 @@ object JustinDB extends StrictLogging {
     implicit val executor: ExecutionContext = system.dispatcher
     implicit val materializer: Materializer = ActorMaterializer()
 
-    val eventualJournalFile: File         = new File(justinConfig.`storage-journal-path`) // FIXME: journal-file should only be read while init Kryo storage
-    val storage: PluggableStorageProtocol = JustinDriver.load(justinConfig.`storage-type`)(eventualJournalFile)
+    val storage: PluggableStorageProtocol = initStorage(justinConfig)
 
     val cluster = Cluster(system)
 
