@@ -39,7 +39,9 @@ initialize := {
   assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
 }
 
-// PROJECT DEFINITIONS
+// *****************************************************************************
+// PROJECTS
+// *****************************************************************************
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaServerAppPackaging)
   .configs(MultiJvm)
@@ -53,8 +55,10 @@ lazy val root = (project in file("."))
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit, git.gitCurrentBranch),
     buildInfoOptions += BuildInfoOption.ToJson
   )
-  .settings(versionWithGit)
-  .settings(git.useGitDescribe := true)
+  .settings(
+    versionWithGit,
+    git.useGitDescribe := true
+  )
   .settings(configAnnotationSettings)
   .aggregate(core, httpApi, storageInMem, storageRocksDB)
   .dependsOn(core, httpApi, storageInMem, storageRocksDB)
@@ -132,7 +136,21 @@ lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
   )
   .dependsOn(storageApi)
 
-// ALIASES
+
+// *****************************************************************************
+// Settings
+// *****************************************************************************
+lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
+  Seq(
+    scalacOptions += "-Xmacro-settings:conf.output.dir=" + baseDirectory.value.getAbsolutePath + "/src/main/resources",
+    addCompilerPlugin(Library.macroParadise cross CrossVersion.full),
+    libraryDependencies += Library.configAnnotation
+  )
+}
+
+// *****************************************************************************
+// Aliases
+// *****************************************************************************
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 addCommandAlias("testAll", ";test:test;multi-jvm:test")
 
