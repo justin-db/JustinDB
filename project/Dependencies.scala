@@ -73,5 +73,7 @@ object Dependencies {
   val storageLogDBExperimental = genericTest
   val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
 
+  val splitBrainResolver = genericTest
+
   val root = core ++ httpApi ++ storageApi
 }

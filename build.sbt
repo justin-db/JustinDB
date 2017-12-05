@@ -136,6 +136,15 @@ lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
   )
   .dependsOn(storageApi)
 
+lazy val splitBrainResolver = (project in file("justin-split-brain-resolver"))
+  .enablePlugins(SbtMultiJvm)
+  .configs(MultiJvm)
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    name := "justin-split-brain-resolver",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.splitBrainResolver
+  )
 
 // *****************************************************************************
 // Settings
