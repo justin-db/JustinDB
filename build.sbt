@@ -93,6 +93,7 @@ lazy val storageApi = (project in file("justin-storage-api"))
 
 lazy val storageInMem = (project in file("justin-storage-in-mem"))
   .disablePlugins(RevolverPlugin)
+  .settings(configAnnotationSettings)
   .settings(
     name := "justin-storage-in-mem",
     scalaVersion := Version.scala,
@@ -102,6 +103,7 @@ lazy val storageInMem = (project in file("justin-storage-in-mem"))
 
 lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
   .disablePlugins(RevolverPlugin)
+  .settings(configAnnotationSettings)
   .settings(
     name := "justin-storage-rocksdb",
     scalaVersion := Version.scala,

@@ -19,3 +19,11 @@ project/plugins/project/
 # Idea-IDE
 .idea
 .idea_modules
+
+# RocksDB
+CURRENT
+IDENTITY
+LOCK
+LOG
+MANIFEST-*
+OPTIONS-*
