@@ -9,7 +9,7 @@ trait justin {
   val storage = new {
     val rocksdb = new {
       val name: String = "RocksDB storage"
-      val `journal-path`: String = "/var/justindb/journal"
+      val `journal-path`: String = "."
     }
   }
 }
