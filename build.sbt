@@ -141,6 +141,9 @@ lazy val splitBrainResolver = (project in file("justin-split-brain-resolver"))
   .configs(MultiJvm)
   .disablePlugins(RevolverPlugin)
   .settings(
+    resolvers += Resolver.bintrayRepo("tanukkii007", "maven")
+  )
+  .settings(
     name := "justin-split-brain-resolver",
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.splitBrainResolver

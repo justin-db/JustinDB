@@ -17,6 +17,7 @@ object Version {
   val configAnnotation   = "0.3.7"
   val macroParadise      = "2.1.1"
   val rocksDB            = "5.5.1"
+  val akkaClusterDowning = "0.0.9"
 }
 
 object Library {
@@ -52,6 +53,9 @@ object Library {
   // storage
   val rocksdb              = "org.rocksdb"           % "rocksdbjni"                     % Version.rocksDB
   val kryo                 = "com.esotericsoftware"  % "kryo"                           % Version.kryo % "provided"
+
+  // split-brain resolver
+  val akkaClusterDowning   = "com.github.TanUkkii007" %% "akka-cluster-custom-downing"  % Version.akkaClusterDowning
 }
 
 object Dependencies {
@@ -63,17 +67,14 @@ object Dependencies {
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar, akkaClusterManager)
 
+  // projects
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
   val ring = genericTest
   val vectorClocks = genericTest
   val httpApi = akkaCommon ++ akkaHttpCommon ++ genericTest
-
   val storageApi = genericTest
   val storageInMem = genericTest
-  val storageLogDBExperimental = genericTest
   val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
-
   val splitBrainResolver = genericTest
-
   val root = core ++ httpApi ++ storageApi
 }
