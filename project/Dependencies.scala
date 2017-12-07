@@ -61,20 +61,19 @@ object Library {
 object Dependencies {
   import Library._
 
-  private val genericTest = Seq(scalactic, scalatest % "test")
-
+  private val genericTest       = Seq(scalactic, scalatest % "test")
   private val akkaCommon        = Seq(akkaActor, akkaSfl4j, akkaTestkit, akkaKryo, akkaStream)
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar, akkaClusterManager)
 
   // projects
-  val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
-  val ring = genericTest
-  val vectorClocks = genericTest
-  val httpApi = akkaCommon ++ akkaHttpCommon ++ genericTest
-  val storageApi = genericTest
-  val storageInMem = genericTest
-  val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
-  val splitBrainResolver = genericTest
-  val root = core ++ httpApi ++ storageApi
+  val core: Seq[ModuleID]               = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
+  val ring: Seq[ModuleID]               = genericTest
+  val vectorClocks: Seq[ModuleID]       = genericTest
+  val httpApi: Seq[ModuleID]            = akkaCommon ++ akkaHttpCommon ++ genericTest
+  val storageApi: Seq[ModuleID]         = genericTest
+  val storageInMem: Seq[ModuleID]       = genericTest
+  val storageRocksDB: Seq[ModuleID]     = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
+  val splitBrainResolver: Seq[ModuleID] = Seq(akkaClusterDowning) ++ genericTest
+  val root: Seq[ModuleID]               = core ++ httpApi ++ storageApi
 }
