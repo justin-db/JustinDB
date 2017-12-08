@@ -60,8 +60,8 @@ lazy val root = (project in file("."))
     git.useGitDescribe := true
   )
   .settings(configAnnotationSettings)
-  .aggregate(core, httpApi, storageInMem, storageRocksDB)
-  .dependsOn(core, httpApi, storageInMem, storageRocksDB)
+  .aggregate(core, httpApi, storageInMem, storageRocksDB, splitBrainResolver)
+  .dependsOn(core, httpApi, storageInMem, storageRocksDB, splitBrainResolver)
 
 lazy val core = (project in file("justin-core"))
   .disablePlugins(RevolverPlugin)
