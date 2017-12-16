@@ -9,16 +9,6 @@ resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 fork in run := true
 
-scalacOptions := Seq(
-  "-feature",
-  "-deprecation",
-  "-unchecked",
-  "-Xfatal-warnings",
-  "-encoding",
-  "utf8",
-  "-language:implicitConversions"
-)
-
 daemonUser.in(Docker) := "root"
 maintainer.in(Docker) := "Mateusz Maciaszek"
 dockerBaseImage       := "java:8"
@@ -34,18 +24,11 @@ initialize := {
   assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
 }
 
-lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
-  Seq(
-    scalacOptions += "-Xmacro-settings:conf.output.dir=" + baseDirectory.value.getAbsolutePath + "/src/main/resources",
-    addCompilerPlugin(Library.macroParadise cross CrossVersion.full),
-    libraryDependencies += Library.configAnnotation
-  )
-}
-
 // PROJECT DEFINITIONS
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaAppPackaging, DockerPlugin)
   .configs(MultiJvm)
+  .settings(commonSettings: _*)
   .settings(
     mainClass in assembly := Some("justin.db.Main"),
     assemblyJarName in assembly := "justindb.jar",
@@ -64,6 +47,7 @@ lazy val root = (project in file("."))
 lazy val core = (project in file("justin-core"))
   .disablePlugins(RevolverPlugin)
   .configs(MultiJvm)
+  .settings(commonSettings: _*)
   .settings(
     name := "justin-core",
     scalaVersion := Version.scala,
@@ -74,6 +58,7 @@ lazy val core = (project in file("justin-core"))
 
 lazy val httpApi = (project in file("justin-http-api"))
   .disablePlugins(RevolverPlugin)
+  .settings(commonSettings: _*)
   .settings(
     name := "justin-http-api",
     scalaVersion := Version.scala,
@@ -85,6 +70,7 @@ lazy val httpApi = (project in file("justin-http-api"))
 
 lazy val storageApi = (project in file("justin-storage-api"))
   .disablePlugins(RevolverPlugin)
+  .settings(commonSettings: _*)
   .settings(
     name := "justin-storage-api",
     scalaVersion := Version.scala,
@@ -94,6 +80,7 @@ lazy val storageApi = (project in file("justin-storage-api"))
 lazy val storageInMem = (project in file("justin-storage-in-mem"))
   .disablePlugins(RevolverPlugin)
   .settings(configAnnotationSettings)
+  .settings(commonSettings: _*)
   .settings(
     name := "justin-storage-in-mem",
     scalaVersion := Version.scala,
@@ -104,6 +91,7 @@ lazy val storageInMem = (project in file("justin-storage-in-mem"))
 lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
   .disablePlugins(RevolverPlugin)
   .settings(configAnnotationSettings)
+  .settings(commonSettings: _*)
   .settings(
     name := "justin-storage-rocksdb",
     scalaVersion := Version.scala,
@@ -114,3 +102,37 @@ lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
 // ALIASES
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 addCommandAlias("testAll", ";test:test;multi-jvm:test")
+
+// SETTINGS
+lazy val commonSettings = Def.settings(
+  compileSettings
+)
+
+lazy val compileSettings = Def.settings(
+  scalacOptions ++= Seq(
+    "-feature",
+    "-deprecation",
+    "-unchecked",
+    "-encoding",
+    "utf8",
+    "-language:implicitConversions",
+    "-language:reflectiveCalls",
+    "-language:existentials",
+    "-language:experimental.macros",
+    "-language:higherKinds",
+    "-Xfatal-warnings",
+    "-Xfuture",
+    "-Yno-adapted-args",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Ywarn-dead-code"
+  )
+)
+
+lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
+  Seq(
+    scalacOptions += "-Xmacro-settings:conf.output.dir=" + baseDirectory.value.getAbsolutePath + "/src/main/resources",
+    addCompilerPlugin(Library.macroParadise cross CrossVersion.full),
+    libraryDependencies += Library.configAnnotation
+  )
+}
