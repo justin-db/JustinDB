@@ -3,11 +3,8 @@ package justin.httpapi
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import akka.stream.Materializer
 
-import scala.concurrent.ExecutionContext
-
-class BuildInfoRouter(implicit ec: ExecutionContext, mat: Materializer) {
+class BuildInfoRouter {
 
   def routes(buildInfoJson: String): Route = path("info") {
     get {

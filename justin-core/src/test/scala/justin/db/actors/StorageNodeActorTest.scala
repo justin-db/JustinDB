@@ -42,7 +42,7 @@ class StorageNodeActorTest extends TestKit(StorageNodeActorTest.actorSystem)
     StorageNodeActor.name(NodeId(999), Datacenter("dc1")) shouldBe "dc1-id-999"
   }
 
-  override def afterAll {
+  override def afterAll: Unit = {
     TestKit.shutdownActorSystem(system)
   }
 

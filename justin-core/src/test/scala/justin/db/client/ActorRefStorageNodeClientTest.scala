@@ -161,7 +161,7 @@ class ActorRefStorageNodeClientTest extends TestKit(ActorSystem("test-system"))
     whenReady(result) { _ shouldBe WriteValueResponse.Conflict }
   }
 
-  override def afterAll {
+  override def afterAll: Unit = {
     TestKit.shutdownActorSystem(system)
   }
 
