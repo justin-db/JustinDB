@@ -76,10 +76,12 @@ class RingTest extends FlatSpec with Matchers {
 
   it should "take over some partitions by added node" in {
     // given
-    val ring   = Ring.apply(nodesSize = 1, partitionsSize = 64)
-    val nodeId = NodeId(5)
+    val nodesSize      = 4
+    val partitionsSize = 36
+    val ring           = Ring.apply(nodesSize, partitionsSize)
 
     // when
+    val nodeId          = NodeId(5)
     val updateResult    = Ring.addNode(ring, nodeId).asInstanceOf[Ring.UpdatedRingWithTakenPartitions]
     val updatedRing     = updateResult.ring
     val takenPartitions = updateResult.takeOverDataFrom
@@ -88,7 +90,6 @@ class RingTest extends FlatSpec with Matchers {
     updatedRing.ring.size shouldBe ring.size
     updatedRing.nodesId   shouldBe (ring.nodesId + nodeId)
 
-    takenPartitions should not be empty
-    println("takenPartitions: " + takenPartitions)
+    takenPartitions.size should not be empty
   }
 }

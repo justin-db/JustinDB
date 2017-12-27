@@ -32,8 +32,7 @@ object Ring {
     if(ring.nodesId.contains(nodeId)) {
       Ring.AlreadyExistingNodeId
     } else {
-      val factor = ring.size / ring.nodesId.size
-      val takeOverDataFrom = (0 until ring.size by factor)
+      val takeOverDataFrom = (0 until ring.size by (ring.nodesId.size + 1))
         .flatMap { ringPartitionId => ring.getNodeId(ringPartitionId).map(nodeId => (ringPartitionId, nodeId)) }
         .toList
 
