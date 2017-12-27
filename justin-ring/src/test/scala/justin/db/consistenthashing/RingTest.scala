@@ -56,7 +56,7 @@ class RingTest extends FlatSpec with Matchers {
     ring.getNodeId(lastIdx + 1) should not be defined
   }
 
-  it should "stingify itself" in {
+  it should "stringify itself" in {
     val ring = Ring.apply(nodesSize = 2, partitionsSize = 2)
 
     ring.toString shouldBe "Map(0 -> NodeId(0), 1 -> NodeId(1))"
@@ -72,5 +72,23 @@ class RingTest extends FlatSpec with Matchers {
     Ring.addNode(ring, nodeId = NodeId(2)) shouldBe Ring.AlreadyExistingNodeId
     Ring.addNode(ring, nodeId = NodeId(3)) shouldBe Ring.AlreadyExistingNodeId
     Ring.addNode(ring, nodeId = NodeId(4)) shouldBe Ring.AlreadyExistingNodeId
+  }
+
+  it should "take over some partitions by added node" in {
+    // given
+    val ring   = Ring.apply(nodesSize = 1, partitionsSize = 64)
+    val nodeId = NodeId(5)
+
+    // when
+    val updateResult    = Ring.addNode(ring, nodeId).asInstanceOf[Ring.UpdatedRingWithTakenPartitions]
+    val updatedRing     = updateResult.ring
+    val takenPartitions = updateResult.takeOverDataFrom
+
+    // then
+    updatedRing.ring.size shouldBe ring.size
+    updatedRing.nodesId   shouldBe (ring.nodesId + nodeId)
+
+    takenPartitions should not be empty
+    println("takenPartitions: " + takenPartitions)
   }
 }
