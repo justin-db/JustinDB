@@ -53,8 +53,17 @@ lazy val core = (project in file("justin-core"))
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.core
   )
-  .aggregate(storageApi)
-  .dependsOn(storageApi)
+  .aggregate(storageApi, ring)
+  .dependsOn(storageApi, ring)
+
+lazy val ring = (project in file("justin-ring"))
+  .disablePlugins(RevolverPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "justin-ring",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.ring
+  )
 
 lazy val httpApi = (project in file("justin-http-api"))
   .disablePlugins(RevolverPlugin)
