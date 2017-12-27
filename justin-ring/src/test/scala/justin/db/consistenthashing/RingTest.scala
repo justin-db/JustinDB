@@ -62,6 +62,14 @@ class RingTest extends FlatSpec with Matchers {
     ring.toString shouldBe "Map(0 -> NodeId(0), 1 -> NodeId(1))"
   }
 
+  it should "update value for particular key" in {
+    val ring = Ring.apply(nodesSize = 5, partitionsSize = 64)
+
+    val updatedRing = ring.updated(ringPartitionId = 2, nodeId = NodeId(100))
+
+    updatedRing.getNodeId(id = 2) shouldBe Some(NodeId(100))
+  }
+
   behavior of "Ring Add Node"
 
   it should "end up with AlreadyExistingNodeId when trying to add reserved node id" in {
@@ -90,6 +98,6 @@ class RingTest extends FlatSpec with Matchers {
     updatedRing.ring.size shouldBe ring.size
     updatedRing.nodesId   shouldBe (ring.nodesId + nodeId)
 
-    takenPartitions.size should not be empty
+    takenPartitions should not be empty
   }
 }
