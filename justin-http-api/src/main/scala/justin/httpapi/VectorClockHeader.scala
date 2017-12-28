@@ -3,13 +3,13 @@ package justin.httpapi
 import akka.http.scaladsl.model.headers.{ModeledCustomHeader, ModeledCustomHeaderCompanion}
 import justin.db.consistenthashing.NodeId
 import justin.db.vectorclocks.VectorClock
-import justin.db.versioning.{NodeIdVectorClock, NodeIdVectorClockBase64}
+import justin.db.versioning.NodeIdVectorClockBase64
 
 import scala.util.Try
 
 case class VectorClockHeaderException(msg: String) extends Exception(msg)
 
-case class VectorClockHeader(vectorClock: NodeIdVectorClock) extends ModeledCustomHeader[VectorClockHeader] {
+case class VectorClockHeader(vectorClock: VectorClock[NodeId]) extends ModeledCustomHeader[VectorClockHeader] {
   override def companion: ModeledCustomHeaderCompanion[VectorClockHeader] = VectorClockHeader
 
   override def value(): String = new NodeIdVectorClockBase64().encode(vectorClock) match {

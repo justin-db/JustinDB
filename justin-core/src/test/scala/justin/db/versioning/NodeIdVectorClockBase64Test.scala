@@ -17,8 +17,8 @@ class NodeIdVectorClockBase64Test extends FlatSpec with Matchers {
     val initVClock = VectorClock(Map(NodeId(1) -> Counter(1), NodeId(2) -> Counter(2), NodeId(3) -> Counter(9)))
 
     // when
-    val encoded: String            = vcBase64.encode(initVClock).get
-    val decoded: NodeIdVectorClock = vcBase64.decode(encoded).get
+    val encoded: String              = vcBase64.encode(initVClock).get
+    val decoded: VectorClock[NodeId] = vcBase64.decode(encoded).get
 
     // then
     decoded shouldBe initVClock

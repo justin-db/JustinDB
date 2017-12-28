@@ -53,8 +53,8 @@ lazy val core = (project in file("justin-core"))
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.core
   )
-  .aggregate(storageApi, ring)
-  .dependsOn(storageApi, ring)
+  .aggregate(storageApi, ring, vectorClocks)
+  .dependsOn(storageApi, ring, vectorClocks)
 
 lazy val ring = (project in file("justin-ring"))
   .disablePlugins(RevolverPlugin)
@@ -63,6 +63,15 @@ lazy val ring = (project in file("justin-ring"))
     name := "justin-ring",
     scalaVersion := Version.scala,
     libraryDependencies ++= Dependencies.ring
+  )
+
+lazy val vectorClocks = (project in file("justin-vector-clocks"))
+  .disablePlugins(RevolverPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "justin-vector-clocks",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.vectorClocks
   )
 
 lazy val httpApi = (project in file("justin-http-api"))
