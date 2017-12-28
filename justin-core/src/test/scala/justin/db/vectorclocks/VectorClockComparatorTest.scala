@@ -1,6 +1,6 @@
-package justin.db.versioning
+package justin.db.vectorclocks
 
-import justin.db.versioning.VectorClockComparator.VectorClockRelation
+import justin.db.vectorclocks.VectorClockComparator.VectorClockRelation
 import justin.db.versioning.VectorClockOps.stringAsId
 import org.scalatest.{FlatSpec, Matchers}
 

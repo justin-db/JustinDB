@@ -5,8 +5,8 @@ import justin.db.actors.protocol.{StorageNodeConflictedWrite, StorageNodeFailedW
 import justin.db.replica.IsPrimaryOrReplica
 import justin.db.storage.PluggableStorageProtocol.StorageGetData
 import justin.db.storage.{GetStorageProtocol, PutStorageProtocol}
-import justin.db.versioning.VectorClockComparator
-import justin.db.versioning.VectorClockComparator.VectorClockRelation
+import justin.db.vectorclocks.VectorClockComparator
+import justin.db.vectorclocks.VectorClockComparator.VectorClockRelation
 
 import scala.concurrent.{ExecutionContext, Future}
 
