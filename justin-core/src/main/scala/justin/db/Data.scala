@@ -2,14 +2,15 @@ package justin.db
 
 import java.util.UUID
 
+import justin.db.consistenthashing.NodeId
 import justin.db.replica.PreferenceList
 import justin.db.storage.JustinData
 import justin.db.vectorclocks.VectorClock
-import justin.db.versioning.{NodeIdVectorClock, NodeIdVectorClockBase64}
+import justin.db.versioning.NodeIdVectorClockBase64
 
 import scala.language.implicitConversions
 
-case class Data(id: UUID, value: String, vclock: NodeIdVectorClock = VectorClock(), timestamp: Long = System.currentTimeMillis())
+case class Data(id: UUID, value: String, vclock: VectorClock[NodeId] = VectorClock(), timestamp: Long = System.currentTimeMillis())
 
 object Data {
 

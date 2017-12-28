@@ -1,13 +1,8 @@
 package justin.db
 
-import justin.db.consistenthashing.NodeId
-import justin.db.vectorclocks.{Counter, VectorClock}
-
 import scala.language.implicitConversions
 
-package object versioning {
-
-  type NodeIdVectorClock = VectorClock[NodeId]
+package object vectorclocks {
 
   /**
     * Create Vector Clock from plain string eg. "A:1, B:1, C:1"
@@ -24,6 +19,5 @@ package object versioning {
   object VectorClockOps {
     implicit def stringAsId(s: String): VectorClock[String] = s.toVectorClock[String]
     implicit def intAsId(s: String): VectorClock[Int]       = s.toVectorClock[Int](_.toInt)
-    implicit def nodeIdAsId(s: String): VectorClock[NodeId] = s.toVectorClock[NodeId](s => NodeId(s.toInt))
   }
 }

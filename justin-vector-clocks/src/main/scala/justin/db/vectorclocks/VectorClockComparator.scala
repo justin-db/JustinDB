@@ -1,8 +1,8 @@
-package justin.db.versioning
+package justin.db.vectorclocks
 
-import justin.db.vectorclocks.VectorClock
-import justin.db.versioning.VectorClockComparator.VectorClockRelation
+import justin.db.vectorclocks.VectorClockComparator.VectorClockRelation
 
+// DIRTY !
 class VectorClockComparator[Id] extends ((VectorClock[Id], VectorClock[Id]) => VectorClockRelation) {
 
   override def apply(baseVC: VectorClock[Id], comparedVC: VectorClock[Id]): VectorClockRelation = {

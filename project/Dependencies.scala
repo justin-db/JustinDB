@@ -75,6 +75,7 @@ object Dependencies {
 
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
   val ring = genericTest
+  val vectorClocks = genericTest
   val httpApi = akkaCommon ++ akkaHttpCommon ++ genericTest
 
   val storageApi = genericTest

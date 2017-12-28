@@ -4,8 +4,10 @@ import java.util.UUID
 
 import justin.db.Data
 import justin.db.actors.protocol.{StorageNodeFailedRead, StorageNodeFoundRead, StorageNodeNotFoundRead}
+import justin.db.consistenthashing.NodeId
 import justin.db.replica.R
-import justin.db.versioning.VectorClockOps._
+import justin.db.vectorclocks.VectorClock
+import justin.db.vectorclocks.VectorClockOps
 import org.scalatest.{FlatSpec, Matchers}
 
 class ReplicaReadAgreementTest extends FlatSpec with Matchers {
@@ -108,4 +110,6 @@ class ReplicaReadAgreementTest extends FlatSpec with Matchers {
     // then
     madeConsensus shouldBe ReadAgreement.Found(searchedData.head.data)
   }
+
+  implicit def nodeIdAsId(s: String): VectorClock[NodeId] = s.toVectorClock[NodeId](s => NodeId(s.toInt))
 }

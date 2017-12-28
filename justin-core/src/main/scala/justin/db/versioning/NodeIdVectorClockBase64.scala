@@ -17,7 +17,7 @@ object NodeIdVectorClockBase64 {
 class NodeIdVectorClockBase64 {
   import NodeIdVectorClockBase64._
 
-  def encode(vclock: NodeIdVectorClock): Try[String] = Try {
+  def encode(vclock: VectorClock[NodeId]): Try[String] = Try {
     val vcClockBytes = vclock.toList
       .map { case (nodeId, counter) => (nodeId.id.toString, counter.value) }
       .toJson
@@ -27,7 +27,7 @@ class NodeIdVectorClockBase64 {
     Base64.getEncoder.encodeToString(vcClockBytes)
   }
 
-  def decode(base64: String): Try[NodeIdVectorClock] = Try {
+  def decode(base64: String): Try[VectorClock[NodeId]] = Try {
     val decodedMap = new String(Base64.getDecoder.decode(base64), charset)
       .parseJson.convertTo[List[(String, Int)]]
       .map { case (k, v) => (NodeId(k.toInt), Counter(v))}
