@@ -56,9 +56,48 @@ class RingTest extends FlatSpec with Matchers {
     ring.getNodeId(lastIdx + 1) should not be defined
   }
 
-  it should "stingify itself" in {
+  it should "stringify itself" in {
     val ring = Ring.apply(nodesSize = 2, partitionsSize = 2)
 
     ring.toString shouldBe "Map(0 -> NodeId(0), 1 -> NodeId(1))"
+  }
+
+  it should "update value for particular key" in {
+    val ring = Ring.apply(nodesSize = 5, partitionsSize = 64)
+
+    val updatedRing = ring.updated(ringPartitionId = 2, nodeId = NodeId(100))
+
+    updatedRing.getNodeId(id = 2) shouldBe Some(NodeId(100))
+  }
+
+  behavior of "Ring Add Node"
+
+  it should "end up with AlreadyExistingNodeId when trying to add reserved node id" in {
+    val ring = Ring.apply(nodesSize = 5, partitionsSize = 64)
+
+    Ring.addNode(ring, nodeId = NodeId(0)) shouldBe Ring.AlreadyExistingNodeId
+    Ring.addNode(ring, nodeId = NodeId(1)) shouldBe Ring.AlreadyExistingNodeId
+    Ring.addNode(ring, nodeId = NodeId(2)) shouldBe Ring.AlreadyExistingNodeId
+    Ring.addNode(ring, nodeId = NodeId(3)) shouldBe Ring.AlreadyExistingNodeId
+    Ring.addNode(ring, nodeId = NodeId(4)) shouldBe Ring.AlreadyExistingNodeId
+  }
+
+  it should "take over some partitions by added node" in {
+    // given
+    val nodesSize      = 4
+    val partitionsSize = 36
+    val ring           = Ring.apply(nodesSize, partitionsSize)
+
+    // when
+    val nodeId          = NodeId(5)
+    val updateResult    = Ring.addNode(ring, nodeId).asInstanceOf[Ring.UpdatedRingWithTakenPartitions]
+    val updatedRing     = updateResult.ring
+    val takenPartitions = updateResult.takeOverDataFrom
+
+    // then
+    updatedRing.ring.size shouldBe ring.size
+    updatedRing.nodesId   shouldBe (ring.nodesId + nodeId)
+
+    takenPartitions should not be empty
   }
 }
