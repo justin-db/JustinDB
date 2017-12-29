@@ -12,11 +12,10 @@ import justin.db.actors.{StorageNodeActor, StorageNodeActorRef}
 import justin.db.client.ActorRefStorageNodeClient
 import justin.db.cluster.datacenter.Datacenter
 import justin.db.consistenthashing.{NodeId, Ring}
-import justin.db.entropy.{ActiveAntiEntropyActor, ActiveAntiEntropyActorRef}
 import justin.db.replica.N
 import justin.db.storage.PluggableStorageProtocol
 import justin.db.storage.provider.StorageProvider
-import justin.httpapi.{ActiveAntiEntropyRouter, BuildInfoRouter, HealthCheckRouter, HttpRouter}
+import justin.httpapi.{BuildInfoRouter, HealthCheckRouter, HttpRouter}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Promise}
@@ -68,8 +67,6 @@ object JustinDB extends StrictLogging {
           name  = StorageNodeActor.name(nodeId, datacenter)
         )
       }
-      // ENTROPY ACTOR
-      val activeAntiEntropyActorRef = ActiveAntiEntropyActorRef(system.actorOf(ActiveAntiEntropyActor.props))
 
       // AKKA-MANAGEMENT
       ClusterHttpManagement(cluster).start().map { _ =>
@@ -80,8 +77,7 @@ object JustinDB extends StrictLogging {
       val routes = logRequestResult(system.name) {
         new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
           new HealthCheckRouter().routes ~
-          new BuildInfoRouter().routes(BuildInfo.toJson) ~
-          new ActiveAntiEntropyRouter(activeAntiEntropyActorRef).routes
+          new BuildInfoRouter().routes(BuildInfo.toJson)
       }
       Http()
         .bindAndHandle(routes, justinConfig.http.interface, justinConfig.http.port)
