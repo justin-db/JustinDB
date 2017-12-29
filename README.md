@@ -1,4 +1,4 @@
-``# JustinDB
+# JustinDB
 
 <img src="https://github.com/justin-db/JustinDB/blob/master/logo.png" align="right" width="280" />
 
