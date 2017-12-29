@@ -21,7 +21,7 @@ class ReplicaWriteCoordinator(
     case Internal.WriteReplica(w, data)  => coordinateReplicated(w, data, clusterMembers)
   }
 
-  private def writeLocal(data: Data) = localDataWriter.apply(data, new IsPrimaryOrReplica(nodeId, ring))
+  private def writeLocal(data: Data) = localDataWriter.apply(data)
 
   private def coordinateReplicated(w: W, data: Data, clusterMembers: ClusterMembers) = {
     val ringPartitionId = UUID2RingPartitionId.apply(data.id, ring)
