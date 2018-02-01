@@ -1,21 +1,38 @@
+import sbt._
 import com.typesafe.sbt.packager.docker._
 
 name           := "JustinDB"
-version        := "0.1"
-maintainer     := "Mateusz Maciaszek"
-packageSummary := "JustinDB"
+maintainer     := "mateusz.maciaszekhpc@gmail.com"
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 fork in run := true
 
+// DOCKER DEFINITION
 daemonUser.in(Docker) := "root"
 maintainer.in(Docker) := "Mateusz Maciaszek"
-dockerBaseImage       := "java:8"
-dockerExposedPorts    := Vector(2552, 8000)
 dockerRepository      := Some("justindb")
+dockerUpdateLatest    := true
+dockerBaseImage       := "local/openjdk-jre-8-bash"
 dockerCommands        += Cmd("RUN", s"ln -s /opt/docker/cli /bin/cli")
 dockerCommands        += Cmd("RUN", "echo 'cat /opt/docker/motd' >> /etc/bash.bashrc")
+dockerEntrypoint      ++= Seq(
+  """-DakkaActorSystemName="$AKKA_ACTOR_SYSTEM_NAME"""",
+  """-Dakka.remote.netty.tcp.hostname="$(eval "echo $AKKA_REMOTING_BIND_HOST")"""",
+  """-Dakka.remote.netty.tcp.port="$AKKA_REMOTING_BIND_PORT"""",
+  """$(IFS=','; I=0; for NODE in $AKKA_SEED_NODES; do echo "-Dakka.cluster.seed-nodes.$I=akka.tcp://$AKKA_ACTOR_SYSTEM_NAME@$NODE"; I=$(expr $I + 1); done)""",
+  "-Dakka.io.dns.resolver=async-dns",
+  "-Dakka.io.dns.async-dns.resolve-srv=true",
+  "-Dakka.io.dns.async-dns.resolv-conf=on",
+  """-DhttpHost="$HTTP_HOST"""",
+  """-DhttpPort="$HTTP_PORT"""",
+  """-DclusterMembershipAskTimeout="$CLUSTER_MEMBERSHIP_ASK_TIMEOUT""""
+)
+dockerCommands :=
+  dockerCommands.value.flatMap {
+    case ExecCmd("ENTRYPOINT", args @ _*) => Seq(Cmd("ENTRYPOINT", args.mkString(" ")))
+    case v => Seq(v)
+  }
 
 // Force building with Java 8
 initialize := {
@@ -26,7 +43,7 @@ initialize := {
 
 // PROJECT DEFINITIONS
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaAppPackaging, DockerPlugin)
+  .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaServerAppPackaging)
   .configs(MultiJvm)
   .settings(commonSettings: _*)
   .settings(
