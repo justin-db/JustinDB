@@ -8,7 +8,7 @@ import justin.db.actors.StorageNodeActor
 @conf
 trait justin extends Configurable {
 
-  val system: String = "justin"
+  val system: String = "justindb"
 
   val `node-id`: Int = 0
 
@@ -32,9 +32,6 @@ trait justin extends Configurable {
 
   val `netty-tcp-hostname`: String = "localhost"
   val `netty-tcp-port`: Int        = 2551
-
-  val `netty-tcp-bindhostname`: String = "localhost"
-  val `netty-tcp-bindport`: Int        = 2551
 
   val dc = new {
     val `cross-data-center-connections`: Int = 1

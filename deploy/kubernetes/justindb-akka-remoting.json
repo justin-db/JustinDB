@@ -8,7 +8,7 @@
     "name": "justindb"
   },
   "spec": {
-    "clusterIP": "justindb",
+    "clusterIP": "None",
     "ports": [
       {
         "port": 2551,

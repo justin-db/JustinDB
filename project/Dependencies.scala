@@ -14,7 +14,6 @@ object Version {
   val sigarLoader        = "1.6.6"
   val logback            = "1.2.3"
   val scalaLogging       = "3.7.2"
-  val constructR         = "0.17.0"
   val configAnnotation   = "0.3.7"
   val macroParadise      = "2.1.1"
   val rocksDB            = "5.5.1"
@@ -53,10 +52,6 @@ object Library {
   val configAnnotation     = "com.wacai"         %% "config-annotation"                 % Version.configAnnotation
   val macroParadise        = "org.scalamacros"    % "paradise"                          % Version.macroParadise
 
-  // service discovery
-  val constructR           = "de.heikoseeberger" %% "constructr"                        % Version.constructR
-  val constructRetcd       = "de.heikoseeberger" %% "constructr-coordination-etcd"      % Version.constructR
-
   // storage
   val rocksdb              = "org.rocksdb"           % "rocksdbjni"                     % Version.rocksDB
   val kryo                 = "com.esotericsoftware"  % "kryo"                           % Version.kryo % "provided"
@@ -71,8 +66,6 @@ object Dependencies {
   private val akkaHttpCommon    = Seq(akkaHttp, akkaHttpSprayJson, akkaHttpTestkit)
   private val akkaClusterCommon = Seq(akkaRemote, akkaMultiNodeTestkit % "multi-jvm", akkaCluster, akkaClusterMetrics, akkaClusterTools, kamonSigar, akkaClusterManager)
 
-  private val constructr = Seq(constructR, constructRetcd)
-
   val core = akkaCommon ++ akkaClusterCommon ++ genericTest ++ Seq(scalacheck % "test", logback, scalaLogging) ++ Seq(akkaHttpSprayJson)
   val ring = genericTest
   val vectorClocks = genericTest
@@ -83,5 +76,5 @@ object Dependencies {
   val storageLogDBExperimental = genericTest
   val storageRocksDB = Seq(rocksdb, rocksdb % "test", kryo) ++ genericTest
 
-  val root = core ++ httpApi ++ storageApi ++ constructr ++ Seq(dockerTestKit, dockerTestKitImpl)
+  val root = core ++ httpApi ++ storageApi ++ Seq(dockerTestKit, dockerTestKitImpl)
 }

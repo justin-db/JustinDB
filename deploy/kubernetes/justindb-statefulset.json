@@ -41,18 +41,6 @@
               {
                 "name": "AKKA_SEED_NODES",
                 "value": "justindb-0.justindb.default.svc.cluster.local:2551,justindb-1.justindb.default.svc.cluster.local:2551,justindb-2.justindb.default.svc.cluster.local:2551"
-              },
-              {
-                "name": "HTTP_HOST",
-                "value": "0.0.0.0"
-              },
-              {
-                "name": "HTTP_PORT",
-                "value": "9000"
-              },
-              {
-                "name": "CLUSTER_MEMBERSHIP_ASK_TIMEOUT",
-                "value": "5000"
               }
             ],
             "readinessProbe": {
