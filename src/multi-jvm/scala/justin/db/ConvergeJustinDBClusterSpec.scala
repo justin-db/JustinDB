@@ -3,7 +3,7 @@ package justin.db
 import akka.remote.testkit.{MultiNodeConfig, MultiNodeSpec}
 import com.typesafe.config.ConfigFactory
 
-final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtcd {
+final class ConvergeJustinDBClusterConfig extends MultiNodeConfig {
   val first  = role("first")
   val second = role("second")
   val third  = role("third")
@@ -13,15 +13,14 @@ final class ConvergeJustinDBClusterConfig extends MultiNodeConfig with DockerEtc
 
   private[this] def commonNodeConfig(id: Int) = ConfigFactory.parseString(
     s"""
-       |justin.system = $clusterName
-       |justin.node-id = $id
-       |justin.http.port = ${9000 + id}
+       |justin.system                                   = $clusterName
+       |justin.node-id                                  = $id
+       |justin.http.port                                = ${9000 + id}
        |akka.cluster.role.storagenode.min-nr-of-members = ${allRoles.size}
-       |akka.remote.netty.tcp.port = 0
-       |akka.remote.netty.tcp.hostname = "localhost"
-       |akka.remote.netty.tcp.bind-hostname = "0.0.0.0"
-       |akka.remote.netty.tcp.bind-port = 0
-       |akka.cluster.http.management.port = ${19999 + id}
+       |akka.cluster.http.management.port               = ${19999 + id}
+       |akka.cluster.seed-nodes.0                       = "akka.tcp://$clusterName@localhost:25551"
+       |akka.remote.netty.tcp.port                      = ${25551 + id}
+       |akka.remote.netty.tcp.hostname                  = "localhost"
     """.stripMargin
   )
 
@@ -42,10 +41,12 @@ abstract class ConvergeJustinDBClusterSpec(config: ConvergeJustinDBClusterConfig
 
   def this() = this(new ConvergeJustinDBClusterConfig())
 
-  "ConstructR should form JustinDB cluster" in {
-    val config = new JustinDBConfig(system.settings.config)
-    val justinDB = JustinDB.init(config)
+  "A cluster" must {
+    "be able to form" in {
+      val config = new JustinDBConfig(system.settings.config)
+      val justinDB = JustinDB.init(config)(system)
 
-    enterBarrier("justindb-cluster-up")
+      enterBarrier("justindb-cluster-up")
+    }
   }
 }

@@ -1,5 +1,6 @@
 package justin.db
 
+import akka.actor.ActorSystem
 import buildinfo.BuildInfo
 import com.typesafe.scalalogging.StrictLogging
 
@@ -18,8 +19,9 @@ object Main extends App with StrictLogging {
     """.stripMargin
   )
 
-  val config = JustinDBConfig.init
-  val justindb = JustinDB.init(config)
+  val justindbConfig = JustinDBConfig.init
+  val actorSystem    = ActorSystem(justindbConfig.system, justindbConfig.config)
+  val justindb       = JustinDB.init(justindbConfig)(actorSystem)
 
   logger.info("Build Info: " + BuildInfo.toString)
 }
