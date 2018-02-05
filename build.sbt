@@ -20,6 +20,7 @@ dockerEntrypoint      ++= Seq(
   """-Djustin.netty-tcp-hostname="$(eval "echo $AKKA_REMOTING_BIND_HOST")"""",
   """-Djustin.netty-tcp-port="$AKKA_REMOTING_BIND_PORT"""",
   """-Djustin.system="$AKKA_ACTOR_SYSTEM_NAME"""",
+  """-Djustin.kubernetes-hostname="$(eval "echo $JUSTINDB_NODE_ID_NAME")"""",
   """$(IFS=','; I=0; for NODE in $AKKA_SEED_NODES; do echo "-Dakka.cluster.seed-nodes.$I=akka.tcp://$AKKA_ACTOR_SYSTEM_NAME@$NODE"; I=$(expr $I + 1); done)""",
   "-Dakka.io.dns.resolver=async-dns",
   "-Dakka.io.dns.async-dns.resolve-srv=true",

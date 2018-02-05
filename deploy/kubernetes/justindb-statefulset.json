@@ -27,6 +27,10 @@
             ],
             "env": [
               {
+                "name": "JUSTINDB_NODE_ID_NAME",
+                "value": "$HOSTNAME"
+              },
+              {
                 "name": "AKKA_ACTOR_SYSTEM_NAME",
                 "value": "justindb"
               },

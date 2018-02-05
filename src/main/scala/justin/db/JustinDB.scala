@@ -21,13 +21,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Promise}
 import scala.language.reflectiveCalls
 
+// $COVERAGE-OFF$
 final class JustinDB
 
-// $COVERAGE-OFF$
 object JustinDB extends StrictLogging {
 
   private[this] def validConfiguration(justinDBConfig: JustinDBConfig): Unit = {
-    require(justinDBConfig.`node-id` >= 0, s"node-id can't be smaller than 0")
     require(justinDBConfig.replication.N > 0, "replication N factor can't be smaller or equal 0")
     require(justinDBConfig.ring.`members-count` > 0, "members-counter can't be smaller or equal 0")
     require(justinDBConfig.ring.partitions > 0, "ring partitions can't be smaller or equal 0")
@@ -56,7 +55,7 @@ object JustinDB extends StrictLogging {
     cluster.registerOnMemberUp {
       // STORAGE ACTOR
       val storageNodeActorRef = StorageNodeActorRef {
-        val nodeId     = NodeId(justinConfig.`node-id`)
+        val nodeId     = NodeId(justinConfig.`kubernetes-hostname`.split("-").last.toInt)
         val ring       = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
         val n          = N(justinConfig.replication.N)
         val datacenter = Datacenter(justinConfig.dc.`self-data-center`)

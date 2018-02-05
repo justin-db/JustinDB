@@ -10,7 +10,7 @@ trait justin extends Configurable {
 
   val system: String = "justindb"
 
-  val `node-id`: Int = 0
+  val `kubernetes-hostname`: String = "justindb-0"
 
   val ring = new {
     val `members-count`: Int = 1

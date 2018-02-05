@@ -13,7 +13,7 @@ final class MultiDcSpecConfig(crossDcConnections: Int = 1) extends MultiNodeConf
   private[this] def commonNodeConfig(id: Int) = ConfigFactory.parseString(
     s"""
        |justin.system                                                = $clusterName
-       |justin.node-id                                               = $id
+       |justin.kubernetes-hostname                                   = s"justindb-$id"
        |justin.http.port                                             = ${9000 + id}
        |akka.cluster.role.storagenode.min-nr-of-members              = ${allRoles.size}
        |akka.cluster.http.management.port                            = ${19999 + id}
