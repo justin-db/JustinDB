@@ -21,13 +21,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Promise}
 import scala.language.reflectiveCalls
 
+// $COVERAGE-OFF$
 final class JustinDB
 
-// $COVERAGE-OFF$
 object JustinDB extends StrictLogging {
 
   private[this] def validConfiguration(justinDBConfig: JustinDBConfig): Unit = {
-    require(justinDBConfig.`node-id` >= 0, s"node-id can't be smaller than 0")
     require(justinDBConfig.replication.N > 0, "replication N factor can't be smaller or equal 0")
     require(justinDBConfig.ring.`members-count` > 0, "members-counter can't be smaller or equal 0")
     require(justinDBConfig.ring.partitions > 0, "ring partitions can't be smaller or equal 0")
@@ -41,28 +40,27 @@ object JustinDB extends StrictLogging {
     provider.init
   }
 
-  def init(justinConfig: JustinDBConfig): JustinDB = {
+  def init(justinConfig: JustinDBConfig)(implicit actorSystem: ActorSystem): JustinDB = {
     validConfiguration(justinConfig)
 
     val processOrchestrator = Promise[JustinDB]
 
-    implicit val system: ActorSystem        = ActorSystem(justinConfig.system, justinConfig.config)
-    implicit val executor: ExecutionContext = system.dispatcher
+    implicit val executor: ExecutionContext = actorSystem.dispatcher
     implicit val materializer: Materializer = ActorMaterializer()
 
     val storage: PluggableStorageProtocol = initStorage(justinConfig)
 
-    val cluster = Cluster(system)
+    val cluster = Cluster(actorSystem)
 
     cluster.registerOnMemberUp {
       // STORAGE ACTOR
       val storageNodeActorRef = StorageNodeActorRef {
-        val nodeId     = NodeId(justinConfig.`node-id`)
+        val nodeId     = NodeId(justinConfig.`kubernetes-hostname`.split("-").last.toInt)
         val ring       = Ring(justinConfig.ring.`members-count`, justinConfig.ring.partitions)
         val n          = N(justinConfig.replication.N)
         val datacenter = Datacenter(justinConfig.dc.`self-data-center`)
 
-        system.actorOf(
+        actorSystem.actorOf(
           props = StorageNodeActor.props(nodeId, datacenter, storage, ring, n),
           name  = StorageNodeActor.name(nodeId, datacenter)
         )
@@ -74,7 +72,7 @@ object JustinDB extends StrictLogging {
       }.recover { case ex => processOrchestrator.failure(ex) }
 
       // HTTP API
-      val routes = logRequestResult(system.name) {
+      val routes = logRequestResult(actorSystem.name) {
         new HttpRouter(new ActorRefStorageNodeClient(storageNodeActorRef)).routes ~
           new HealthCheckRouter().routes ~
           new BuildInfoRouter().routes(BuildInfo.toJson)

@@ -1,0 +1,70 @@
+{
+  "apiVersion": "apps/v1beta1",
+  "kind": "StatefulSet",
+  "metadata": {
+    "name": "justindb"
+  },
+  "spec": {
+    "serviceName": "justindb",
+    "replicas": 3,
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "justindb"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "justindb",
+            "image": "justindb/justindb",
+            "imagePullPolicy": "Always",
+            "ports": [
+              {
+                "containerPort": 2551,
+                "name": "akka-remote"
+              },
+              {
+                "containerPort": 9000,
+                "name": "justindb-host"
+              },
+              {
+                "containerPort": 19999,
+                "name": "justindb-info"
+              }
+            ],
+            "env": [
+              {
+                "name": "JUSTINDB_NODE_ID_NAME",
+                "value": "$HOSTNAME"
+              },
+              {
+                "name": "AKKA_ACTOR_SYSTEM_NAME",
+                "value": "justindb"
+              },
+              {
+                "name": "AKKA_REMOTING_BIND_PORT",
+                "value": "2551"
+              },
+              {
+                "name": "AKKA_REMOTING_BIND_HOST",
+                "value": "$HOSTNAME.justindb.default.svc.cluster.local"
+              },
+              {
+                "name": "AKKA_SEED_NODES",
+                "value": "justindb-0.justindb.default.svc.cluster.local:2551,justindb-1.justindb.default.svc.cluster.local:2551,justindb-2.justindb.default.svc.cluster.local:2551"
+              }
+            ],
+            "readinessProbe": {
+              "tcpSocket": {
+                "port": 2551
+              },
+              "initialDelaySeconds": 10,
+              "timeoutSeconds": 120
+            }
+          }
+        ]
+      }
+    }
+  }
+}

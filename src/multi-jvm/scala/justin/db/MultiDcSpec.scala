@@ -12,17 +12,16 @@ final class MultiDcSpecConfig(crossDcConnections: Int = 1) extends MultiNodeConf
 
   private[this] def commonNodeConfig(id: Int) = ConfigFactory.parseString(
     s"""
-       |justin.system = $clusterName
-       |justin.node-id = $id
-       |justin.http.port = ${9000 + id}
-       |akka.cluster.role.storagenode.min-nr-of-members = ${allRoles.size}
-       |akka.remote.netty.tcp.port = 0
-       |akka.remote.netty.tcp.hostname = "localhost"
-       |akka.remote.netty.tcp.bind-hostname = "0.0.0.0"
-       |akka.remote.netty.tcp.bind-port = 0
-       |akka.cluster.http.management.port = ${19999 + id}
+       |justin.system                                                = $clusterName
+       |justin.kubernetes-hostname                                   = s"justindb-$id"
+       |justin.http.port                                             = ${9000 + id}
+       |akka.cluster.role.storagenode.min-nr-of-members              = ${allRoles.size}
+       |akka.cluster.http.management.port                            = ${19999 + id}
+       |akka.cluster.seed-nodes.0                                    = "akka.tcp://$clusterName@localhost:25551"
+       |akka.remote.netty.tcp.port                                   = ${25551 + id}
+       |akka.remote.netty.tcp.hostname                               = "localhost"
        |akka.cluster.multi-data-center.cross-data-center-connections = $crossDcConnections
-       |akka.cluster.multi-data-center.self-data-center = "dc$id"
+       |akka.cluster.multi-data-center.self-data-center              = "dc$id"
     """.stripMargin
   )
 
@@ -45,7 +44,7 @@ abstract class MultiDcSpec(config: MultiDcSpecConfig)
   "A cluster with multiple data centers" must {
     "be able to form" in {
       val config = new JustinDBConfig(system.settings.config)
-      val justinDB = JustinDB.init(config)
+      val justinDB = JustinDB.init(config)(system)
 
       enterBarrier("justindb-cluster-up")
     }
