@@ -23,6 +23,14 @@
               {
                 "containerPort": 2551,
                 "name": "akka-remote"
+              },
+              {
+                "containerPort": 9000,
+                "name": "justindb-host"
+              },
+              {
+                "containerPort": 19999,
+                "name": "justindb-info"
               }
             ],
             "env": [
