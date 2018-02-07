@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration._
 import akka.testkit.TestDuration
 
-final class SplitBrainResolverConfig extends MultiNodeConfig with DockerEtcd {
+final class SplitBrainResolverConfig extends MultiNodeConfig {
   val first: RoleName  = role("first")
   val second: RoleName = role("second")
   val third: RoleName  = role("third")
@@ -18,25 +18,20 @@ final class SplitBrainResolverConfig extends MultiNodeConfig with DockerEtcd {
 
   private[this] def commonNodeConfig(id: Int) = ConfigFactory.parseString(
     s"""
-       |justin.system = $clusterName
-       |justin.node-id = $id
-       |justin.http.port = ${9000 + id}
+       |justin.system                                   = $clusterName
+       |justin.kubernetes-hostname                      = s"justindb-$id"
+       |justin.http.port                                = ${9000 + id}
        |akka.cluster.role.storagenode.min-nr-of-members = ${allRoles.size}
-       |akka.remote.netty.tcp.port = 0
-       |akka.remote.netty.tcp.hostname = "localhost"
-       |akka.remote.netty.tcp.bind-hostname = "0.0.0.0"
-       |akka.remote.netty.tcp.bind-port = 0
-       |akka.cluster.http.management.port = ${19999 + id}
+       |akka.cluster.http.management.port               = ${19999 + id}
+       |akka.cluster.seed-nodes.0                       = "akka.trttl.gremlin.tcp://$clusterName@localhost:25551"
+       |akka.remote.netty.tcp.port                      = ${25551 + id}
+       |akka.remote.netty.tcp.hostname                  = "localhost"
+       |akka.remote.netty.tcp.applied-adapters          = [trttl, gremlin]
+       |akka.remote.artery.advanced.test-mode           = on
     """.stripMargin
   )
 
-  testTransport(on = true)
-
-  commonConfig {
-    MultiNodeClusterSpec
-      .commonBaseConfig
-      .withFallback(JustinDBConfig.init.config)
-  }
+  commonConfig(MultiNodeClusterSpec.commonBaseConfig.withFallback(JustinDBConfig.init.config))
 
   allRoles.zipWithIndex.foreach { case (roleName, id) =>
     nodeConfig(roleName)(commonNodeConfig(id))
@@ -60,7 +55,7 @@ abstract class SplitBrainResolverSpec(config: SplitBrainResolverConfig)
 
     "be able to DOWN a 'last' node that is UNREACHABLE" in within(150.seconds) {
       val config = new JustinDBConfig(system.settings.config)
-      val justinDB = JustinDB.init(config)
+      val justinDB = JustinDB.init(config)(system)
 
       enterBarrier("justindb-cluster-up")
 

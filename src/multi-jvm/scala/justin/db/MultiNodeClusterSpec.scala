@@ -70,5 +70,6 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec { self: MultiNodeS
       max = timeout,
       interval = 2.seconds
     )
+    ()
   }
 }

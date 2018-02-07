@@ -150,23 +150,14 @@ lazy val splitBrainResolver = (project in file("justin-split-brain-resolver"))
   )
 
 // *****************************************************************************
-// Settings
-// *****************************************************************************
-lazy val configAnnotationSettings: Seq[sbt.Setting[_]] = {
-  Seq(
-    scalacOptions += "-Xmacro-settings:conf.output.dir=" + baseDirectory.value.getAbsolutePath + "/src/main/resources",
-    addCompilerPlugin(Library.macroParadise cross CrossVersion.full),
-    libraryDependencies += Library.configAnnotation
-  )
-}
-
-// *****************************************************************************
 // Aliases
 // *****************************************************************************
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 addCommandAlias("testAll", ";test:test;multi-jvm:test")
 
-// SETTINGS
+// *****************************************************************************
+// Settings
+// *****************************************************************************
 lazy val commonSettings = Def.settings(
   compileSettings
 )
