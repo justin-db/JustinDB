@@ -39,7 +39,9 @@ initialize := {
   assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
 }
 
-// PROJECT DEFINITIONS
+// *****************************************************************************
+// PROJECTS
+// *****************************************************************************
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin, SbtMultiJvm, JavaServerAppPackaging)
   .configs(MultiJvm)
@@ -53,11 +55,13 @@ lazy val root = (project in file("."))
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit, git.gitCurrentBranch),
     buildInfoOptions += BuildInfoOption.ToJson
   )
-  .settings(versionWithGit)
-  .settings(git.useGitDescribe := true)
+  .settings(
+    versionWithGit,
+    git.useGitDescribe := true
+  )
   .settings(configAnnotationSettings)
-  .aggregate(core, httpApi, storageInMem, storageRocksDB)
-  .dependsOn(core, httpApi, storageInMem, storageRocksDB)
+  .aggregate(core, httpApi, storageInMem, storageRocksDB, splitBrainResolver)
+  .dependsOn(core, httpApi, storageInMem, storageRocksDB, splitBrainResolver)
 
 lazy val core = (project in file("justin-core"))
   .disablePlugins(RevolverPlugin)
@@ -132,11 +136,28 @@ lazy val storageRocksDB = (project in file("justin-storage-rocksdb"))
   )
   .dependsOn(storageApi)
 
-// ALIASES
+lazy val splitBrainResolver = (project in file("justin-split-brain-resolver"))
+  .enablePlugins(SbtMultiJvm)
+  .configs(MultiJvm)
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    resolvers += Resolver.bintrayRepo("tanukkii007", "maven")
+  )
+  .settings(
+    name := "justin-split-brain-resolver",
+    scalaVersion := Version.scala,
+    libraryDependencies ++= Dependencies.splitBrainResolver
+  )
+
+// *****************************************************************************
+// Aliases
+// *****************************************************************************
 addCommandAlias("compileAll", ";compile;test:compile;multi-jvm:compile")
 addCommandAlias("testAll", ";test:test;multi-jvm:test")
 
-// SETTINGS
+// *****************************************************************************
+// Settings
+// *****************************************************************************
 lazy val commonSettings = Def.settings(
   compileSettings
 )
