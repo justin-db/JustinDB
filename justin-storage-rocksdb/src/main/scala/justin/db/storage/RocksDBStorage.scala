@@ -10,10 +10,6 @@ import org.rocksdb.{FlushOptions, Options, RocksDB}
 
 import scala.concurrent.Future
 
-// TODO:
-// Current version store every single data under one file (totally doesn't care about data originality).
-// Data should be eventually splitted by ring partitionId.
-// This might be an issue during possible data movements between nodes.
 final class RocksDBStorage(dir: File) extends PluggableStorageProtocol {
   import RocksDBStorage._
 
@@ -28,7 +24,7 @@ final class RocksDBStorage(dir: File) extends PluggableStorageProtocol {
     RocksDB.open(options, dir.getPath)
   }
 
-  override def get(id: UUID)(resolveOriginality: (UUID) => PluggableStorageProtocol.DataOriginality): Future[PluggableStorageProtocol.StorageGetData] = {
+  override def get(id: UUID): Future[PluggableStorageProtocol.StorageGetData] = {
     val key: Array[Byte] = uuid2bytes(kryo, id)
     val dataBytes: Array[Byte] = db.get(key)
 
@@ -40,7 +36,7 @@ final class RocksDBStorage(dir: File) extends PluggableStorageProtocol {
     Future.successful(justinDataOpt.map(StorageGetData.Single).getOrElse(StorageGetData.None))
   }
 
-  override def put(data: JustinData)(resolveOriginality: (UUID) => PluggableStorageProtocol.DataOriginality): Future[PluggableStorageProtocol.Ack] = {
+  override def put(data: JustinData): Future[PluggableStorageProtocol.Ack] = {
     val key: Array[Byte] = uuid2bytes(kryo, data.id)
     val dataBytes: Array[Byte] = {
       val output = new Output(new ByteArrayOutputStream())

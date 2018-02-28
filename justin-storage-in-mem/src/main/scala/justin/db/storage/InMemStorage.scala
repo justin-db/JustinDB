@@ -2,7 +2,7 @@ package justin.db.storage
 
 import java.util.UUID
 
-import justin.db.storage.PluggableStorageProtocol.{Ack, DataOriginality, StorageGetData}
+import justin.db.storage.PluggableStorageProtocol.{Ack, StorageGetData}
 
 import scala.collection.mutable
 import scala.concurrent.Future
@@ -12,37 +12,16 @@ import scala.concurrent.Future
   */
 class InMemStorage extends PluggableStorageProtocol {
 
-  private type MMap           = mutable.Map[RingPartitionId, Map[UUID, JustinData]]
-  private var primaries: MMap = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
-  private var replicas: MMap  = mutable.Map.empty[RingPartitionId, Map[UUID, JustinData]]
+  private[this] val data = mutable.Map.empty[UUID, JustinData]
 
-  override def get(id: UUID)(resolveOriginality: (UUID) => DataOriginality): Future[StorageGetData] = Future.successful {
-    def get(mmap: MMap, partitionId: RingPartitionId) = {
-      mmap.get(partitionId).fold[StorageGetData](StorageGetData.None) { _.get(id) match {
-        case Some(data) => StorageGetData.Single(data)
-        case None       => StorageGetData.None
-      }}
-    }
-
-    resolveOriginality(id) match {
-      case DataOriginality.Primary(partitionId) => get(primaries, partitionId)
-      case DataOriginality.Replica(partitionId) => get(replicas, partitionId)
-    }
+  override def get(id: UUID): Future[StorageGetData] = Future.successful {
+    data.get(id)
+      .map(StorageGetData.Single)
+      .getOrElse(StorageGetData.None)
   }
 
-  override def put(data: JustinData)(resolveOriginality: (UUID) => DataOriginality): Future[Ack] = {
-    def update(mmap: MMap, partitionId: RingPartitionId, data: JustinData) = {
-      mmap.get(partitionId) match {
-        case Some(partitionMap) => mmap + (partitionId -> (partitionMap ++ Map(data.id -> data)))
-        case None               => mmap + (partitionId -> Map(data.id -> data))
-      }
-    }
-
-    resolveOriginality(data.id) match {
-      case DataOriginality.Primary(partitionId) => primaries = update(primaries, partitionId, data)
-      case DataOriginality.Replica(partitionId) => replicas  = update(replicas, partitionId, data)
-    }
-
+  override def put(justinData: JustinData): Future[Ack] = {
+    data += justinData.id -> justinData
     Ack.future
   }
 }
